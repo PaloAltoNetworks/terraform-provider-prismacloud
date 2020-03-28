@@ -58,13 +58,13 @@ func Get(c pc.PrismaCloudClient, id string) (Role, error) {
 	return ans, nil
 }
 
-// Update modifies information related to an existing user role.
-func Update(c pc.PrismaCloudClient, role Role) error {
+// Create makes a new user role on the Prisma Cloud platform.
+func Create(c pc.PrismaCloudClient, role Role) error {
 	return createUpdate(false, c, role)
 }
 
-// Create makes a new user role on the Prisma Cloud platform.
-func Create(c pc.PrismaCloudClient, role Role) error {
+// Update modifies information related to an existing user role.
+func Update(c pc.PrismaCloudClient, role Role) error {
 	return createUpdate(true, c, role)
 }
 

@@ -5,4 +5,13 @@ const (
 	plural   = "user roles"
 )
 
+// Valid values for Role.RoleType.
+const (
+	TypeSystemAdmin                      = "System Admin"
+	TypeAccountGroupAdmin                = "Account Group Admin"
+	TypeAccountGroupReadOnly             = "Account Group Read Only"
+	TypeCloudProvisioningAdmin           = "Cloud Provisioning Admin"
+	TypeAccountAndCloudProvisioningAdmin = "Account and Cloud Provisioning Admin"
+)
+
 var Suffix = []string{"user", "role"}
