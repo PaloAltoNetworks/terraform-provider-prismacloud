@@ -14,9 +14,9 @@ const (
 
 // Valid values for Relative.Unit and ToNow.Unit.
 const (
-    TimeLogin = "login" // Valid for ToNow.Unit.
-    TimeEpoch = "epoch" // Valid for ToNow.Unit.
-	TimeHour  = "hour" // Valid for Relative.Unit.
+	TimeLogin = "login" // Valid for ToNow.Unit.
+	TimeEpoch = "epoch" // Valid for ToNow.Unit.
+	TimeHour  = "hour"  // Valid for Relative.Unit.
 	TimeDay   = "day"
 	TimeWeek  = "week"
 	TimeMonth = "month"

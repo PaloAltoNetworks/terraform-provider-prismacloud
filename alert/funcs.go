@@ -10,6 +10,8 @@ import (
 func List(c pc.PrismaCloudClient, req Request) (Response, error) {
 	c.Log(pc.LogAction, "(get) list of %s", plural)
 
+	var resp Response
+
 	// Sanity check the time range.
 	switch v := req.TimeRange.Value.(type) {
 	case Absolute:
@@ -19,14 +21,13 @@ func List(c pc.PrismaCloudClient, req Request) (Response, error) {
 	case ToNow:
 		req.TimeRange.Type = TimeToNow
 	case nil:
-		return nil, fmt.Errorf("time range must be specified")
+		return resp, fmt.Errorf("time range must be specified")
 	default:
-		return nil, fmt.Errorf("invalid time range type: %v", v)
+		return resp, fmt.Errorf("invalid time range type: %v", v)
 	}
 
-	var resp Response
 	_, err := c.Communicate("POST", []string{"v2", "alert"}, req, &resp, true)
-    return resp, err
+	return resp, err
 }
 
 // Get returns information about an alert for the specified ID.
