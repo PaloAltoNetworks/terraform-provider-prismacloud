@@ -35,9 +35,7 @@ func Get(c pc.PrismaCloudClient, id string) (Alert, error) {
 	c.Log(pc.LogAction, "(get) %s: %s", singular, id)
 
 	var ans Alert
-	if _, err := c.Communicate("GET", []string{"alert", id}, nil, &ans, true); err != nil {
-		return ans, err
-	}
 
-	return ans, nil
+	_, err := c.Communicate("GET", []string{"alert", id}, nil, &ans, true)
+	return ans, err
 }
