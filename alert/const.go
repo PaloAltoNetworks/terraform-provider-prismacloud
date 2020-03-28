@@ -12,9 +12,11 @@ const (
 	TimeToNow    = "to_now"
 )
 
-// Valid values for Relative.Unit.
+// Valid values for Relative.Unit and ToNow.Unit.
 const (
-	TimeHour  = "hour"
+    TimeLogin = "login" // Valid for ToNow.Unit.
+    TimeEpoch = "epoch" // Valid for ToNow.Unit.
+	TimeHour  = "hour" // Valid for Relative.Unit.
 	TimeDay   = "day"
 	TimeWeek  = "week"
 	TimeMonth = "month"

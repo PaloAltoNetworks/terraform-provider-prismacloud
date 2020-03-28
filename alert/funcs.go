@@ -7,7 +7,7 @@ import (
 )
 
 // List returns a list of alerts that match the constraints specified.
-func List(c pc.PrismaCloudClient, req Request) ([]Alert, error) {
+func List(c pc.PrismaCloudClient, req Request) (Response, error) {
 	c.Log(pc.LogAction, "(get) list of %s", plural)
 
 	// Sanity check the time range.
@@ -25,11 +25,8 @@ func List(c pc.PrismaCloudClient, req Request) ([]Alert, error) {
 	}
 
 	var resp Response
-	if _, err := c.Communicate("POST", []string{"v2", "alert"}, req, &resp, true); err != nil {
-		return nil, err
-	}
-
-	return resp.Data, nil
+	_, err := c.Communicate("POST", []string{"v2", "alert"}, req, &resp, true)
+    return resp, err
 }
 
 // Get returns information about an alert for the specified ID.
