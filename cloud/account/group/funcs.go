@@ -54,13 +54,13 @@ func Get(c pc.PrismaCloudClient, id string) (Group, error) {
 	return ans, err
 }
 
-// Update modifies information related to an existing account group.
-func Update(c pc.PrismaCloudClient, group Group) error {
+// Create makes a new account group on the Prisma Cloud platform.
+func Create(c pc.PrismaCloudClient, group Group) error {
 	return createUpdate(false, c, group)
 }
 
-// Create makes a new account group on the Prisma Cloud platform.
-func Create(c pc.PrismaCloudClient, group Group) error {
+// Update modifies information related to an existing account group.
+func Update(c pc.PrismaCloudClient, group Group) error {
 	return createUpdate(true, c, group)
 }
 
