@@ -41,31 +41,50 @@ func Identify(c pc.PrismaCloudClient, cloudType, name string) (string, error) {
 	return "", pc.ObjectNotFoundError
 }
 
-// Get returns top level information about the cloud account.
-func Get(c pc.PrismaCloudClient, cloudType, id string) (Account, error) {
+/*
+Get returns top level information about the cloud account.
+
+The interface returned will be one of the following:
+- account.Aws
+- account.Azure
+- account.Gcp
+- account.Alibaba
+- nil
+*/
+func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
 	c.Log(pc.LogAction, "(get) %s type:%s id:%s", singular, cloudType, id)
 
-	ans := AccountAndCredentials{}
+	var ans interface{}
 
-	//path := strings.Join([]string{Suffix, cloudType, id}, "/")
+	switch cloudType {
+	case TypeAws:
+		ans = Aws{}
+	case TypeAzure:
+		ans = Azure{}
+	case TypeGcp:
+		ans = Gcp{}
+	case TypeAlibaba:
+		ans = Alibaba{}
+	default:
+		return nil, fmt.Errorf("Unknown cloud type: %s", cloudType)
+	}
+
 	path := make([]string, 0, len(Suffix)+2)
 	path = append(path, Suffix...)
 	path = append(path, cloudType, id)
 
-	if _, err := c.Communicate("GET", path, nil, &ans, true); err != nil {
-		return ans.Account, err
-	}
+	_, err := c.Communicate("GET", path, nil, &ans, true)
 
-	return ans.Account, nil
-}
-
-// Update modifies information related to a cloud account.
-func Update(c pc.PrismaCloudClient, account interface{}) error {
-	return createUpdate(false, c, account)
+	return ans, err
 }
 
 // Create onboards a new cloud account onto the Prisma Cloud platform.
 func Create(c pc.PrismaCloudClient, account interface{}) error {
+	return createUpdate(false, c, account)
+}
+
+// Update modifies information related to a cloud account.
+func Update(c pc.PrismaCloudClient, account interface{}) error {
 	return createUpdate(true, c, account)
 }
 
@@ -101,19 +120,21 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 	logMsg.WriteString(") ")
 
 	switch v := account.(type) {
-	case AwsAccount:
+	case nil:
+		return fmt.Errorf("Cloud account specified")
+	case Aws:
 		logMsg.WriteString("aws")
 		cloudType = TypeAws
 		id = v.AccountId
-	case AzureAccount:
+	case Azure:
 		logMsg.WriteString("azure")
 		cloudType = TypeAzure
 		id = v.Account.AccountId
-	case GcpAccount:
+	case Gcp:
 		logMsg.WriteString("gcp")
 		cloudType = TypeGcp
 		id = v.Account.AccountId
-	case AlibabaAccount:
+	case Alibaba:
 		logMsg.WriteString("alibaba")
 		cloudType = TypeAlibaba
 		id = v.AccountId

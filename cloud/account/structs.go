@@ -33,7 +33,7 @@ type Group struct {
 	Name string `json:"name"`
 }
 
-type AwsAccount struct {
+type Aws struct {
 	AccountId  string   `json:"accountId"`
 	Enabled    bool     `json:"enabled"`
 	ExternalId string   `json:"externalId"`
@@ -49,7 +49,7 @@ type CloudAccount struct {
 	Name      string   `json:"name"`
 }
 
-type AzureAccount struct {
+type Azure struct {
 	Account            CloudAccount `json:"cloudAccount"`
 	ClientId           string       `json:"clientId"`
 	Key                string       `json:"key"`
@@ -71,7 +71,7 @@ type GcpCredentials struct {
 	ClientCertUrl   string `json:"client_x509_cert_url"`
 }
 
-type GcpAccount struct {
+type Gcp struct {
 	Account                CloudAccount   `json:"cloudAccount"`
 	CompressionEnabled     bool           `json:"compressionEnabled"`
 	DataflowEnabledProject string         `json:"dataflowEnabledProject"`
@@ -79,7 +79,7 @@ type GcpAccount struct {
 	Credentials            GcpCredentials `json:"credentials"`
 }
 
-type AlibabaAccount struct {
+type Alibaba struct {
 	AccountId string   `json:"accountId"`
 	GroupIds  []string `json:"groupIds"`
 	Name      string   `json:"name"`
