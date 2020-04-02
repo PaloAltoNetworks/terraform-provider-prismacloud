@@ -24,7 +24,6 @@ func resourceCloudAccount() *schema.Resource {
 			// AWS type.
 			"aws": {
 				Type:        schema.TypeList,
-				ForceNew:    true,
 				Optional:    true,
 				Description: "AWS account type",
 				MaxItems:    1,
@@ -54,6 +53,9 @@ func resourceCloudAccount() *schema.Resource {
 							Type:        schema.TypeList,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"name": {
 							Type:        schema.TypeString,
@@ -72,7 +74,6 @@ func resourceCloudAccount() *schema.Resource {
 			// Azure type.
 			"azure": {
 				Type:        schema.TypeList,
-				ForceNew:    true,
 				Optional:    true,
 				Description: "AWS account type",
 				MaxItems:    1,
@@ -97,6 +98,9 @@ func resourceCloudAccount() *schema.Resource {
 							Type:        schema.TypeList,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"name": {
 							Type:        schema.TypeString,
@@ -135,7 +139,6 @@ func resourceCloudAccount() *schema.Resource {
 			// GCP type.
 			"gcp": {
 				Type:        schema.TypeList,
-				ForceNew:    true,
 				Optional:    true,
 				Description: "AWS account type",
 				MaxItems:    1,
@@ -160,6 +163,9 @@ func resourceCloudAccount() *schema.Resource {
 							Type:        schema.TypeList,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"name": {
 							Type:        schema.TypeString,
@@ -188,7 +194,6 @@ func resourceCloudAccount() *schema.Resource {
 			// Alibaba type.
 			"alibaba": {
 				Type:        schema.TypeList,
-				ForceNew:    true,
 				Optional:    true,
 				Description: "AWS account type",
 				MaxItems:    1,
@@ -208,6 +213,9 @@ func resourceCloudAccount() *schema.Resource {
 							Type:        schema.TypeList,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"name": {
 							Type:        schema.TypeString,
@@ -324,7 +332,7 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 
 	for _, key := range []string{"aws", "azure", "gcp", "alibaba"} {
 		if key == dest {
-			if err := d.Set(key, val); err != nil {
+			if err := d.Set(key, []interface{}{val}); err != nil {
 				log.Printf("[WARN] Error setting %q field for %q: %s", key, d.Id(), err)
 			}
 		} else {
