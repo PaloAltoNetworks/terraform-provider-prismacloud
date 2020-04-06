@@ -1,6 +1,8 @@
 Terraform Provider for Palo Alto Networks Prisma Cloud
 ======================================================
 
+NOTE:  THIS PROVIDER SHOULD BE CONSIDERED ALPHA AND SHOULD NOT USED IN PRODUCTION UNTIL THIS NOTE IS REMOVED.
+
 - Website: https://www.terraform.io
 - Documentation: https://www.terraform.io/docs/providers/prismacloud/index.html
 - [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
