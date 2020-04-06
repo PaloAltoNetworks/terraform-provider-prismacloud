@@ -1,7 +1,7 @@
 package rule
 
 type Rule struct {
-	PolicyScanConfigId   string               `json:"policyScanConfigId"`
+	PolicyScanConfigId   string               `json:"policyScanConfigId,omitempty"`
 	Name                 string               `json:"name"`
 	Description          string               `json:"description"`
 	Enabled              bool                 `json:"enabled"`
