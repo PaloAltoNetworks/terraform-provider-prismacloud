@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-const IdSeparator = "."
+const IdSeparator = ":"
 
 func TwoStringsToId(a, b string) string {
 	return strings.Join([]string{a, b}, IdSeparator)
