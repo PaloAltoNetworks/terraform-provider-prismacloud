@@ -44,6 +44,7 @@ func resourceCloudAccount() *schema.Resource {
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Description: "Whether or not the account is enabled",
+							Default:     true,
 						},
 						"external_id": {
 							Type:        schema.TypeString,
@@ -94,6 +95,7 @@ func resourceCloudAccount() *schema.Resource {
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Description: "Whether or not the account is enabled",
+							Default:     true,
 						},
 						"group_ids": {
 							Type:        schema.TypeList,
@@ -159,6 +161,7 @@ func resourceCloudAccount() *schema.Resource {
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Description: "Whether or not the account is enabled",
+							Default:     true,
 						},
 						"group_ids": {
 							Type:        schema.TypeList,
