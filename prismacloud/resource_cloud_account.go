@@ -187,6 +187,15 @@ func resourceCloudAccount() *schema.Resource {
 							Optional:    true,
 							Description: "GCP flow logs storage bucket",
 						},
+                        "credentials": {
+                            Type: schema.TypeMap,
+                            Required: true,
+                            Description: "Content of the JSON credentials file",
+                            Sensitive: true,
+                            Elem: &schema.Schema{
+                                Type: schema.TypeString,
+                            },
+                        },
 					},
 				},
 			},
@@ -259,6 +268,7 @@ func parseCloudAccount(d *schema.ResourceData, id string) (string, string, inter
 			ServicePrincipalId: x["service_principal_id"].(string),
 		}
 	} else if x := ResourceDataInterfaceMap(d, "gcp"); len(x) != 0 {
+        val := x["credentials"].(map[string] interface{})
 		return account.TypeGcp, x["name"].(string), account.Gcp{
 			Account: account.CloudAccount{
 				AccountId: id,
@@ -269,10 +279,18 @@ func parseCloudAccount(d *schema.ResourceData, id string) (string, string, inter
 			CompressionEnabled:     x["compression_enabled"].(bool),
 			DataflowEnabledProject: x["dataflow_enabled_project"].(string),
 			FlowLogStorageBucket:   x["flow_log_storage_bucket"].(string),
-			/*
-			   Credentials: account.GcpCredentials{
-			   },
-			*/
+            Credentials: account.GcpCredentials{
+                Type: val["type"].(string),
+                ProjectId: val["project_id"].(string),
+                PrivateKeyId: val["private_key_id"].(string),
+                PrivateKey: val["private_key"].(string),
+                ClientEmail: val["client_email"].(string),
+                ClientId: val["client_id"].(string),
+                AuthUri: val["auth_uri"].(string),
+                TokenUri: val["token_uri"].(string),
+                ProviderCertUrl: val["auth_provider_x509_cert_url"].(string),
+                ClientCertUrl: val["client_x509_cert_url"].(string),
+            },
 		}
 	} else if x := ResourceDataInterfaceMap(d, "alibaba"); len(x) != 0 {
 		return account.TypeAlibaba, x["name"].(string), account.Alibaba{
@@ -312,6 +330,7 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"service_principal_id": v.ServicePrincipalId,
 		}
 	case account.Gcp:
+        c := make(map[string] interface{})
 		val = map[string]interface{}{
 			"account_id":               v.Account.AccountId,
 			"enabled":                  v.Account.Enabled,
@@ -320,6 +339,18 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"compression_enabled":      v.CompressionEnabled,
 			"dataflow_enabled_project": v.DataflowEnabledProject,
 			"flow_log_storage_bucket":  v.FlowLogStorageBucket,
+            "credentials": map[string] interface{}{
+                "type": v.Credentials.Type,
+                "project_id": v.Credentials.ProjectId,
+                "private_key_id": v.Credentials.PrivateKeyId,
+                "private_key": v.Credentials.PrivateKey,
+                "client_email": v.Credentials.ClientEmail,
+                "client_id": v.Credentials.ClientId,
+                "auth_uri": v.Credentials.AuthUri,
+                "token_uri": v.Credentials.TokenUri,
+                "auth_provider_x509_cert_url": v.Credentials.ProviderCertUrl,
+                "client_x509_cert_url": v.Credentials.ClientCertUrl,
+            },
 		}
 	case account.Alibaba:
 		val = map[string]interface{}{
