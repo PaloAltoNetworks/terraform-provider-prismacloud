@@ -1,0 +1,41 @@
+<% wrap_layout :inner do %>
+  <% content_for :sidebar do %>
+    <div class="docs-sidebar hidden-print affix-top" role="complementary">
+      <ul class="nav docs-sidenav">
+        <li>
+        <a href="/docs/providers/index.html">All Providers</a>
+        </li>
+
+        <li>
+        <a href="/docs/providers/prismacloud/index.html">Prisma Cloud Provider</a>
+        </li>
+
+        <li>
+          <a href="#">Data Sources</a>
+          <ul class="nav nav-visible">
+            <li>
+              <a href="/docs/providers/prismacloud/d/alerts.html">prismacloud_alerts</a>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="#">Resources</a>
+          <ul class="nav nav-visible">
+            <li>
+              <a href="/docs/providers/prismacloud/r/account_group.html">prismacloud_account_group</a>
+            </li>
+            <li>
+              <a href="/docs/providers/prismacloud/r/cloud_account.html">prismacloud_cloud_account</a>
+            </li>
+            <li>
+              <a href="/docs/providers/prismacloud/r/user_role.html">prismacloud_user_role</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= yield %>
+  <% end %>
