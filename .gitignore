@@ -16,6 +16,7 @@
 # Misc ignores
 *.swp
 *.tf
+*.no
 .DS_Store
 .terraform/
 terraform.tfstate
