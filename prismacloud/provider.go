@@ -43,12 +43,14 @@ func Provider() terraform.ResourceProvider {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Description:  "The protocol (https or http)",
+				DefaultFunc:  schema.EnvDefaultFunc("PRISMACLOUD_PROTOCOL", nil),
 				ValidateFunc: validation.StringInSlice([]string{"", "https", "http"}, false),
 			},
 			"port": {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Description: "If the port is non-standard for the protocol, the port number to use",
+				DefaultFunc: schema.EnvDefaultFunc("PRISMACLOUD_PORT", nil),
 			},
 			"timeout": {
 				Type:        schema.TypeInt,
@@ -60,6 +62,7 @@ func Provider() terraform.ResourceProvider {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Description: "Skip SSL certificate verification",
+				DefaultFunc: schema.EnvDefaultFunc("PRISMACLOUD_SKIP_SSL_CERT_VERIFICATION", nil),
 			},
 			"logging": {
 				Type: schema.TypeMap,
