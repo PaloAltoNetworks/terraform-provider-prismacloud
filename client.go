@@ -18,20 +18,20 @@ type Client struct {
 	Url                     string          `json:"url"`
 	Username                string          `json:"username"`
 	Password                string          `json:"password"`
-	CustomerName            string          `json:"customer-name"`
+	CustomerName            string          `json:"customer_name"`
 	Protocol                string          `json:"protocol"`
 	Port                    int             `json:"port"`
 	Timeout                 int             `json:"timeout"`
-	SkipSslCertVerification bool            `json:"skip-ssl-cert-verification"`
+	SkipSslCertVerification bool            `json:"skip_ssl_cert_verification"`
 	Logging                 map[string]bool `json:"logging"`
-	DisableReconnect        bool            `json:"disable-reconnect"`
+	DisableReconnect        bool            `json:"disable_reconnect"`
 
 	// Advanced user config.
 	Transport *http.Transport `json:"-"`
 
 	// Set at runtime.
-	JsonWebToken string       `json:"-"`
-	con          *http.Client `json:"-"`
+	JsonWebToken string `json:"json_web_token"`
+	con          *http.Client
 
 	// Variables for testing.
 	pcAuthFileContent []byte
@@ -147,6 +147,11 @@ func (c *Client) Initialize(filename string) error {
 	c.con = &http.Client{
 		Transport: c.Transport,
 		Timeout:   tout,
+	}
+
+	if c.JsonWebToken == "" && c2.JsonWebToken != "" {
+		c.JsonWebToken = c2.JsonWebToken
+		return nil
 	}
 
 	return c.Authenticate()
