@@ -34,11 +34,15 @@ resource "prismacloud_account_group" "example" {
 
 ### Accounts
 
+Each account has the following attributes.
+
 * `account_id` - Associated cloud account ID.
 * `name` - Associated cloud account name.
 * `account_type` - Associated cloud account type.
 
 ### Alert Rules
+
+Each alert rule has the following attributes.
 
 * `alert_id` - The alert ID.
 * `name` - Alert name.
