@@ -50,6 +50,7 @@ func resourceCloudAccount() *schema.Resource {
 							Type:        schema.TypeString,
 							Required:    true,
 							Description: "AWS account external ID",
+							Sensitive:   true,
 						},
 						"group_ids": {
 							Type:        schema.TypeList,
