@@ -56,7 +56,7 @@ func Provider() terraform.ResourceProvider {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Description: "The timeout in seconds for all communications with Prisma Cloud",
-				Default:     10,
+				Default:     90,
 			},
 			"skip_ssl_cert_verification": {
 				Type:        schema.TypeBool,
