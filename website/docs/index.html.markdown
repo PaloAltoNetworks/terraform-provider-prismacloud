@@ -23,8 +23,8 @@ provider "prismacloud" {
 There are multiple ways to specify provider config, and they may all be combined if desired.  The params are taken from the following locations, in order of preference:
 
 1) Any param specified explicitly in the `provider` block
-2) From the param environment variable, where applicable.
-3) From the JSON config file.
+2) From the param's environment variable, where applicable.
+3) From the JSON config file, if specified.
 
 When retrieving params from the JSON configuration file, the param names are the same as the provider params, except that underscores in provider params become hyphens in the JSON config file.  For example, the provider param `json_web_token` is `json-web-token` in the config file.
 
@@ -37,7 +37,7 @@ The following arguments are supported:
 * `protocol` - (Env: `PRISMACLOUD_PROTOCOL`) The protocol.  Valid values are `https` or `http`.
 * `port` - (Env: `PRISMACLOUD_PORT`, int) If the port is non-standard for the protocol, the port number to use.
 * `timeout` - The default timeout (in seconds) for all communications with Prisma Cloud (default: `10`).
-* `skip_ssl_cert_verification` - (bool) Skip SSL certificate verification.
+* `skip_ssl_cert_verification` - (Env: `PRISMACLOUD_SKIP_SSL_CERT_VERIFICATION`, bool) Skip SSL certificate verification.
 * `logging` - Map of logging options for the API connection.  Valid values are `quiet` (disable logging), `action`, `path`, `send`, and `receive`.
 * `disable_reconnect` - (bool) Prisma Cloud invalidates authenticated sessions after 10minutes.  By default the provider will silently get a new JSON web token and continue deploying the plan.  If you do not want the provider to fetch a new JSON web token, set this to `true`.
 * `json_web_token` - (Env: `PRISMACLOUD_JSON_WEB_TOKEN`) A JSON web token.  These are only valid for 10 minutes once issued.  If this is specified but not the `username` / `password` then the provider will not have a way to reauthenticate once the JSON web token expires.
