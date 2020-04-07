@@ -85,10 +85,10 @@ func (c *Client) Initialize(filename string) error {
 		if c2.Timeout > 0 {
 			c.Timeout = c2.Timeout
 		} else {
-			c.Timeout = 10
+			c.Timeout = 90
 		}
 	}
-	if c.Timeout < 0 || c.Timeout > 60 {
+	if c.Timeout < 0 {
 		return fmt.Errorf("Invalid timeout")
 	}
 	tout = time.Duration(time.Duration(c.Timeout) * time.Second)
