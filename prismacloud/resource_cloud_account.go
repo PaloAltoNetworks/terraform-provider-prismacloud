@@ -23,15 +23,15 @@ func resourceCloudAccount() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			// AWS type.
-			"aws": {
+			account.TypeAws: {
 				Type:        schema.TypeList,
 				Optional:    true,
 				Description: "AWS account type",
 				MaxItems:    1,
 				ConflictsWith: []string{
-					"azure",
-					"gcp",
-					"alibaba",
+					account.TypeAzure,
+					account.TypeGcp,
+					account.TypeAlibaba,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -75,15 +75,15 @@ func resourceCloudAccount() *schema.Resource {
 			},
 
 			// Azure type.
-			"azure": {
+			account.TypeAzure: {
 				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "AWS account type",
+				Description: "Azure account type",
 				MaxItems:    1,
 				ConflictsWith: []string{
-					"aws",
-					"gcp",
-					"alibaba",
+					account.TypeAws,
+					account.TypeGcp,
+					account.TypeAlibaba,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -141,15 +141,15 @@ func resourceCloudAccount() *schema.Resource {
 			},
 
 			// GCP type.
-			"gcp": {
+			account.TypeGcp: {
 				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "AWS account type",
+				Description: "GCP account type",
 				MaxItems:    1,
 				ConflictsWith: []string{
-					"aws",
-					"azure",
-					"alibaba",
+					account.TypeAws,
+					account.TypeAzure,
+					account.TypeAlibaba,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -182,7 +182,7 @@ func resourceCloudAccount() *schema.Resource {
 							Optional:    true,
 							Description: "Enable flow log compression",
 						},
-						"data_flow_enabled_project": {
+						"dataflow_enabled_project": {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Description: "GCP project for flow log compression",
@@ -206,15 +206,15 @@ func resourceCloudAccount() *schema.Resource {
 			},
 
 			// Alibaba type.
-			"alibaba": {
+			account.TypeAlibaba: {
 				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "AWS account type",
+				Description: "Alibaba account type",
 				MaxItems:    1,
 				ConflictsWith: []string{
-					"aws",
-					"azure",
-					"gcp",
+					account.TypeAws,
+					account.TypeAzure,
+					account.TypeGcp,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -275,7 +275,7 @@ func gcpCredentialsMatch(k, old, new string, d *schema.ResourceData) bool {
 }
 
 func parseCloudAccount(d *schema.ResourceData, id string) (string, string, interface{}) {
-	if x := ResourceDataInterfaceMap(d, "aws"); len(x) != 0 {
+	if x := ResourceDataInterfaceMap(d, account.TypeAws); len(x) != 0 {
 		return account.TypeAws, x["name"].(string), account.Aws{
 			AccountId:  id,
 			Enabled:    x["enabled"].(bool),
@@ -284,7 +284,7 @@ func parseCloudAccount(d *schema.ResourceData, id string) (string, string, inter
 			Name:       x["name"].(string),
 			RoleArn:    x["role_arn"].(string),
 		}
-	} else if x := ResourceDataInterfaceMap(d, "azure"); len(x) != 0 {
+	} else if x := ResourceDataInterfaceMap(d, account.TypeAzure); len(x) != 0 {
 		return account.TypeAzure, x["name"].(string), account.Azure{
 			Account: account.CloudAccount{
 				AccountId: id,
@@ -298,7 +298,7 @@ func parseCloudAccount(d *schema.ResourceData, id string) (string, string, inter
 			TenantId:           x["tenant_id"].(string),
 			ServicePrincipalId: x["service_principal_id"].(string),
 		}
-	} else if x := ResourceDataInterfaceMap(d, "gcp"); len(x) != 0 {
+	} else if x := ResourceDataInterfaceMap(d, account.TypeGcp); len(x) != 0 {
 		var creds account.GcpCredentials
 		_ = json.Unmarshal([]byte(x["credentials_json"].(string)), &creds)
 
@@ -314,7 +314,7 @@ func parseCloudAccount(d *schema.ResourceData, id string) (string, string, inter
 			FlowLogStorageBucket:   x["flow_log_storage_bucket"].(string),
 			Credentials:            creds,
 		}
-	} else if x := ResourceDataInterfaceMap(d, "alibaba"); len(x) != 0 {
+	} else if x := ResourceDataInterfaceMap(d, account.TypeAlibaba); len(x) != 0 {
 		return account.TypeAlibaba, x["name"].(string), account.Alibaba{
 			AccountId: id,
 			GroupIds:  ListToStringSlice(x["group_ids"].([]interface{})),
@@ -372,13 +372,14 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 		}
 	}
 
-	for _, key := range []string{"aws", "azure", "gcp", "alibaba"} {
-		if key == dest {
-			if err := d.Set(key, []interface{}{val}); err != nil {
-				log.Printf("[WARN] Error setting %q field for %q: %s", key, d.Id(), err)
-			}
-		} else {
+	for _, key := range []string{account.TypeAws, account.TypeAzure, account.TypeGcp, account.TypeAlibaba} {
+		if key != dest {
 			d.Set(key, nil)
+			continue
+		}
+
+		if err := d.Set(key, []interface{}{val}); err != nil {
+			log.Printf("[WARN] Error setting %q field for %q: %s", key, d.Id(), err)
 		}
 	}
 }
