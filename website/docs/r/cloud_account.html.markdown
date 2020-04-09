@@ -31,7 +31,7 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `aws` - AWS account type spec, defined [below](#aws).
 * `azure` - Azure account type spec, defined [below](#azure).
 * `gcp` - GCP account type spec, defined [below](#gcp).
-* `alibaba` - Alibaba account type spec, defined [below](#alibaba).
+* `alibaba_cloud` - Alibaba account type spec, defined [below](#alibaba-cloud).
 
 ### AWS
 
@@ -65,9 +65,9 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `flow_log_storage_bucket` - (Optional) GCP Flow logs storage bucket.
 * `credentials_json` - (Required) Content of the JSON credentials file (read in using `file()`).
 
-### Alibaba
+### Alibaba Cloud
 
-* `account_id` - (Required) GCP account ID.
+* `account_id` - (Required) Alibaba account ID.
 * `group_ids` - (Required) List of account IDs to which you are assigning this account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `ram_arn` - (Required) Unique identifier for an Alibaba RAM role resource.
