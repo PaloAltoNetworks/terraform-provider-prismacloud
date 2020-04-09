@@ -68,26 +68,37 @@ func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
 	path = append(path, Suffix...)
 	path = append(path, cloudType, id)
 
+	var ans interface{}
+
 	switch cloudType {
 	case TypeAws:
-		ans := Aws{}
-		_, err := c.Communicate("GET", path, nil, &ans, true)
-		return ans, err
+		ans = &Aws{}
 	case TypeAzure:
-		ans := Azure{}
-		_, err := c.Communicate("GET", path, nil, &ans, true)
-		return ans, err
+		ans = &Azure{}
 	case TypeGcp:
-		ans := Gcp{}
-		_, err := c.Communicate("GET", path, nil, &ans, true)
-		return ans, err
+		ans = &Gcp{}
 	case TypeAlibaba:
-		ans := Alibaba{}
-		_, err := c.Communicate("GET", path, nil, &ans, true)
-		return ans, err
+		ans = &Alibaba{}
+	default:
+		return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
 	}
 
-	return nil, fmt.Errorf("Unknown cloud type: %s", cloudType)
+	_, err := c.Communicate("GET", path, nil, ans, true)
+
+	// Can't just return ans here or it won't be right, so re-cast it back
+	// to the appropriate specific object type.
+	switch cloudType {
+	case TypeAws:
+		return *ans.(*Aws), err
+	case TypeAzure:
+		return *ans.(*Azure), err
+	case TypeGcp:
+		return *ans.(*Gcp), err
+	case TypeAlibaba:
+		return *ans.(*Alibaba), err
+	}
+
+	return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
 }
 
 // Create onboards a new cloud account onto the Prisma Cloud platform.
