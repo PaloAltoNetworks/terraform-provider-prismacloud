@@ -19,16 +19,26 @@ func List(c pc.PrismaCloudClient) ([]Account, error) {
 	return ans, nil
 }
 
-// Identify returns the ID for the given cloud type and name.
-func Identify(c pc.PrismaCloudClient, cloudType, name string) (string, error) {
-	c.Log(pc.LogAction, "(get) id for %s type:%s name:%s", singular, cloudType, name)
+// Names returns the name listing for cloud accounts.
+func Names(c pc.PrismaCloudClient) ([]NameTypeId, error) {
+	c.Log(pc.LogAction, "(get) %s names", singular)
 
 	path := make([]string, 0, len(Suffix)+1)
 	path = append(path, Suffix...)
 	path = append(path, "name")
 
 	var ans []NameTypeId
-	if _, err := c.Communicate("GET", path, nil, &ans, true); err != nil {
+	_, err := c.Communicate("GET", path, nil, &ans, true)
+
+	return ans, err
+}
+
+// Identify returns the ID for the given cloud type and name.
+func Identify(c pc.PrismaCloudClient, cloudType, name string) (string, error) {
+	c.Log(pc.LogAction, "(get) id for %s type:%s name:%s", singular, cloudType, name)
+
+	ans, err := Names(c)
+	if err != nil {
 		return "", err
 	}
 
@@ -54,28 +64,30 @@ The interface returned will be one of the following:
 func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
 	c.Log(pc.LogAction, "(get) %s type:%s id:%s", singular, cloudType, id)
 
-	var ans interface{}
-
-	switch cloudType {
-	case TypeAws:
-		ans = Aws{}
-	case TypeAzure:
-		ans = Azure{}
-	case TypeGcp:
-		ans = Gcp{}
-	case TypeAlibaba:
-		ans = Alibaba{}
-	default:
-		return nil, fmt.Errorf("Unknown cloud type: %s", cloudType)
-	}
-
 	path := make([]string, 0, len(Suffix)+2)
 	path = append(path, Suffix...)
 	path = append(path, cloudType, id)
 
-	_, err := c.Communicate("GET", path, nil, &ans, true)
+	switch cloudType {
+	case TypeAws:
+		ans := Aws{}
+		_, err := c.Communicate("GET", path, nil, &ans, true)
+		return ans, err
+	case TypeAzure:
+		ans := Azure{}
+		_, err := c.Communicate("GET", path, nil, &ans, true)
+		return ans, err
+	case TypeGcp:
+		ans := Gcp{}
+		_, err := c.Communicate("GET", path, nil, &ans, true)
+		return ans, err
+	case TypeAlibaba:
+		ans := Alibaba{}
+		_, err := c.Communicate("GET", path, nil, &ans, true)
+		return ans, err
+	}
 
-	return ans, err
+	return nil, fmt.Errorf("Unknown cloud type: %s", cloudType)
 }
 
 // Create onboards a new cloud account onto the Prisma Cloud platform.
