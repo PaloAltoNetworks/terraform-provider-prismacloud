@@ -3,6 +3,7 @@ package prismacloud
 import (
 	"encoding/json"
 	"log"
+	"time"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account"
@@ -16,6 +17,12 @@ func resourceCloudAccount() *schema.Resource {
 		Read:   readCloudAccount,
 		Update: updateCloudAccount,
 		Delete: deleteCloudAccount,
+
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(10 * time.Minute),
+			Update: schema.DefaultTimeout(10 * time.Minute),
+			Delete: schema.DefaultTimeout(5 * time.Minute),
+		},
 
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
