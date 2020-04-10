@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -178,10 +179,10 @@ func (c *Client) Authenticate() error {
 	if c.Username != "" && c.Password != "" {
 		c.Log(LogAction, "(auth) retrieving jwt")
 		req := initial{c.Username, c.Password, c.CustomerName}
-		_, err = c.Communicate("POST", []string{"login"}, &req, &ans, false)
+		_, err = c.communicate("POST", []string{"login"}, nil, &req, &ans, false)
 	} else if c.JsonWebToken != "" {
 		c.Log(LogAction, "(auth) refreshing jwt")
-		_, err = c.Communicate("GET", []string{"auth_token", "extend"}, nil, &ans, false)
+		_, err = c.communicate("GET", []string{"auth_token", "extend"}, nil, nil, &ans, false)
 	} else {
 		return fmt.Errorf("no authentication params given")
 	}
@@ -201,85 +202,8 @@ If a non-nil interface is given as the "ans" variable, then this function
 will unmarshal the returned JSON into it, and you can safely discard the
 slice of bytes returned.
 */
-func (c *Client) Communicate(method string, suffix []string, data interface{}, ans interface{}, allowRetry bool) ([]byte, error) {
-	var err error
-	var buf bytes.Buffer
-
-	if data != nil {
-		b, err := json.Marshal(data)
-		if err != nil {
-			return nil, err
-		}
-		buf = *bytes.NewBuffer(b)
-		c.logSendReceive(LogSend, 0, b)
-	}
-
-	var path strings.Builder
-	path.Grow(30)
-	fmt.Fprintf(&path, "%s://%s", c.Protocol, c.Url)
-	if c.Port != 0 {
-		fmt.Fprintf(&path, ":%d", c.Port)
-	}
-	for _, v := range suffix {
-		path.WriteString("/")
-		path.WriteString(v)
-	}
-	c.Log(LogPath, "path: %s", path.String())
-
-	req, err := http.NewRequest(method, path.String(), &buf)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	if c.JsonWebToken != "" {
-		req.Header.Set("x-redlock-auth", c.JsonWebToken)
-	}
-
-	resp, err := c.do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	c.logSendReceive(LogReceive, resp.StatusCode, []byte(body))
-
-	switch resp.StatusCode {
-	case http.StatusOK:
-	case http.StatusUnauthorized:
-		if !c.DisableReconnect && allowRetry {
-			if err = c.Authenticate(); err == nil {
-				return c.Communicate(method, suffix, data, ans, false)
-			}
-		}
-		return body, InvalidCredentialsError
-	default:
-		pcel := PrismaCloudErrorList{
-			Method:     method,
-			StatusCode: resp.StatusCode,
-			Path:       path.String(),
-		}
-		info := resp.Header["X-Redlock-Status"][0]
-		if err = json.Unmarshal([]byte(info), &pcel.Errors); err != nil {
-			return body, fmt.Errorf("%d error, and could not unmarshal header %q: %s", resp.StatusCode, info, err)
-		}
-		if ce := pcel.GenericError(); ce != nil {
-			return body, ce
-		}
-		return body, pcel
-	}
-
-	if ans != nil {
-		if err = json.Unmarshal(body, ans); err != nil {
-			return body, err
-		}
-	}
-
-	return body, nil
+func (c *Client) Communicate(method string, suffix []string, query, data interface{}, ans interface{}) ([]byte, error) {
+	return c.communicate(method, suffix, query, data, ans, true)
 }
 
 // Log logs a message to the user if the appropriate style is enabled.
@@ -329,4 +253,90 @@ func (c *Client) logSendReceive(logFlag string, code int, b []byte) {
 
 	b2, _ := json.MarshalIndent(ti, "", "    ")
 	log.Printf("%s\n%s", desc, scrubSensitiveData(b2))
+}
+
+func (c *Client) communicate(method string, suffix []string, query, data interface{}, ans interface{}, allowRetry bool) ([]byte, error) {
+	var err error
+	var buf bytes.Buffer
+
+	if data != nil {
+		b, err := json.Marshal(data)
+		if err != nil {
+			return nil, err
+		}
+		buf = *bytes.NewBuffer(b)
+		c.logSendReceive(LogSend, 0, b)
+	}
+
+	var path strings.Builder
+	path.Grow(30)
+	fmt.Fprintf(&path, "%s://%s", c.Protocol, c.Url)
+	if c.Port != 0 {
+		fmt.Fprintf(&path, ":%d", c.Port)
+	}
+	for _, v := range suffix {
+		path.WriteString("/")
+		path.WriteString(v)
+	}
+	if query != nil {
+		qv := query.(url.Values)
+		path.WriteString("?")
+		path.WriteString(qv.Encode())
+	}
+	c.Log(LogPath, "path: %s", path.String())
+
+	req, err := http.NewRequest(method, path.String(), &buf)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	if c.JsonWebToken != "" {
+		req.Header.Set("x-redlock-auth", c.JsonWebToken)
+	}
+
+	resp, err := c.do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	c.logSendReceive(LogReceive, resp.StatusCode, []byte(body))
+
+	switch resp.StatusCode {
+	case http.StatusOK:
+	case http.StatusUnauthorized:
+		if !c.DisableReconnect && allowRetry {
+			if err = c.Authenticate(); err == nil {
+				return c.communicate(method, suffix, query, data, ans, false)
+			}
+		}
+		return body, InvalidCredentialsError
+	default:
+		pcel := PrismaCloudErrorList{
+			Method:     method,
+			StatusCode: resp.StatusCode,
+			Path:       path.String(),
+		}
+		info := resp.Header["X-Redlock-Status"][0]
+		if err = json.Unmarshal([]byte(info), &pcel.Errors); err != nil {
+			return body, fmt.Errorf("%d error, and could not unmarshal header %q: %s", resp.StatusCode, info, err)
+		}
+		if ce := pcel.GenericError(); ce != nil {
+			return body, ce
+		}
+		return body, pcel
+	}
+
+	if ans != nil {
+		if err = json.Unmarshal(body, ans); err != nil {
+			return body, err
+		}
+	}
+
+	return body, nil
 }

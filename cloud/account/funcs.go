@@ -12,7 +12,7 @@ func List(c pc.PrismaCloudClient) ([]Account, error) {
 	c.Log(pc.LogAction, "(get) list of %s", plural)
 
 	var ans []Account
-	if _, err := c.Communicate("GET", Suffix, nil, &ans, true); err != nil {
+	if _, err := c.Communicate("GET", Suffix, nil, nil, &ans); err != nil {
 		return nil, err
 	}
 
@@ -28,7 +28,7 @@ func Names(c pc.PrismaCloudClient) ([]NameTypeId, error) {
 	path = append(path, "name")
 
 	var ans []NameTypeId
-	_, err := c.Communicate("GET", path, nil, &ans, true)
+	_, err := c.Communicate("GET", path, nil, nil, &ans)
 
 	return ans, err
 }
@@ -83,7 +83,7 @@ func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
 		return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
 	}
 
-	_, err := c.Communicate("GET", path, nil, ans, true)
+	_, err := c.Communicate("GET", path, nil, nil, ans)
 
 	// Can't just return ans here or it won't be right, so re-cast it back
 	// to the appropriate specific object type.
@@ -119,7 +119,7 @@ func Delete(c pc.PrismaCloudClient, cloudType, id string) error {
 	path := make([]string, 0, len(Suffix)+2)
 	path = append(path, Suffix...)
 	path = append(path, cloudType, id)
-	_, err := c.Communicate("DELETE", path, nil, nil, true)
+	_, err := c.Communicate("DELETE", path, nil, nil, nil)
 	return err
 }
 
@@ -180,6 +180,6 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 		path = append(path, id)
 	}
 
-	_, err := c.Communicate(method, path, account, nil, true)
+	_, err := c.Communicate(method, path, nil, account, nil)
 	return err
 }

@@ -31,7 +31,7 @@ func List(c pc.PrismaCloudClient) ([]Rule, error) {
 
 	var ans []Rule
 
-	_, err := c.Communicate("GET", []string{"v2", "alert", "rule"}, nil, &ans, true)
+	_, err := c.Communicate("GET", []string{"v2", "alert", "rule"}, nil, nil, &ans)
 	return ans, err
 }
 
@@ -45,7 +45,7 @@ func Get(c pc.PrismaCloudClient, id string) (Rule, error) {
 	path = append(path, Suffix...)
 	path = append(path, id)
 
-	_, err := c.Communicate("GET", path, nil, &ans, true)
+	_, err := c.Communicate("GET", path, nil, nil, &ans)
 	return ans, err
 }
 
@@ -67,7 +67,7 @@ func Delete(c pc.PrismaCloudClient, id string) error {
 	path = append(path, Suffix...)
 	path = append(path, id)
 
-	_, err := c.Communicate("DELETE", path, nil, nil, true)
+	_, err := c.Communicate("DELETE", path, nil, nil, nil)
 	return err
 }
 
@@ -103,6 +103,6 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, rule Rule) error {
 		path = append(path, id)
 	}
 
-	_, err := c.Communicate(method, path, rule, nil, true)
+	_, err := c.Communicate(method, path, rule, nil, nil)
 	return err
 }

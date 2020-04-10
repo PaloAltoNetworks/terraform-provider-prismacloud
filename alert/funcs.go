@@ -26,7 +26,7 @@ func List(c pc.PrismaCloudClient, req Request) (Response, error) {
 		return resp, fmt.Errorf("invalid time range type: %v", v)
 	}
 
-	_, err := c.Communicate("POST", []string{"v2", "alert"}, req, &resp, true)
+	_, err := c.Communicate("POST", []string{"v2", "alert"}, nil, req, &resp)
 	return resp, err
 }
 
@@ -36,6 +36,6 @@ func Get(c pc.PrismaCloudClient, id string) (Alert, error) {
 
 	var ans Alert
 
-	_, err := c.Communicate("GET", []string{"alert", id}, nil, &ans, true)
+	_, err := c.Communicate("GET", []string{"alert", id}, nil, nil, &ans)
 	return ans, err
 }

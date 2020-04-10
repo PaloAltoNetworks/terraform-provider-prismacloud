@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -166,6 +167,55 @@ func TestLogActionDisabled(t *testing.T) {
 	}
 }
 
+func TestPathWithQuery(t *testing.T) {
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+	defer rl()
+
+	c := MockClient(
+		[]*http.Response{
+			OkResponse(""),
+		},
+	)
+	c.Logging[LogPath] = true
+
+	v := url.Values{}
+	v.Set("foo", "bar")
+
+	_, err := c.Communicate("GET", TestPath, v, nil, nil)
+	if err != nil {
+		t.Fail()
+	}
+
+	expected := "path: https://api.prismacloud.io/test/path?foo=bar\n"
+	if buf.String() != expected {
+		t.Errorf("expected:%q  got:%q", expected, buf.String())
+	}
+}
+
+func TestPathWithoutQuery(t *testing.T) {
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+	defer rl()
+
+	c := MockClient(
+		[]*http.Response{
+			OkResponse(""),
+		},
+	)
+	c.Logging[LogPath] = true
+
+	_, err := c.Communicate("GET", TestPath, nil, nil, nil)
+	if err != nil {
+		t.Fail()
+	}
+
+	expected := "path: https://api.prismacloud.io/test/path\n"
+	if buf.String() != expected {
+		t.Errorf("expected:%q  got:%q", expected, buf.String())
+	}
+}
+
 func TestReauthenticateHappens(t *testing.T) {
 	expected := "okay"
 	c := MockClient(
@@ -177,7 +227,7 @@ func TestReauthenticateHappens(t *testing.T) {
 	)
 	c.JsonWebToken = "oldToken"
 
-	body, err := c.Communicate("GET", TestPath, nil, nil, true)
+	body, err := c.Communicate("GET", TestPath, nil, nil, nil)
 	if err != nil {
 		t.Errorf("Failed communicate: %s", err)
 	}
@@ -204,7 +254,7 @@ func TestAlreadyExists(t *testing.T) {
 		},
 	)
 
-	_, err := c.Communicate("GET", TestPath, nil, nil, true)
+	_, err := c.Communicate("GET", TestPath, nil, nil, nil)
 	if err == nil {
 		t.Fail()
 	}
@@ -222,7 +272,7 @@ func TestInvalidCredentialsError(t *testing.T) {
 		},
 	)
 
-	_, err := c.Communicate("GET", TestPath, nil, nil, true)
+	_, err := c.Communicate("GET", TestPath, nil, nil, nil)
 	if err == nil {
 		t.Fail()
 	}
@@ -245,7 +295,7 @@ func TestObjectNotFoundError(t *testing.T) {
 		},
 	)
 
-	_, err := c.Communicate("GET", TestPath, nil, nil, true)
+	_, err := c.Communicate("GET", TestPath, nil, nil, nil)
 	if err == nil {
 		t.Fail()
 	}

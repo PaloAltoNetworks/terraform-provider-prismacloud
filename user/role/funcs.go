@@ -16,7 +16,7 @@ func Identify(c pc.PrismaCloudClient, name string) (string, error) {
 	path = append(path, "name")
 
 	var ans []NameId
-	if _, err := c.Communicate("GET", path, nil, &ans, true); err != nil {
+	if _, err := c.Communicate("GET", path, nil, nil, &ans); err != nil {
 		return "", err
 	}
 
@@ -34,7 +34,7 @@ func List(c pc.PrismaCloudClient) ([]Role, error) {
 	c.Log(pc.LogAction, "(get) list of %s", plural)
 
 	var ans []Role
-	if _, err := c.Communicate("GET", Suffix, nil, &ans, true); err != nil {
+	if _, err := c.Communicate("GET", Suffix, nil, nil, &ans); err != nil {
 		return nil, err
 	}
 
@@ -51,7 +51,7 @@ func Get(c pc.PrismaCloudClient, id string) (Role, error) {
 	path = append(path, Suffix...)
 	path = append(path, id)
 
-	if _, err := c.Communicate("GET", path, nil, &ans, true); err != nil {
+	if _, err := c.Communicate("GET", path, nil, nil, &ans); err != nil {
 		return ans, err
 	}
 
@@ -75,7 +75,7 @@ func Delete(c pc.PrismaCloudClient, id string) error {
 	path := make([]string, 0, len(Suffix)+1)
 	path = append(path, Suffix...)
 	path = append(path, id)
-	_, err := c.Communicate("DELETE", path, nil, nil, true)
+	_, err := c.Communicate("DELETE", path, nil, nil, nil)
 	return err
 }
 
@@ -111,6 +111,6 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, role Role) error {
 		path = append(path, id)
 	}
 
-	_, err := c.Communicate(method, path, role, nil, true)
+	_, err := c.Communicate(method, path, nil, role, nil)
 	return err
 }
