@@ -1,7 +1,7 @@
 package prismacloud
 
 // These are the hidden fields blanked out during send and receive logging.
-var SensitiveKeys = []string{"password", "private_key"}
+var SensitiveKeys = []string{"password", "private_key", "external_id"}
 
 // Control what is echoed to the user.
 const (
