@@ -12,7 +12,7 @@ type Policy struct {
 	CloudType              string               `json:"cloudType"`
 	ComplianceMetadata     []ComplianceMetadata `json:"complianceMetadata"`
 	Remediation            Remediation          `json:"remediation"`
-	Labels                 []string             `json:"labels"`
+	Labels                 []string             `json:"labels"` // unordered
 	Enabled                bool                 `json:"enabled"`
 	CreatedOn              int                  `json:"createdOn,omitempty"`
 	CreatedBy              string               `json:"createdBy,omitempty"`
@@ -28,6 +28,12 @@ type Policy struct {
 	Remediable             bool                 `json:"remediable,omitempty"`
 }
 
+/*
+Rule is the rule object.
+
+Due to 05befc8b-c78a-45e9-98dc-c7fbaef580e7, criteria has to be
+an interface{}.
+*/
 type Rule struct {
 	Name           string            `json:"name"`
 	CloudType      string            `json:"cloudType"`
@@ -35,7 +41,7 @@ type Rule struct {
 	ResourceType   string            `json:"resourceType"`
 	ApiName        string            `json:"apiName"`
 	ResourceIdPath string            `json:"resourceIdPath"`
-	Criteria       string            `json:"criteria"`
+	Criteria       interface{}       `json:"criteria"`
 	Parameters     map[string]string `json:"parameters"`
 	Type           string            `json:"type"`
 }
