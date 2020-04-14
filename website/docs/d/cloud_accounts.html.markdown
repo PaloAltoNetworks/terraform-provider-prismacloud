@@ -12,7 +12,7 @@ Retrieve a list of cloud accounts onboarded onto the Prisma Cloud platform.
 ## Example Usage
 
 ```hcl
-data_source "prismacloud_cloud_accounts" "example" {}
+data "prismacloud_cloud_accounts" "example" {}
 ```
 
 ## Attribute Reference
