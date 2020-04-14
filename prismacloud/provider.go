@@ -113,18 +113,18 @@ func Provider() terraform.ResourceProvider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	/*
-			    An int in Terraform is a Go "int", which can be either 32 or 64bit
-			    depending on what the underlying OS is.  A Terraform "schema.TypeInt" is
-			    also a Go "int".
+	   An int in Terraform is a Go "int", which can be either 32 or 64bit
+	   depending on what the underlying OS is.  A Terraform "schema.TypeInt" is
+	   also a Go "int".
 
-			    Timestamps returned Prisma Cloud are 64bit ints.  In addition to this,
-			    a Go time.Duration is an int64.
+	   Timestamps returned Prisma Cloud are 64bit ints.  In addition to this,
+	   a Go time.Duration is an int64.
 
-			    Thus, require that the OS is 64bit or bail.
+	   Thus, require that the OS is 64bit or bail.
 
-			    If this becomes a problem in the future, then the fix is to go through all
-			    resources and anywhere where a timestamp is returned, that needs to be either
-		        a float64 or a string, either of which will require lots of casting.
+	   If this becomes a problem in the future, then the fix is to go through all
+	   resources and anywhere where a timestamp is returned, that needs to be either
+	   a float64 or a string, either of which will require lots of casting.
 	*/
 	is64Bit := uint64(^uintptr(0)) == ^uint64(0)
 	if !is64Bit {
