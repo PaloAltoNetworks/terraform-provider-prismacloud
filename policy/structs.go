@@ -5,26 +5,26 @@ type Policy struct {
 	Name                   string               `json:"name"`
 	PolicyType             string               `json:"policyType"`
 	SystemDefault          bool                 `json:"systemDefault,omitempty"`
-	Description            string               `json:"description"`
+	Description            string               `json:"description,omitempty"`
 	Severity               string               `json:"severity"`
 	Rule                   Rule                 `json:"rule"`
-	Recommendation         string               `json:"recommendation"`
-	CloudType              string               `json:"cloudType"`
+	Recommendation         string               `json:"recommendation,omitempty"`
+	CloudType              string               `json:"cloudType,omitempty"`
 	ComplianceMetadata     []ComplianceMetadata `json:"complianceMetadata"`
-	Remediation            Remediation          `json:"remediation"`
-	Labels                 []string             `json:"labels"` // unordered
+	Remediation            Remediation          `json:"remediation,omitempty"`
+	Labels                 []string             `json:"labels,omitempty"` // unordered
 	Enabled                bool                 `json:"enabled"`
 	CreatedOn              int                  `json:"createdOn,omitempty"`
 	CreatedBy              string               `json:"createdBy,omitempty"`
 	LastModifiedOn         int                  `json:"lastModifiedOn,omitempty"`
 	LastModifiedBy         string               `json:"lastModifiedBy,omitempty"`
 	RuleLastModifiedOn     int                  `json:"ruleLastModifiedOn,omitempty"`
-	Overridden             bool                 `json:"overridden"`
-	Deleted                bool                 `json:"deleted"`
-	RestrictAlertDismissal bool                 `json:"restrictAlertDismissal"`
+	Overridden             bool                 `json:"overridden,omitempty"`
+	Deleted                bool                 `json:"deleted,omitempty"`
+	RestrictAlertDismissal bool                 `json:"restrictAlertDismissal,omitempty"`
 	OpenAlertsCount        int                  `json:"openAlertsCount,omitempty"`
-	Owner                  string               `json:"owner"`
-	PolicyMode             string               `json:"policyMode"`
+	Owner                  string               `json:"owner,omitempty"`
+	PolicyMode             string               `json:"policyMode,omitempty"`
 	Remediable             bool                 `json:"remediable,omitempty"`
 }
 
@@ -36,32 +36,33 @@ an interface{}.
 */
 type Rule struct {
 	Name           string            `json:"name"`
-	CloudType      string            `json:"cloudType"`
-	CloudAccount   string            `json:"cloudAccount"`
-	ResourceType   string            `json:"resourceType"`
-	ApiName        string            `json:"apiName"`
-	ResourceIdPath string            `json:"resourceIdPath"`
+	CloudType      string            `json:"cloudType,omitempty"`
+	CloudAccount   string            `json:"cloudAccount,omitempty"`
+	ResourceType   string            `json:"resourceType,omitempty"`
+	ApiName        string            `json:"apiName,omitempty"`
+	ResourceIdPath string            `json:"resourceIdPath,omitempty"`
 	Criteria       interface{}       `json:"criteria"`
 	Parameters     map[string]string `json:"parameters"`
 	Type           string            `json:"type"`
 }
 
 type ComplianceMetadata struct {
-	StandardName           string `json:"standardName"`
-	StandardDescription    string `json:"standardDescription"`
-	RequirementId          string `json:"requirementId"`
-	RequirementName        string `json:"requirementName"`
-	RequirementDescription string `json:"requirementDescription"`
-	SectionId              string `json:"sectionId"`
-	SectionDescription     string `json:"sectionDescription"`
-	PolicyId               string `json:"policyId"`
-	ComplianceId           string `json:"complianceId"`
-	SectionLabel           string `json:"sectionLabel"`
-	CustomAssigned         bool   `json:"customAssigned"`
+	StandardName           string `json:"standardName,omitempty"`
+	StandardDescription    string `json:"standardDescription,omitempty"`
+	RequirementId          string `json:"requirementId,omitempty"`
+	RequirementName        string `json:"requirementName,omitempty"`
+	RequirementDescription string `json:"requirementDescription,omitempty"`
+	SectionId              string `json:"sectionId,omitempty"`
+	SectionDescription     string `json:"sectionDescription,omitempty"`
+	PolicyId               string `json:"policyId,omitempty"`
+	ComplianceId           string `json:"complianceId,omitempty"`
+	SectionLabel           string `json:"sectionLabel,omitempty"`
+	CustomAssigned         bool   `json:"customAssigned,omitempty"`
 }
 
 type Remediation struct {
-	TemplateType        string      `json:"templateType"`
-	CliScriptTemplate   string      `json:"cliScriptTemplate"`
-	CliScriptJsonSchema interface{} `json:"cliScriptJsonSchema"`
+	TemplateType        string      `json:"templateType,omitempty"`
+	Description         string      `json:"description,omitempty"`
+	CliScriptTemplate   string      `json:"cliScriptTemplate,omitempty"`
+	CliScriptJsonSchema interface{} `json:"cliScriptJsonSchema,omitempty"`
 }
