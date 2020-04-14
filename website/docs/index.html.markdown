@@ -36,7 +36,7 @@ The following arguments are supported:
 * `customer_name` - (Env: `PRISMACLOUD_CUSTOMER_NAME`) Customer name.
 * `protocol` - (Env: `PRISMACLOUD_PROTOCOL`) The protocol.  Valid values are `https` or `http`.
 * `port` - (Env: `PRISMACLOUD_PORT`, int) If the port is non-standard for the protocol, the port number to use.
-* `timeout` - The default timeout (in seconds) for all communications with Prisma Cloud (default: `10`).
+* `timeout` - The default timeout (in seconds) for all communications with Prisma Cloud (default: `90`).
 * `skip_ssl_cert_verification` - (Env: `PRISMACLOUD_SKIP_SSL_CERT_VERIFICATION`, bool) Skip SSL certificate verification.
 * `logging` - Map of logging options for the API connection.  Valid values are `quiet` (disable logging), `action`, `path`, `send`, and `receive`.
 * `disable_reconnect` - (bool) Prisma Cloud invalidates authenticated sessions after 10minutes.  By default the provider will silently get a new JSON web token and continue deploying the plan.  If you do not want the provider to fetch a new JSON web token, set this to `true`.
