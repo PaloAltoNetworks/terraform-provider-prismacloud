@@ -96,11 +96,14 @@ func Provider() terraform.ResourceProvider {
 			"prismacloud_alerts":         dataSourceAlerts(),
 			"prismacloud_cloud_account":  dataSourceCloudAccount(),
 			"prismacloud_cloud_accounts": dataSourceCloudAccounts(),
+			"prismacloud_policies":       dataSourcePolicies(),
+			"prismacloud_policy":         dataSourcePolicy(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
 			"prismacloud_account_group": resourceAccountGroup(),
 			"prismacloud_cloud_account": resourceCloudAccount(),
+			"prismacloud_policy":        resourcePolicy(),
 			"prismacloud_user_role":     resourceUserRole(),
 		},
 
