@@ -12,7 +12,7 @@ Retrieve information on a specific cloud account.
 ## Example Usage
 
 ```hcl
-data_source "prismacloud_cloud_account" "example" {
+data "prismacloud_cloud_account" "example" {
     cloud_type = "azure"
     name = "My Azure cloud account"
 }
