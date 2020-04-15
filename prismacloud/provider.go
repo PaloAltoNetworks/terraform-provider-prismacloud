@@ -93,6 +93,7 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
+			"prismacloud_alert_rules":    dataSourceAlertRules(),
 			"prismacloud_alerts":         dataSourceAlerts(),
 			"prismacloud_cloud_account":  dataSourceCloudAccount(),
 			"prismacloud_cloud_accounts": dataSourceCloudAccounts(),
