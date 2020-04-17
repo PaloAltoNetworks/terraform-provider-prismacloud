@@ -24,12 +24,12 @@ func dataSourceAlertRules() *schema.Resource {
 						"policy_scan_config_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "Policy ID",
+							Description: "Policy scan config ID",
 						},
 						"name": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "Policy name",
+							Description: "Rule/Scan name",
 						},
 						"description": {
 							Type:        schema.TypeString,
