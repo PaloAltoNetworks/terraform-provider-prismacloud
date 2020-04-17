@@ -66,8 +66,9 @@ func resourcePolicy() *schema.Resource {
 			},
 			"severity": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: "Severity",
+				Default:     policy.SeverityLow,
 				ValidateFunc: validation.StringInSlice(
 					[]string{
 						policy.SeverityLow,
@@ -248,7 +249,7 @@ func resourcePolicy() *schema.Resource {
 						"template_type": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "CLI script template",
+							Description: "Template type",
 						},
 						"description": {
 							Type:        schema.TypeString,
