@@ -198,7 +198,7 @@ func dataSourcePolicy() *schema.Resource {
 						"template_type": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "CLI script template",
+							Description: "Template type",
 						},
 						"description": {
 							Type:        schema.TypeString,
