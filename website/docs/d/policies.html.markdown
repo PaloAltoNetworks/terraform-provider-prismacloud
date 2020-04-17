@@ -14,8 +14,8 @@ Retrieve a list of policies.
 ```hcl
 data "prismacloud_policies" "example" {
     filters = {
-        "policy.severity" = "high"
-        "policy.type" = "network"
+        "policy.severity": "high",
+        "policy.type": "network",
     }
 }
 ```
