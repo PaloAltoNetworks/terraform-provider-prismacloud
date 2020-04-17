@@ -10,11 +10,9 @@ type Rule struct {
 	PolicyLabels         []string             `json:"policyLabels"`
 	ExcludedPolicies     []string             `json:"excludedPolicies"`
 	Target               Target               `json:"target"`
-	CreatedOn            int                  `json:"createdOn,omitempty"`
-	CreatedBy            string               `json:"createdBy,omitempty"`
 	LastModifiedOn       int                  `json:"lastModifiedOn,omitempty"`
 	LastModifiedBy       string               `json:"lastModifiedBy,omitempty"`
-	NotificationConfig   []NotificationConfig `json:"alertRuleNotificationConfig"`
+	NotificationConfig   []NotificationConfig `json:"alertRuleNotificationConfig,omitempty"`
 	AllowAutoRemediate   bool                 `json:"allowAutoRemediate"`
 	DelayNotificationMs  int                  `json:"delayNotificationMs"`
 	NotifyOnOpen         bool                 `json:"notifyOnOpen"`
@@ -30,9 +28,9 @@ type Rule struct {
 
 type Target struct {
 	AccountGroups    []string `json:"accountGroups"`
-	ExcludedAccounts []string `json:"excludedAccounts"`
-	Regions          []string `json:"regions"`
-	Tags             []Tag    `json:"tags"`
+	ExcludedAccounts []string `json:"excludedAccounts,omitempty"`
+	Regions          []string `json:"regions,omitempty"`
+	Tags             []Tag    `json:"tags,omitempty"`
 }
 
 type Tag struct {
@@ -62,6 +60,8 @@ type NotificationConfig struct {
 
 type Timezone struct {
 	Id string `json:"id"`
+	// TODO(gfreeman): add the rules when the data structure is known.
+	//Rules interface{} `json:"rules"`
 }
 
 type Day struct {
