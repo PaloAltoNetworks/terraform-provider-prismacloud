@@ -13,8 +13,8 @@ NOTE:  THIS PROVIDER SHOULD BE CONSIDERED ALPHA AND SHOULD NOT USED IN PRODUCTIO
 Requirements
 ------------
 
-- [Terraform](https://www.terraform.io/downloads.html) 0.10.x
-- [Go](https://golang.org/doc/install) 1.11 (to build the provider plugin)
+- [Terraform](https://www.terraform.io/downloads.html) 0.11.x or higher
+- [Go](https://golang.org/doc/install) 1.12 (to build the provider plugin)
 
 Building The Provider
 ---------------------
