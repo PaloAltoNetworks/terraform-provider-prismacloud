@@ -93,3 +93,11 @@ This section may be present or may be ommitted:
 * `open_alerts_count` - (int) Open alerts count
 * `owner` - Owner
 * `policy_mode` - Policy mode
+
+## Import
+
+Resources can be imported using the poilcy ID:
+
+```
+$ terraform import prismacloud_policy.example 11111111-2222-3333-4444-555555555555
+```
