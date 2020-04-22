@@ -14,6 +14,15 @@ Manage a specific policy.
 ```hcl
 resource "prismacloud_policy" "example" {
     name = "My Policy"
+    policy_type = "network"
+    rule {
+        name = "my rule"
+        criteria = "savedSearchId"
+        parameters = {
+            "foo": "bar",
+        }
+        rule_type = "Network"
+    }
 }
 ```
 
@@ -32,7 +41,7 @@ resource "prismacloud_policy" "example" {
 * `deleted` - (bool) Deleted
 * `restrict_alert_dismissal` - (bool) Restrict alert dismissal
 * `remediable` - (bool) Is remediable or not
-* `rule` - Model for the rule, as defined [below](#rule)
+* `rule` - (Required) Model for the rule, as defined [below](#rule)
 * `remediation` - Model for remediation, as defined [below](#remediation)
 * `compliance_metadata` - List of compliance data.  Each item has compliance standard, requirement, and/or section information, as defined [below](#compliance-metadata)
 
