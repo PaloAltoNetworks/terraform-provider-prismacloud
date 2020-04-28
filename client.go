@@ -317,12 +317,16 @@ func (c *Client) communicate(method string, suffix []string, query, data interfa
 		}
 		return body, InvalidCredentialsError
 	default:
+		errLocation := "X-Redlock-Status"
+		if _, ok := resp.Header[errLocation]; !ok {
+			return body, fmt.Errorf("%q header is missing, is this Prisma Cloud?\n%s", errLocation, body)
+		}
 		pcel := PrismaCloudErrorList{
 			Method:     method,
 			StatusCode: resp.StatusCode,
 			Path:       path.String(),
 		}
-		info := resp.Header["X-Redlock-Status"][0]
+		info := resp.Header[errLocation][0]
 		if err = json.Unmarshal([]byte(info), &pcel.Errors); err != nil {
 			return body, fmt.Errorf("%d error, and could not unmarshal header %q: %s", resp.StatusCode, info, err)
 		}
