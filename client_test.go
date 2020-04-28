@@ -56,19 +56,19 @@ func OkResponse(body string) *http.Response {
 	}
 }
 
-func ErrorResponse(code int, e interface{}) *http.Response {
+func ErrorResponse(code int, body string, e interface{}) *http.Response {
 	ans := &http.Response{
 		StatusCode: code,
 		Body: ioutil.NopCloser(
-			strings.NewReader(""),
+			strings.NewReader(body),
 		),
 	}
 
 	if e != nil {
-		body, _ := json.Marshal(e)
+		errBody, _ := json.Marshal(e)
 		ans.Header = map[string][]string{
 			"X-Redlock-Status": []string{
-				"[" + string(body) + "]",
+				"[" + string(errBody) + "]",
 			},
 		}
 	}
@@ -220,7 +220,7 @@ func TestReauthenticateHappens(t *testing.T) {
 	expected := "okay"
 	c := MockClient(
 		[]*http.Response{
-			ErrorResponse(http.StatusUnauthorized, nil),
+			ErrorResponse(http.StatusUnauthorized, "", nil),
 			OkResponse(LoginBody),
 			OkResponse(expected),
 		},
@@ -246,6 +246,7 @@ func TestAlreadyExists(t *testing.T) {
 		[]*http.Response{
 			ErrorResponse(
 				http.StatusTeapot,
+				"",
 				PrismaCloudError{
 					Message:  "teapot_already_exists",
 					Severity: "error",
@@ -267,8 +268,8 @@ func TestAlreadyExists(t *testing.T) {
 func TestInvalidCredentialsError(t *testing.T) {
 	c := MockClient(
 		[]*http.Response{
-			ErrorResponse(http.StatusUnauthorized, nil),
-			ErrorResponse(http.StatusUnauthorized, nil),
+			ErrorResponse(http.StatusUnauthorized, "", nil),
+			ErrorResponse(http.StatusUnauthorized, "", nil),
 		},
 	)
 
@@ -287,6 +288,7 @@ func TestObjectNotFoundError(t *testing.T) {
 		[]*http.Response{
 			ErrorResponse(
 				http.StatusTeapot,
+				"",
 				PrismaCloudError{
 					Message:  "not_found",
 					Severity: "error",
@@ -302,5 +304,31 @@ func TestObjectNotFoundError(t *testing.T) {
 
 	if err != ObjectNotFoundError {
 		t.Errorf("error is %s, not %s", err, ObjectNotFoundError)
+	}
+}
+
+func TestInvalidResponse(t *testing.T) {
+	expectedHtml := `<html>
+  <body>
+    <p>nope</p>
+  </body>
+</html>`
+	c := MockClient(
+		[]*http.Response{
+			ErrorResponse(http.StatusTeapot, expectedHtml, nil),
+		},
+	)
+
+	data, err := c.Communicate("GET", TestPath, nil, nil, nil)
+	if string(data) != expectedHtml {
+		t.Errorf("Expected:%s got:%s", expectedHtml, data)
+	}
+
+	if err == nil {
+		t.Errorf("No error returned")
+	}
+
+	if !strings.HasSuffix(err.Error(), expectedHtml) {
+		t.Errorf("Error doesn't have expected suffix:\n%s", err)
 	}
 }
