@@ -8,6 +8,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	_ "github.com/paloaltonetworks/prisma-cloud-go/compliance/standard"
+	_ "github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement"
+	_ "github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement/section"
 )
 
 // Provider returns a terraform.ResourceProvider.
