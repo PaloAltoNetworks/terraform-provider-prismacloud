@@ -38,7 +38,7 @@ func Identify(c pc.PrismaCloudClient, name string) (string, error) {
 }
 
 // Get returns the compliance standard for the specified ID.
-func Get(c pc.PrismaCloudClient, id string) (interface{}, error) {
+func Get(c pc.PrismaCloudClient, id string) (Standard, error) {
 	c.Log(pc.LogAction, "(get) %s id:%s", singular, id)
 
 	path := make([]string, 0, len(Suffix)+1)
