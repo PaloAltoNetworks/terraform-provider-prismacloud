@@ -46,7 +46,7 @@ func Get(c pc.PrismaCloudClient, id string) (Standard, error) {
 	path = append(path, id)
 
 	var ans Standard
-	_, err := c.Communicate("GET", path, nil, nil, ans)
+	_, err := c.Communicate("GET", path, nil, nil, &ans)
 	return ans, err
 }
 
