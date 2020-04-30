@@ -8,7 +8,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	_ "github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement"
 	_ "github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement/section"
 )
 
@@ -95,26 +94,29 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"prismacloud_account_group":        dataSourceAccountGroup(),
-			"prismacloud_account_groups":       dataSourceAccountGroups(),
-			"prismacloud_alert_rule":           dataSourceAlertRule(),
-			"prismacloud_alert_rules":          dataSourceAlertRules(),
-			"prismacloud_alerts":               dataSourceAlerts(),
-			"prismacloud_cloud_account":        dataSourceCloudAccount(),
-			"prismacloud_cloud_accounts":       dataSourceCloudAccounts(),
-			"prismacloud_compliance_standard":  dataSourceComplianceStandard(),
-			"prismacloud_compliance_standards": dataSourceComplianceStandards(),
-			"prismacloud_policies":             dataSourcePolicies(),
-			"prismacloud_policy":               dataSourcePolicy(),
+			"prismacloud_account_group":                    dataSourceAccountGroup(),
+			"prismacloud_account_groups":                   dataSourceAccountGroups(),
+			"prismacloud_alert_rule":                       dataSourceAlertRule(),
+			"prismacloud_alert_rules":                      dataSourceAlertRules(),
+			"prismacloud_alerts":                           dataSourceAlerts(),
+			"prismacloud_cloud_account":                    dataSourceCloudAccount(),
+			"prismacloud_cloud_accounts":                   dataSourceCloudAccounts(),
+			"prismacloud_compliance_standard":              dataSourceComplianceStandard(),
+			"prismacloud_compliance_standard_requirement":  dataSourceComplianceStandardRequirement(),
+			"prismacloud_compliance_standard_requirements": dataSourceComplianceStandardRequirements(),
+			"prismacloud_compliance_standards":             dataSourceComplianceStandards(),
+			"prismacloud_policies":                         dataSourcePolicies(),
+			"prismacloud_policy":                           dataSourcePolicy(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"prismacloud_account_group":       resourceAccountGroup(),
-			"prismacloud_alert_rule":          resourceAlertRule(),
-			"prismacloud_cloud_account":       resourceCloudAccount(),
-			"prismacloud_compliance_standard": resourceComplianceStandard(),
-			"prismacloud_policy":              resourcePolicy(),
-			"prismacloud_user_role":           resourceUserRole(),
+			"prismacloud_account_group":                   resourceAccountGroup(),
+			"prismacloud_alert_rule":                      resourceAlertRule(),
+			"prismacloud_cloud_account":                   resourceCloudAccount(),
+			"prismacloud_compliance_standard":             resourceComplianceStandard(),
+			"prismacloud_compliance_standard_requirement": resourceComplianceStandardRequirement(),
+			"prismacloud_policy":                          resourcePolicy(),
+			"prismacloud_user_role":                       resourceUserRole(),
 		},
 
 		ConfigureFunc: providerConfigure,
