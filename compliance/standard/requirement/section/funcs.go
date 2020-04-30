@@ -19,8 +19,24 @@ func List(c pc.PrismaCloudClient, rid string) ([]Section, error) {
 	return ans, nil
 }
 
+// GetId returns the compliance requirement section data for the specified ID.
+func GetId(c pc.PrismaCloudClient, rid, id string) (Section, error) {
+	list, err := List(c, rid)
+	if err != nil {
+		return Section{}, err
+	}
+
+	for _, o := range list {
+		if o.Id == id {
+			return o, nil
+		}
+	}
+
+	return Section{}, pc.ObjectNotFoundError
+}
+
 // Get returns the compliance requirement section data for the specified requirements section ID.
-func Get(c pc.PrismaCloudClient, rid string, sectionId string) (Section, error) {
+func Get(c pc.PrismaCloudClient, rid, sectionId string) (Section, error) {
 	list, err := List(c, rid)
 	if err != nil {
 		return Section{}, err
