@@ -17,6 +17,7 @@
 *.swp
 *.tf
 *.no
+*.log
 .DS_Store
 .terraform/
 terraform.tfstate
