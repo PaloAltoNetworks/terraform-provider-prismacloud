@@ -30,7 +30,6 @@ resource "prismacloud_compliance_standard" "x" {
 * `cs_id` - (Required) Compliance standard ID.
 * `name` - (Required) Compliance standard requirement name
 * `description` - Description
-* `standard_name` - Compliance standard name
 * `requirement_id` - (Required) Compliance requirement number
 * `view_order` - (Computed, int) View order
 
@@ -43,6 +42,7 @@ resource "prismacloud_compliance_standard" "x" {
 * `last_modified_on` - (int) Last modified on
 * `system_default` - (bool) System default
 * `policies_assigned_count` - (int) Number of assigned policies
+* `standard_name` - Compliance standard name
 
 ## Import
 

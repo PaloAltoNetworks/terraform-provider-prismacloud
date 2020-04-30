@@ -72,7 +72,7 @@ func resourceComplianceStandardRequirement() *schema.Resource {
 			},
 			"standard_name": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Computed:    true,
 				Description: "Compliance standard name",
 			},
 			"requirement_id": {
@@ -96,7 +96,6 @@ func parseComplianceStandardRequirement(d *schema.ResourceData, csrId string) re
 		Id:            csrId,
 		Name:          d.Get("name").(string),
 		Description:   d.Get("description").(string),
-		StandardName:  d.Get("standard_name").(string),
 		RequirementId: d.Get("requirement_id").(string),
 		ViewOrder:     d.Get("view_order").(int),
 	}
