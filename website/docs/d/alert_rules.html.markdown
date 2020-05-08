@@ -17,9 +17,10 @@ data "prismacloud_alert_rules" "example" {}
 
 ## Attribute Reference
 
-* `rules` - List of alerts returned, as defined [below](#rules).
+* `total` - (int) Total number of alert rules.
+* `listing` - List of alerts returned, as defined [below](#listing).
 
-### Rules
+### Listing
 
 Each alert rule has the following attributes:
 
