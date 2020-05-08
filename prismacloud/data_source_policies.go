@@ -28,7 +28,8 @@ func dataSourcePolicies() *schema.Resource {
 			},
 
 			// Output.
-			"policies": {
+			"total": totalSchema("policies"),
+			"listing": {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "List of policies",
@@ -143,6 +144,7 @@ func dataSourcePoliciesRead(d *schema.ResourceData, meta interface{}) error {
 	} else {
 		d.SetId(base64.StdEncoding.EncodeToString(buf.Bytes()))
 	}
+	d.Set("total", len(items))
 
 	list := make([]interface{}, 0, len(items))
 	for _, i := range items {
@@ -165,8 +167,8 @@ func dataSourcePoliciesRead(d *schema.ResourceData, meta interface{}) error {
 		})
 	}
 
-	if err := d.Set("policies", list); err != nil {
-		log.Printf("[WARN] Error setting 'policies' field for %q: %s", d.Id(), err)
+	if err := d.Set("listing", list); err != nil {
+		log.Printf("[WARN] Error setting 'listing' field for %q: %s", d.Id(), err)
 	}
 
 	return nil
