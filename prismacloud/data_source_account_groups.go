@@ -15,12 +15,8 @@ func dataSourceAccountGroups() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			// Output.
-			"group_count": {
-				Type:        schema.TypeInt,
-				Computed:    true,
-				Description: "Number of groups",
-			},
-			"groups": {
+			"total": totalSchema("account groups"),
+			"listing": {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "List of accounts",
@@ -95,7 +91,7 @@ func dataSourceAccountGroupsRead(d *schema.ResourceData, meta interface{}) error
 	}
 
 	d.SetId("account_groups")
-	d.Set("group_count", len(items))
+	d.Set("total", len(items))
 
 	list := make([]interface{}, 0, len(items))
 	for _, i := range items {
@@ -124,8 +120,8 @@ func dataSourceAccountGroupsRead(d *schema.ResourceData, meta interface{}) error
 		})
 	}
 
-	if err := d.Set("groups", list); err != nil {
-		log.Printf("[WARN] Error setting 'accounts' field for %q: %s", d.Id(), err)
+	if err := d.Set("listing", list); err != nil {
+		log.Printf("[WARN] Error setting 'listing' field for %q: %s", d.Id(), err)
 	}
 
 	return nil
