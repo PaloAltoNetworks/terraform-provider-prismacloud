@@ -22,12 +22,8 @@ func dataSourceComplianceStandardRequirementSections() *schema.Resource {
 			},
 
 			// Output.
-			"section_count": {
-				Type:        schema.TypeInt,
-				Computed:    true,
-				Description: "Number of system supported and custom compliance standard requirement sections",
-			},
-			"sections": {
+			"total": totalSchema("system supported and custom compliance standard requirement sections"),
+			"listing": {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "List of all compliance requirement sections",
@@ -124,7 +120,7 @@ func dataSourceComplianceStandardRequirementSectionsRead(d *schema.ResourceData,
 
 	d.SetId(csrId)
 	d.Set("csr_id", csrId)
-	d.Set("section_count", len(items))
+	d.Set("total", len(items))
 
 	list := make([]interface{}, 0, len(items))
 	for _, o := range items {
@@ -146,8 +142,8 @@ func dataSourceComplianceStandardRequirementSectionsRead(d *schema.ResourceData,
 		})
 	}
 
-	if err := d.Set("sections", list); err != nil {
-		log.Printf("[WARN] Error setting 'sections' field for %q: %s", d.Id(), err)
+	if err := d.Set("listing", list); err != nil {
+		log.Printf("[WARN] Error setting 'listing' field for %q: %s", d.Id(), err)
 	}
 
 	return nil
