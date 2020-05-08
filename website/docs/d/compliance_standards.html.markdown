@@ -17,10 +17,10 @@ data "prismacloud_compliance_standards" "example" {}
 
 ## Attribute Reference
 
-* `standard_count` - (int) Number of system supported and custom compliance standards
-* `standards` - List of system supported and custom compliance standards, as defined [below](#standards)
+* `total` - (int) Number of system supported and custom compliance standards
+* `listing` - List of system supported and custom compliance standards, as defined [below](#listing)
 
-### Standards
+### Listing
 
 Each standard has the following attributes:
 
