@@ -15,7 +15,8 @@ func dataSourceCloudAccounts() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			// Output.
-			"accounts": {
+			"total": totalSchema("accounts"),
+			"listing": {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "List of accounts",
@@ -52,6 +53,7 @@ func dataSourceCloudAccountsRead(d *schema.ResourceData, meta interface{}) error
 	}
 
 	d.SetId("cloud_accounts")
+	d.Set("total", len(items))
 
 	list := make([]interface{}, 0, len(items))
 	for _, i := range items {
@@ -62,7 +64,7 @@ func dataSourceCloudAccountsRead(d *schema.ResourceData, meta interface{}) error
 		})
 	}
 
-	if err := d.Set("accounts", list); err != nil {
+	if err := d.Set("listing", list); err != nil {
 		log.Printf("[WARN] Error setting 'accounts' field for %q: %s", d.Id(), err)
 	}
 
