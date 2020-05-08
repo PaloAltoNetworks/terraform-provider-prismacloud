@@ -23,7 +23,7 @@ data "prismacloud_alerts" "info" {
 }
 
 output "alerts" {
-    value = data.prismacloud_alerts.info.data
+    value = data.prismacloud_alerts.info.listing
 }
 ```
 
@@ -70,9 +70,9 @@ Filtering parameters.  This block can be specified multiple times to add more fi
 
 * `page_token` - The next page token returned.
 * `total` - (int) Total number of alerts returned.
-* `data` - Alert listing, as defined [below](#alert-data).
+* `listing` - Alert listing, as defined [below](#listing).
 
-### Alert Data
+### Listing
 
 The alert information.
 
