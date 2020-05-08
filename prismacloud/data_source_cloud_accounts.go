@@ -15,7 +15,7 @@ func dataSourceCloudAccounts() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			// Output.
-			"total": totalSchema("accounts"),
+			"total": totalSchema("cloud accounts"),
 			"listing": {
 				Type:        schema.TypeList,
 				Computed:    true,
