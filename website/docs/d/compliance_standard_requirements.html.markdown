@@ -23,10 +23,10 @@ data "prismacloud_compliance_standard_requirements" "example" {
 
 ## Attribute Reference
 
-* `requirement_count` - (int) Number of system supported and custom compliance standard requirements
-* `requirements` - List of compliance requirements, as defined [below](#requirements)
+* `total` - (int) Total number of system supported and custom compliance standard requirements
+* `listing` - List of compliance requirements, as defined [below](#listing)
 
-### Requirements
+### Listing
 
 Each requirement has the following attributes:
 
