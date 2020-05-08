@@ -23,12 +23,12 @@ data "prismacloud_compliance_standard_requirement_sections" "example" {
 
 ## Attribute Reference
 
-* `section_count` - (int) Number of system supported and custom compliance standard requirement sections
-* `sections` - List of compliance requirements, as defined [below](#sections)
+* `total` - (int) Total number of system supported and custom compliance standard requirement sections.
+* `listing` - List of compliance requirement sections, as defined [below](#listing)
 
-### Sections
+### Listing
 
-Each requirement has the following attributes:
+Each requirement section has the following attributes:
 
 * `csrs_id` - Compliance standard requirement section ID
 * `description` - Description
