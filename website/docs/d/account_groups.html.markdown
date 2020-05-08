@@ -17,12 +17,13 @@ data "prismacloud_account_groups" "example" {}
 
 ## Attribute Reference
 
+* `total` - (int) Total number of account groups.
+* `listing` - List of accounts, as defined [below](#listing).
+
+### Listing
+
 * `name` - Name of the account group.
 * `group_id` - Account group ID.
-* `description` - Description.
-* `account_ids` - List of cloud account IDs.
-* `last_modified_by` - Last modified by.
-* `last_modified_ts` - (int) Last modified timestamp.
 * `accounts` - Associated cloud accounts spec, as defined [below](#accounts).
 * `alert_rules` - Singly associated rules which cannot exist in the system without the account group spec, as defined [below](#alert-rules).
 
