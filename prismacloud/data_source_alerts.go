@@ -160,11 +160,7 @@ func dataSourceAlerts() *schema.Resource {
 				Description: "The next page token returned",
 				Computed:    true,
 			},
-			"total": {
-				Type:        schema.TypeInt,
-				Description: "Total number of alerts returned",
-				Computed:    true,
-			},
+			"total": totalSchema("alerts"),
 			"data": {
 				Type:        schema.TypeList,
 				Description: "Alert listing",
