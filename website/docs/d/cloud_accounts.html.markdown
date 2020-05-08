@@ -17,11 +17,12 @@ data "prismacloud_cloud_accounts" "example" {}
 
 ## Attribute Reference
 
-* `accounts` - List of cloud accounts, defined [below](#accounts).
+* `total` - (int) Total number of cloud accounts.
+* `listing` - List of cloud accounts, defined [below](#listing).
 
-### Accounts
+### Listing
 
-Each account has the following attributes:
+Each cloud account has the following attributes:
 
 * `name` - Account name
 * `cloud_type` - Cloud type
