@@ -15,7 +15,8 @@ func dataSourceAlertRules() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			// Output.
-			"rules": {
+			"total": totalSchema("alert rules"),
+			"listing": {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "List of alert rules",
@@ -107,8 +108,9 @@ func dataSourceAlertRulesRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId("alert_rules")
-	if err = d.Set("rules", ans); err != nil {
-		log.Printf("[WARN] Error setting 'rules' field for %q: %s", d.Id(), err)
+	d.Set("total", len(items))
+	if err = d.Set("listing", ans); err != nil {
+		log.Printf("[WARN] Error setting 'listing' field for %q: %s", d.Id(), err)
 	}
 
 	return nil
