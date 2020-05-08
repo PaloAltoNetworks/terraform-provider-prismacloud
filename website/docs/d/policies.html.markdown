@@ -26,9 +26,10 @@ data "prismacloud_policies" "example" {
 
 ## Attribute Reference
 
-* `policies` - List of policies returned, as defined [below](#policies).
+* `total` - (int) Total number of policies.
+* `listing` - List of policies returned, as defined [below](#listing).
 
-### Policies
+### Listing
 
 Each policy has the following attributes:
 
