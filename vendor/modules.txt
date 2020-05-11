@@ -170,7 +170,7 @@ github.com/mitchellh/mapstructure
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
-# github.com/paloaltonetworks/prisma-cloud-go v0.2.3
+# github.com/paloaltonetworks/prisma-cloud-go v0.3.0
 github.com/paloaltonetworks/prisma-cloud-go
 github.com/paloaltonetworks/prisma-cloud-go/alert
 github.com/paloaltonetworks/prisma-cloud-go/alert/rule
@@ -179,7 +179,9 @@ github.com/paloaltonetworks/prisma-cloud-go/cloud/account/group
 github.com/paloaltonetworks/prisma-cloud-go/compliance/standard
 github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement
 github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement/section
+github.com/paloaltonetworks/prisma-cloud-go/integration
 github.com/paloaltonetworks/prisma-cloud-go/policy
+github.com/paloaltonetworks/prisma-cloud-go/settings/enterprise
 github.com/paloaltonetworks/prisma-cloud-go/user/role
 # github.com/posener/complete v1.2.1
 github.com/posener/complete
