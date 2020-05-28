@@ -84,4 +84,5 @@ type Alibaba struct {
 	GroupIds  []string `json:"groupIds"`
 	Name      string   `json:"name"`
 	RamArn    string   `json:"ramArn"`
+	Enabled   bool     `json:"enabled"`
 }
