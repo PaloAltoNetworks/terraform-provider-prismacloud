@@ -239,6 +239,11 @@ func dataSourceCloudAccount() *schema.Resource {
 							Computed:    true,
 							Description: "Unique identifier for an Alibaba RAM role resource",
 						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the account is enabled",
+						},
 					},
 				},
 			},

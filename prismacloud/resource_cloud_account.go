@@ -248,6 +248,12 @@ func resourceCloudAccount() *schema.Resource {
 							Required:    true,
 							Description: "Unique identifier for an Alibaba RAM role resource",
 						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Whether or not the account is enabled",
+							Default:     true,
+						},
 					},
 				},
 			},
@@ -327,6 +333,7 @@ func parseCloudAccount(d *schema.ResourceData, id string) (string, string, inter
 			GroupIds:  ListToStringSlice(x["group_ids"].([]interface{})),
 			Name:      x["name"].(string),
 			RamArn:    x["ram_arn"].(string),
+			Enabled:   x["enabled"].(bool),
 		}
 	}
 
@@ -376,6 +383,7 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"group_ids":  v.GroupIds,
 			"name":       v.Name,
 			"ram_arn":    v.RamArn,
+			"enabled":    v.Enabled,
 		}
 	}
 
