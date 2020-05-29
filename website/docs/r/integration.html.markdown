@@ -1,0 +1,71 @@
+---
+layout: "prismacloud"
+page_title: "Prisma Cloud: prismacloud_integration"
+description: |-
+  Manages an integration.
+---
+
+# prismacloud_integration
+
+Manages an integration.
+
+## Example Usage
+
+```hcl
+data "prismacloud_integration" "example" {
+    name = "SQS"
+    integration_type = "amazon_sqs"
+    description = "Made by Terraform"
+    enabled = true
+    integration_config {
+        queue_url = "https://sqs.us-east-1.amazonaws.com/12345/url"
+    }
+}
+```
+
+## Argument Reference
+
+* `name` - (Required) Name of the integration.
+* `description` - Description.
+* `integration_type` - (Required) Integration type (valid values can be found [here](https://api.docs.prismacloud.io/reference#integrations).
+* `enabled` - (bool) Enabled.
+* `status` - Status.
+* `valid` - (bool) Valid.
+* `integration_config` - (Required) Integration configuration, the values depend on the integration type, as defined [below](#integration-config).
+
+### Integration Config
+
+Refer to the [Prisma Cloud integration documentation](https://api.docs.prismacloud.io/reference#integration-configuration) if you need more information on a specific integration.
+
+* `queue_url` - The Queue URL you used when you configured Prisma Cloud in Amazon SQS
+* `login` - (Qualys/ServiceNow) Login.
+* `base_url` - Qualys Security Operations Center server API URL (without "http(s)")
+* `password` - (Qualys/ServiceNow) Password
+* `host_url` - ServiceNow URL.
+* `tables` - (Map of bools) Key/value pairs that identify the ServiceNow module tables with which to integrate (e.g. - incident, sn_si_incident, or em_event).
+* `version` - ServiceNow release version.
+* `url` - Webhook URL.
+* `auth_token` - (Webhook/PagerDuty) The authentication token for the event collector.
+* `integration_key` - PagerDuty integration key.
+
+## Attribute Reference
+
+* `integration_id` - Integration ID.
+* `created_by` - Created by.
+* `created_ts` - (int) Created timestamp.
+* `last_modified_by` - Last modified by.
+* `last_modified_ts` - (int) Last modified timestamp.
+* `reason` - Model for the integration status details, as defined [below](#reason).
+
+### Reason
+
+* `last_updated` - (int) Last updated.
+* `error_type` - Error type.
+* `message` - Message.
+* `details` - Model for message details, as defined [below](#details).
+
+### Details
+
+* `status_code` - (int) Status code.
+* `subject` - Subject.
+* `message` - Internationalization key.
