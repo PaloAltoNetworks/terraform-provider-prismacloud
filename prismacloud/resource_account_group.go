@@ -48,7 +48,7 @@ func resourceAccountGroup() *schema.Resource {
 			},
 			"account_ids": {
 				Type:        schema.TypeList,
-				Optional:    true,
+				Computed:    true,
 				Description: "Cloud account IDs",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -103,11 +103,11 @@ func resourceAccountGroup() *schema.Resource {
 	}
 }
 
-func parseAccountGroup(d *schema.ResourceData) *group.Group {
-	return &group.Group{
+func parseAccountGroup(d *schema.ResourceData, id string) group.Group {
+	return group.Group{
+		Id:          id,
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
-		AccountIds:  ListToStringSlice(d.Get("account_ids").([]interface{})),
 	}
 }
 
@@ -153,9 +153,9 @@ func saveAccountGroup(d *schema.ResourceData, obj group.Group) {
 
 func createAccountGroup(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
-	obj := parseAccountGroup(d)
+	obj := parseAccountGroup(d, "")
 
-	if err := group.Create(client, *obj); err != nil {
+	if err := group.Create(client, obj); err != nil {
 		return err
 	}
 
@@ -188,10 +188,9 @@ func readAccountGroup(d *schema.ResourceData, meta interface{}) error {
 
 func updateAccountGroup(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
-	obj := parseAccountGroup(d)
-	obj.Id = d.Id()
+	obj := parseAccountGroup(d, d.Id())
 
-	if err := group.Update(client, *obj); err != nil {
+	if err := group.UpdateUsingLiveAccountIds(client, obj); err != nil {
 		return err
 	}
 
