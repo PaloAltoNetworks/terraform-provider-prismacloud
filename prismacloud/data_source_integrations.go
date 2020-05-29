@@ -15,7 +15,7 @@ func dataSourceIntegrations() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			// Output.
-			"total": totalSchema("system supported and custom compliance standards"),
+			"total": totalSchema("all integrations"),
 			"listing": {
 				Type:        schema.TypeList,
 				Computed:    true,
