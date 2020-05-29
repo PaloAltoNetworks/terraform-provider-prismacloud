@@ -22,10 +22,10 @@ resource "prismacloud_account_group" "example" {
 
 * `name` - (Required) name of the group.
 * `description` - (Optional) Description.
-* `account_ids` - (Optional) List of cloud account IDs.
 
 ## Attribute Reference
 
+* `account_ids` - List of cloud account IDs.
 * `group_id` - Account group ID.
 * `last_modified_by` - Last modified by.
 * `last_modified_ts` - (int) Last modified timestamp.
