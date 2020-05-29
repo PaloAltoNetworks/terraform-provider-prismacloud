@@ -59,6 +59,20 @@ func Create(c pc.PrismaCloudClient, group Group) error {
 	return createUpdate(false, c, group)
 }
 
+// UpdateUsingLiveAccountIds copies the AccountIds param from what's
+// live, but otherwise with the group definition provided.  The problem is
+// that the API endpoint can change the accounts associated with this group,
+// but in Terraform the group membership is a read-only attribute.
+func UpdateUsingLiveAccountIds(c pc.PrismaCloudClient, group Group) error {
+	lg, err := Get(c, group.Id)
+	if err != nil {
+		return err
+	}
+	group.AccountIds = lg.AccountIds
+
+	return Update(c, group)
+}
+
 // Update modifies information related to an existing account group.
 func Update(c pc.PrismaCloudClient, group Group) error {
 	return createUpdate(true, c, group)
