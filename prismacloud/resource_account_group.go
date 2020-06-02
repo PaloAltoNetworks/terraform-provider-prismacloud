@@ -108,6 +108,7 @@ func parseAccountGroup(d *schema.ResourceData, id string) group.Group {
 		Id:          id,
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
+		AccountIds:  []string{},
 	}
 }
 
