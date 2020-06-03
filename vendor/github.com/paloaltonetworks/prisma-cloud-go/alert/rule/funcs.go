@@ -103,6 +103,6 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, rule Rule) error {
 		path = append(path, id)
 	}
 
-	_, err := c.Communicate(method, path, rule, nil, nil)
+	_, err := c.Communicate(method, path, nil, rule, nil)
 	return err
 }
