@@ -20,7 +20,7 @@ type Rule struct {
 	NotifyOnDismissed    bool                 `json:"notifyOnDismissed"`
 	NotifyOnResolved     bool                 `json:"notifyOnResolved"`
 	Owner                string               `json:"owner,omitempty"`
-	NotificationChannels []string             `json:"notificationChannels"`
+	NotificationChannels []string             `json:"notificationChannels,omitempty"`
 	OpenAlertsCount      int                  `json:"openAlertsCount,omitempty"`
 	ReadOnly             bool                 `json:"readOnly,omitempty"`
 	Deleted              bool                 `json:"deleted,omitempty"`
