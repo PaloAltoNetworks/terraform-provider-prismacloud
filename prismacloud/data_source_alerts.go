@@ -231,7 +231,7 @@ func parseAlertsRequest(d *schema.ResourceData) *alert.Request {
 			Amount: rtr["amount"].(int),
 			Unit:   rtr["unit"].(string),
 		}
-	} else if tntr := ToInterfaceMap(tr, "to_now"); len(rtr) != 0 {
+	} else if tntr := ToInterfaceMap(tr, "to_now"); len(tntr) != 0 {
 		ans.TimeRange.Value = alert.ToNow{
 			Unit: tntr["unit"].(string),
 		}
