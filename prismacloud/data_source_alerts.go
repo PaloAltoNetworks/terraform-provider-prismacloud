@@ -161,7 +161,7 @@ func dataSourceAlerts() *schema.Resource {
 				Computed:    true,
 			},
 			"total": totalSchema("alerts"),
-			"data": {
+			"listing": {
 				Type:        schema.TypeList,
 				Description: "Alert listing",
 				Computed:    true,
@@ -265,7 +265,19 @@ func dataSourceAlertsRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("total", ans.Total)
 
 	data := make([]interface{}, 0, len(ans.Data))
-	for _, info := range ans.Data {
+	for num, info := range ans.Data {
+		// TODO(shinmog) - Remove this workaround when Prisma Cloud fixes their bug.
+		//
+		// WORKAROUND: Prisma Cloud does not honor the limit for to_now queries, so
+		// enforce it here to prevent resource size overruns in Terraform:
+		//
+		// Error: rpc error: code = ResourceExhausted desc = grpc: received message larger than max (5685945 vs. 4194304)
+		//
+		// The `total` value is being intentionally left as-is so later on it will be
+		// easier to see when they've fixed this on their end.
+		if num >= req.Limit {
+			break
+		}
 		item := map[string]interface{}{
 			"alert_id":       info.Id,
 			"status":         info.Status,
@@ -278,7 +290,7 @@ func dataSourceAlertsRead(d *schema.ResourceData, meta interface{}) error {
 		}
 		data = append(data, item)
 	}
-	if err := d.Set("data", data); err != nil {
+	if err := d.Set("listing", data); err != nil {
 		log.Printf("[WARN] Error setting 'data' for %q: %s", d.Id(), err)
 	}
 
