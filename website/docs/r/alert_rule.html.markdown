@@ -20,8 +20,6 @@ resource "prismacloud_alert_rule" "example" {
 
 ## Argument Reference
 
-You must specify at least one of the following:
-
 * `name` - (Required) Rule/Scan name
 * `description` - Description
 * `enabled` - (bool) Enabled (default: `true`)
@@ -35,17 +33,17 @@ You must specify at least one of the following:
 * `notify_on_snoozed` - (bool) Include snoozed alerts in notification
 * `notify_on_dismissed` - (bool) Include dismissed alerts in notification
 * `notify_on_resolved` - (bool) Include resolved alerts in notification
-* `target` - Model for the target filter, as defined [below](#target)
+* `target` - (Required) Model for the target filter, as defined [below](#target)
 * `notification_config` - List of data for notifications to third-party tools, as defined [below](#notification-config)
 
 ### Target
 
 There should be one and only one target block:
 
-* `account_groups` - List of account groups
+* `account_groups` - (Required) List of account groups
 * `excluded_accounts` - List of excluded accounts
 * `regions` - List of regions
-* `tags` - List of TargetTag objects, as defined [below](#tags)
+* `tags` - List of tag models, as defined [below](#tags)
 
 ### Tags
 
