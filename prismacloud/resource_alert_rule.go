@@ -335,8 +335,23 @@ func resourceAlertRule() *schema.Resource {
 
 func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 	tgt := ResourceDataInterfaceMap(d, "target")
-	var tags []rule.Tag
 
+	accountGroups := []string{}
+	if tg := tgt["account_groups"]; tg != nil {
+		accountGroups = ListToStringSlice(tg.([]interface{}))
+	}
+
+	var excludedAccounts []string
+	if ea := tgt["excluded_accounts"]; ea != nil {
+		excludedAccounts = ListToStringSlice(ea.([]interface{}))
+	}
+
+	var regions []string
+	if r := tgt["regions"]; r != nil {
+		regions = ListToStringSlice(r.([]interface{}))
+	}
+
+	var tags []rule.Tag
 	if tt := tgt["tags"]; tt != nil && len(tt.([]interface{})) > 0 {
 		tlist := tt.([]interface{})
 		tags = make([]rule.Tag, 0, len(tlist))
@@ -355,21 +370,30 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 		Description:        d.Get("description").(string),
 		Enabled:            d.Get("enabled").(bool),
 		ScanAll:            d.Get("scan_all").(bool),
-		Policies:           ListToStringSlice(d.Get("policies").([]interface{})),
+		Policies:           SetToStringSlice(d.Get("policies").(*schema.Set)),
 		PolicyLabels:       ListToStringSlice(d.Get("policy_labels").([]interface{})),
 		ExcludedPolicies:   ListToStringSlice(d.Get("excluded_policies").([]interface{})),
 		Target: rule.Target{
-			AccountGroups:    ListToStringSlice(tgt["account_groups"].([]interface{})),
-			ExcludedAccounts: ListToStringSlice(tgt["excluded_accounts"].([]interface{})),
-			Regions:          ListToStringSlice(tgt["regions"].([]interface{})),
+			AccountGroups:    accountGroups,
+			ExcludedAccounts: excludedAccounts,
+			Regions:          regions,
 			Tags:             tags,
 		},
 		AllowAutoRemediate:  d.Get("allow_auto_remediate").(bool),
-		DelayNotificationMs: d.Get("delay_notifications_ms").(int),
+		DelayNotificationMs: d.Get("delay_notification_ms").(int),
 		NotifyOnOpen:        d.Get("notify_on_open").(bool),
 		NotifyOnSnoozed:     d.Get("notify_on_snoozed").(bool),
 		NotifyOnDismissed:   d.Get("notify_on_dismissed").(bool),
 		NotifyOnResolved:    d.Get("notify_on_resolved").(bool),
+	}
+	if ans.Policies == nil {
+		ans.Policies = []string{}
+	}
+	if ans.PolicyLabels == nil {
+		ans.PolicyLabels = []string{}
+	}
+	if ans.ExcludedPolicies == nil {
+		ans.ExcludedPolicies = []string{}
 	}
 
 	ncl := d.Get("notification_config").([]interface{})
