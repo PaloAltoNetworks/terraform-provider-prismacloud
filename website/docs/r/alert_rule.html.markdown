@@ -29,7 +29,7 @@ resource "prismacloud_alert_rule" "example" {
 * `excluded_policies` - List of policies to exclude from scan
 * `allow_auto_remediate` - (bool) Allow auto-remediation
 * `delay_notification_ms` - (int) Delay notifications by the specified miliseconds
-* `notify_on_open` - (bool) Include open alerts in notification
+* `notify_on_open` - (bool) Include open alerts in notification (default: `true`)
 * `notify_on_snoozed` - (bool) Include snoozed alerts in notification
 * `notify_on_dismissed` - (bool) Include dismissed alerts in notification
 * `notify_on_resolved` - (bool) Include resolved alerts in notification
