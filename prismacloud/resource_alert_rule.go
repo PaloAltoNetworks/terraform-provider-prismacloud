@@ -96,6 +96,7 @@ func resourceAlertRule() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Description: "Include open alerts in notification",
+				Default:     true,
 			},
 			"notify_on_snoozed": {
 				Type:        schema.TypeBool,
