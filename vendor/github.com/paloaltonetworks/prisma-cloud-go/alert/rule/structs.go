@@ -15,7 +15,7 @@ type Rule struct {
 	NotificationConfig   []NotificationConfig `json:"alertRuleNotificationConfig,omitempty"`
 	AllowAutoRemediate   bool                 `json:"allowAutoRemediate"`
 	DelayNotificationMs  int                  `json:"delayNotificationMs"`
-	NotifyOnOpen         bool                 `json:"notifyOnOpen,omitempty"`
+	NotifyOnOpen         bool                 `json:"notifyOnOpen"`
 	NotifyOnSnoozed      bool                 `json:"notifyOnSnoozed,omitempty"`
 	NotifyOnDismissed    bool                 `json:"notifyOnDismissed,omitempty"`
 	NotifyOnResolved     bool                 `json:"notifyOnResolved,omitempty"`
