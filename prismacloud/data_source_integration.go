@@ -171,10 +171,39 @@ func dataSourceIntegration() *schema.Resource {
 							Computed:    true,
 							Description: "Webhook URL",
 						},
+						"headers": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "Webhook headers",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"key": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Header name",
+									},
+									"value": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Header value",
+									},
+									"secure": {
+										Type:        schema.TypeBool,
+										Computed:    true,
+										Description: "Secure",
+									},
+									"read_only": {
+										Type:        schema.TypeBool,
+										Computed:    true,
+										Description: "Read only",
+									},
+								},
+							},
+						},
 						"auth_token": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "(Webhook/PagerDuty) The authentication token for the event collector",
+							Description: "PagerDuty authentication token for the event collector",
 						},
 						"integration_key": {
 							Type:        schema.TypeString,
