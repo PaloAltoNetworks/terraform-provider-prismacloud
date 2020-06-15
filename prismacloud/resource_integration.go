@@ -68,12 +68,12 @@ func resourceIntegration() *schema.Resource {
 			},
 			"status": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Computed:    true,
 				Description: "Status",
 			},
 			"valid": {
 				Type:        schema.TypeBool,
-				Optional:    true,
+				Computed:    true,
 				Description: "Valid",
 			},
 			"reason": {
@@ -175,10 +175,39 @@ func resourceIntegration() *schema.Resource {
 							Optional:    true,
 							Description: "Webhook URL",
 						},
+						"headers": {
+							Type:        schema.TypeList,
+							Optional:    true,
+							Description: "Webhook headers",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"key": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Header name",
+									},
+									"value": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Header value",
+									},
+									"secure": {
+										Type:        schema.TypeBool,
+										Optional:    true,
+										Description: "Secure",
+									},
+									"read_only": {
+										Type:        schema.TypeBool,
+										Optional:    true,
+										Description: "Read only",
+									},
+								},
+							},
+						},
 						"auth_token": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "(Webhook/PagerDuty) The authentication token for the event collector",
+							Description: "PagerDuty authentication token for the event collector",
 						},
 						"integration_key": {
 							Type:        schema.TypeString,
@@ -195,6 +224,7 @@ func resourceIntegration() *schema.Resource {
 func parseIntegration(d *schema.ResourceData, id string) integration.Integration {
 	ic := ResourceDataInterfaceMap(d, "integration_config")
 	var tables []map[string]bool
+	var headers []integration.Header
 
 	if ic["tables"] != nil && len(ic["tables"].(map[string]interface{})) > 0 {
 		tlist := ic["tables"].(map[string]interface{})
@@ -204,9 +234,24 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 		}
 	}
 
+	if ic["headers"] != nil && len(ic["headers"].([]interface{})) > 0 {
+		hlist := ic["headers"].([]interface{})
+		headers = make([]integration.Header, 0, len(hlist))
+		for i := range hlist {
+			hdr := hlist[i].(map[string]interface{})
+			headers = append(headers, integration.Header{
+				Key:      hdr["key"].(string),
+				Value:    hdr["value"].(string),
+				Secure:   hdr["secure"].(bool),
+				ReadOnly: hdr["read_only"].(bool),
+			})
+		}
+	}
+
 	return integration.Integration{
 		Id:              id,
 		Name:            d.Get("name").(string),
+		Description:     d.Get("description").(string),
 		IntegrationType: d.Get("integration_type").(string),
 		IntegrationConfig: integration.IntegrationConfig{
 			QueueUrl:       ic["queue_url"].(string),
@@ -217,12 +262,11 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 			Tables:         tables,
 			Version:        ic["version"].(string),
 			Url:            ic["url"].(string),
+			Headers:        headers,
 			AuthToken:      ic["auth_token"].(string),
 			IntegrationKey: ic["integration_key"].(string),
 		},
 		Enabled: d.Get("enabled").(bool),
-		Status:  d.Get("status").(string),
-		Valid:   d.Get("valid").(bool),
 	}
 }
 
@@ -254,7 +298,7 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 			"message":     o.Reason.Details.Message,
 		}}
 	}
-	if err = d.Set("reason", reason); err != nil {
+	if err = d.Set("reason", []interface{}{reason}); err != nil {
 		log.Printf("[WARN] Error setting 'reason' for %s: %s", d.Id(), err)
 	}
 
@@ -267,6 +311,7 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 		"tables":          nil,
 		"version":         o.IntegrationConfig.Version,
 		"url":             o.IntegrationConfig.Url,
+		"headers":         nil,
 		"auth_token":      o.IntegrationConfig.AuthToken,
 		"integration_key": o.IntegrationConfig.IntegrationKey,
 	}
@@ -278,6 +323,18 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 			}
 		}
 		ic["tables"] = tables
+	}
+	if len(o.IntegrationConfig.Headers) != 0 {
+		headers := make([]interface{}, 0, len(o.IntegrationConfig.Headers))
+		for _, h := range o.IntegrationConfig.Headers {
+			headers = append(headers, map[string]interface{}{
+				"key":       h.Key,
+				"value":     h.Value,
+				"secure":    h.Secure,
+				"read_only": h.ReadOnly,
+			})
+		}
+		ic["headers"] = headers
 	}
 	if err = d.Set("integration_config", []interface{}{ic}); err != nil {
 		log.Printf("[WARN] Error setting 'integration_config' for %s: %s", d.Id(), err)
