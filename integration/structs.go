@@ -34,12 +34,19 @@ type IntegrationConfig struct {
 	Version string            `json:"version,omitempty"`
 
 	// Webhook.
-	Url       string `json:"url,omitempty"`
-	AuthToken string `json:"authToken,omitempty"`
+	Url     string   `json:"url,omitempty"`
+	Headers []Header `json:"headers,omitempty"`
 
 	// PagerDuty.
 	IntegrationKey string `json:"integrationKey,omitempty"`
-	// AuthToken
+	AuthToken      string `json:"authToken,omitempty"`
+}
+
+type Header struct {
+	Key      string `json:"key"`
+	Value    string `json:"value"`
+	Secure   bool   `json:"secure"`
+	ReadOnly bool   `json:"readOnly"`
 }
 
 type Reason struct {
