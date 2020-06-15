@@ -61,5 +61,13 @@ One of the following must be specified:
 * `tables` - (Map of bools) Key/value pairs that identify the ServiceNow module tables with which to integrate (e.g. - incident, sn_si_incident, or em_event).
 * `version` - ServiceNow release version.
 * `url` - Webhook URL.
-* `auth_token` - (Webhook/PagerDuty) The authentication token for the event collector.
+* `headers` - Webhook headers, as defined [below](#headers).
+* `auth_token` - PagerDuty authentication token for the event collector.
 * `integration_key` - PagerDuty integration key.
+
+### Headers
+
+* `key` - Header name.
+* `value` - Header value.
+* `secure` - (bool) Secure.
+* `read_only` - (bool) Read-only.
