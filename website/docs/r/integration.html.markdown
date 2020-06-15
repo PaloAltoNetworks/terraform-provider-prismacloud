@@ -29,8 +29,6 @@ data "prismacloud_integration" "example" {
 * `description` - Description.
 * `integration_type` - (Required) Integration type (valid values can be found [here](https://api.docs.prismacloud.io/reference#integrations).
 * `enabled` - (bool) Enabled.
-* `status` - Status.
-* `valid` - (bool) Valid.
 * `integration_config` - (Required) Integration configuration, the values depend on the integration type, as defined [below](#integration-config).
 
 ### Integration Config
@@ -45,12 +43,22 @@ Refer to the [Prisma Cloud integration documentation](https://api.docs.prismaclo
 * `tables` - (Map of bools) Key/value pairs that identify the ServiceNow module tables with which to integrate (e.g. - incident, sn_si_incident, or em_event).
 * `version` - ServiceNow release version.
 * `url` - Webhook URL.
-* `auth_token` - (Webhook/PagerDuty) The authentication token for the event collector.
+* `headers` - List of webhook headers, as defined [below](#headers).
+* `auth_token` - PagerDuty authentication token for the event collector.
 * `integration_key` - PagerDuty integration key.
+
+### Headers
+
+* `key` - (Required) Header name.
+* `value` - (Required) Header value.
+* `secure` - (bool) Secure.
+* `read_only` - (bool) Read-only.
 
 ## Attribute Reference
 
 * `integration_id` - Integration ID.
+* `status` - Status.
+* `valid` - (bool) Valid.
 * `created_by` - Created by.
 * `created_ts` - (int) Created timestamp.
 * `last_modified_by` - Last modified by.
