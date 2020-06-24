@@ -12,7 +12,7 @@ type Integration struct {
 	LastModifiedBy    string            `json:"lastModifiedBy,omitempty"`
 	LastModifiedTs    int64             `json:"lastModifiedTs,omitempty"`
 	Status            string            `json:"status,omitempty"`
-	Reason            Reason            `json:"reason,omitempty"`
+	Reason            *Reason           `json:"reason"`
 	Valid             bool              `json:"valid,omitempty"`
 	AlertRules        []AlertRule       `json:"alertRules,omitempty"`
 }

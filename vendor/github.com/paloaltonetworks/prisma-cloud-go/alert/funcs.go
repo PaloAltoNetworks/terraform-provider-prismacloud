@@ -1,8 +1,6 @@
 package alert
 
 import (
-	"fmt"
-
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 )
 
@@ -13,17 +11,8 @@ func List(c pc.PrismaCloudClient, req Request) (Response, error) {
 	var resp Response
 
 	// Sanity check the time range.
-	switch v := req.TimeRange.Value.(type) {
-	case Absolute:
-		req.TimeRange.Type = TimeAbsolute
-	case Relative:
-		req.TimeRange.Type = TimeRelative
-	case ToNow:
-		req.TimeRange.Type = TimeToNow
-	case nil:
-		return resp, fmt.Errorf("time range must be specified")
-	default:
-		return resp, fmt.Errorf("invalid time range type: %v", v)
+	if err := req.TimeRange.SetType(); err != nil {
+		return resp, err
 	}
 
 	_, err := c.Communicate("POST", []string{"v2", "alert"}, nil, req, &resp)

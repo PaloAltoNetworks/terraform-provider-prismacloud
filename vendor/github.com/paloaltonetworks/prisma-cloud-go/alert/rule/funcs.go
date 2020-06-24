@@ -74,7 +74,6 @@ func Delete(c pc.PrismaCloudClient, id string) error {
 func createUpdate(exists bool, c pc.PrismaCloudClient, rule Rule) error {
 	var (
 		logMsg strings.Builder
-		id     string
 		method string
 	)
 
@@ -92,7 +91,7 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, rule Rule) error {
 	logMsg.WriteString(" ")
 	logMsg.WriteString(singular)
 	if exists {
-		fmt.Fprintf(&logMsg, ": %s", id)
+		fmt.Fprintf(&logMsg, ": %s", rule.PolicyScanConfigId)
 	}
 
 	c.Log(pc.LogAction, logMsg.String())
@@ -100,7 +99,7 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, rule Rule) error {
 	path := make([]string, 0, len(Suffix)+1)
 	path = append(path, Suffix...)
 	if exists {
-		path = append(path, id)
+		path = append(path, rule.PolicyScanConfigId)
 	}
 
 	_, err := c.Communicate(method, path, nil, rule, nil)

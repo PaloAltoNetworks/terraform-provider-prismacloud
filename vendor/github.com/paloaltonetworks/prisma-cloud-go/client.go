@@ -320,7 +320,7 @@ func (c *Client) communicate(method string, suffix []string, query, data interfa
 	default:
 		errLocation := "X-Redlock-Status"
 		if _, ok := resp.Header[errLocation]; !ok {
-			return body, fmt.Errorf("%q header is missing, is this Prisma Cloud?\n%s", errLocation, body)
+			return body, fmt.Errorf("%d error without the %q header - returned HTML:\n%s", resp.StatusCode, errLocation, body)
 		}
 		pcel := PrismaCloudErrorList{
 			Method:     method,
