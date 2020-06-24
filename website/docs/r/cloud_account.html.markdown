@@ -18,9 +18,15 @@ resource "prismacloud_cloud_account" "aws_example" {
         name = "myAwsAccountName"
         account_id = "accountIdHere"
         external_id = "eidHere"
-        group_ids = []
+        group_ids = [
+            prismacloud_account_group.g1.group_id,
+        ]
         role_arn = "some:arn:here"
     }
+}
+
+resource "prismacloud_account_group" "g1" {
+    name = "My group"
 }
 
 /*
