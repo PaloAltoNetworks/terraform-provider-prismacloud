@@ -5,9 +5,9 @@ import (
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/alert"
+	"github.com/paloaltonetworks/prisma-cloud-go/timerange"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func dataSourceAlerts() *schema.Resource {
@@ -16,104 +16,7 @@ func dataSourceAlerts() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			// Input.
-			"time_range": {
-				Type:        schema.TypeList,
-				Required:    true,
-				Description: "The time range spec",
-				MaxItems:    1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"absolute": {
-							Type:        schema.TypeList,
-							Optional:    true,
-							Description: "An absolute time range",
-							MaxItems:    1,
-							ConflictsWith: []string{
-								"time_range.relative",
-								"time_range.to_now",
-							},
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start": {
-										Type:        schema.TypeInt,
-										Required:    true,
-										Description: "Start time",
-									},
-									"end": {
-										Type:        schema.TypeInt,
-										Required:    true,
-										Description: "End time",
-									},
-								},
-							},
-						},
-						"relative": {
-							Type:        schema.TypeList,
-							Optional:    true,
-							Description: "Relative time range",
-							MaxItems:    1,
-							ConflictsWith: []string{
-								"time_range.absolute",
-								"time_range.to_now",
-							},
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"amount": {
-										Type:        schema.TypeInt,
-										Required:    true,
-										Description: "The time number",
-									},
-									"unit": {
-										Type:        schema.TypeString,
-										Required:    true,
-										Description: "The time unit",
-										ValidateFunc: validation.StringInSlice(
-											[]string{
-												alert.TimeHour,
-												alert.TimeDay,
-												alert.TimeWeek,
-												alert.TimeMonth,
-												alert.TimeYear,
-											},
-											false,
-										),
-									},
-								},
-							},
-						},
-						"to_now": {
-							Type:        schema.TypeList,
-							Optional:    true,
-							Description: "From some time in the past to now",
-							MaxItems:    1,
-							ConflictsWith: []string{
-								"time_range.absolute",
-								"time_range.relative",
-							},
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"unit": {
-										Type:        schema.TypeString,
-										Required:    true,
-										Description: "The time unit",
-										ValidateFunc: validation.StringInSlice(
-											[]string{
-												alert.TimeLogin,
-												alert.TimeEpoch,
-												alert.TimeDay,
-												alert.TimeWeek,
-												alert.TimeMonth,
-												alert.TimeYear,
-											},
-											false,
-										),
-									},
-								},
-							},
-						},
-					},
-				},
-			},
+			"time_range": timeRangeSchema("data_source_alerts"),
 			"limit": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -220,19 +123,19 @@ func parseAlertsRequest(d *schema.ResourceData) *alert.Request {
 		SortBy: ListToStringSlice(d.Get("sort_by").([]interface{})),
 	}
 
-	tr := (d.Get("time_range").([]interface{})[0]).(map[string]interface{})
+	tr := ResourceDataInterfaceMap(d, "time_range")
 	if atr := ToInterfaceMap(tr, "absolute"); len(atr) != 0 {
-		ans.TimeRange.Value = alert.Absolute{
+		ans.TimeRange.Value = timerange.Absolute{
 			Start: atr["start"].(int),
 			End:   atr["end"].(int),
 		}
 	} else if rtr := ToInterfaceMap(tr, "relative"); len(rtr) != 0 {
-		ans.TimeRange.Value = alert.Relative{
+		ans.TimeRange.Value = timerange.Relative{
 			Amount: rtr["amount"].(int),
 			Unit:   rtr["unit"].(string),
 		}
 	} else if tntr := ToInterfaceMap(tr, "to_now"); len(tntr) != 0 {
-		ans.TimeRange.Value = alert.ToNow{
+		ans.TimeRange.Value = timerange.ToNow{
 			Unit: tntr["unit"].(string),
 		}
 	}
