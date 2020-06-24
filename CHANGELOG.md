@@ -9,7 +9,10 @@ NEW DATA SOURCES:
 * `prismacloud_compliance_standard` / `prismacloud_compliance_standards`
 * `prismacloud_compliance_standard_requirement` / `prismacloud_compliance_standard_requirements`
 * `prismacloud_compliance_standard_requirement_section` / `prismacloud_compliance_standard_requirement_sections`
+* `prismacloud_enterprise_settings`
+* `prismacloud_integration` / `prismacloud_integrations`
 * `prismacloud_policy` / `prismacloud_policies`
+* `prismacloud_rql_historic_search` / `prismacloud_rql_historic_searches`
 
 NEW RESOURCES:
 
@@ -19,5 +22,7 @@ NEW RESOURCES:
 * `prismacloud_compliance_standard`
 * `prismacloud_compliance_standard_requirement`
 * `prismacloud_compliance_standard_requirement_section`
+* `prismacloud_enterprise_settings`
+* `prismacloud_integration`
 * `prismacloud_policy`
 * `prismacloud_user_role`
