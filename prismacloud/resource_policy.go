@@ -348,7 +348,7 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 		Severity:               d.Get("severity").(string),
 		Recommendation:         d.Get("recommendation").(string),
 		CloudType:              d.Get("cloud_type").(string),
-		Labels:                 ListToStringSlice(d.Get("labels").([]interface{})),
+		Labels:                 SetToStringSlice(d.Get("labels").(*schema.Set)),
 		Enabled:                d.Get("enabled").(bool),
 		Overridden:             d.Get("overridden").(bool),
 		Deleted:                d.Get("deleted").(bool),
@@ -362,7 +362,7 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 			ApiName:        rspec["api_name"].(string),
 			ResourceIdPath: rspec["resource_id_path"].(string),
 			Criteria:       rspec["criteria"].(string),
-			Type:           rspec["type"].(string),
+			Type:           rspec["rule_type"].(string),
 		},
 	}
 
