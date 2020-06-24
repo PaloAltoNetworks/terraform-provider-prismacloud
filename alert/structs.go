@@ -1,32 +1,17 @@
 package alert
 
+import (
+	"github.com/paloaltonetworks/prisma-cloud-go/timerange"
+)
+
 type Request struct {
-	TimeRange TimeRange `json:"timeRange"`
-	Limit     int       `json:"limit,omitempty"`
-	Offset    int       `json:"offset,omitempty"`
-	Detailed  bool      `json:"detailed"`
-	PageToken string    `json:"pageToken,omitempty"`
-	SortBy    []string  `json:"sortBy,omitempty"`
-	Filters   []Filter  `json:"filters,omitempty"`
-}
-
-type TimeRange struct {
-	Type  string      `json:"type"`
-	Value interface{} `json:"value"`
-}
-
-type Absolute struct {
-	Start int `json:"startTime"`
-	End   int `json:"endTime"`
-}
-
-type Relative struct {
-	Amount int    `json:"amount"`
-	Unit   string `json:"unit"`
-}
-
-type ToNow struct {
-	Unit string `json:"unit"`
+	TimeRange timerange.TimeRange `json:"timeRange"`
+	Limit     int                 `json:"limit,omitempty"`
+	Offset    int                 `json:"offset,omitempty"`
+	Detailed  bool                `json:"detailed"`
+	PageToken string              `json:"pageToken,omitempty"`
+	SortBy    []string            `json:"sortBy,omitempty"`
+	Filters   []Filter            `json:"filters,omitempty"`
 }
 
 type Filter struct {
