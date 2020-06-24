@@ -59,13 +59,13 @@ func Get(c pc.PrismaCloudClient, id string) (Role, error) {
 }
 
 // Create makes a new user role on the Prisma Cloud platform.
-func Create(c pc.PrismaCloudClient, role Role) error {
-	return createUpdate(false, c, role)
+func Create(c pc.PrismaCloudClient, obj Role) error {
+	return createUpdate(false, c, obj)
 }
 
 // Update modifies information related to an existing user role.
-func Update(c pc.PrismaCloudClient, role Role) error {
-	return createUpdate(true, c, role)
+func Update(c pc.PrismaCloudClient, obj Role) error {
+	return createUpdate(true, c, obj)
 }
 
 // Delete removes an existing user role using its ID.
@@ -79,10 +79,9 @@ func Delete(c pc.PrismaCloudClient, id string) error {
 	return err
 }
 
-func createUpdate(exists bool, c pc.PrismaCloudClient, role Role) error {
+func createUpdate(exists bool, c pc.PrismaCloudClient, obj Role) error {
 	var (
 		logMsg strings.Builder
-		id     string
 		method string
 	)
 
@@ -100,7 +99,7 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, role Role) error {
 	logMsg.WriteString(" ")
 	logMsg.WriteString(singular)
 	if exists {
-		fmt.Fprintf(&logMsg, ": %s", id)
+		fmt.Fprintf(&logMsg, ": %s", obj.Id)
 	}
 
 	c.Log(pc.LogAction, logMsg.String())
@@ -108,9 +107,9 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, role Role) error {
 	path := make([]string, 0, len(Suffix)+1)
 	path = append(path, Suffix...)
 	if exists {
-		path = append(path, id)
+		path = append(path, obj.Id)
 	}
 
-	_, err := c.Communicate(method, path, nil, role, nil)
+	_, err := c.Communicate(method, path, nil, obj, nil)
 	return err
 }
