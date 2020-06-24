@@ -111,6 +111,8 @@ func Provider() terraform.ResourceProvider {
 			"prismacloud_integrations":                             dataSourceIntegrations(),
 			"prismacloud_policies":                                 dataSourcePolicies(),
 			"prismacloud_policy":                                   dataSourcePolicy(),
+			"prismacloud_rql_historic_search":                      dataSourceRqlHistoricSearch(),
+			"prismacloud_rql_historic_searches":                    dataSourceRqlHistoricSearches(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
