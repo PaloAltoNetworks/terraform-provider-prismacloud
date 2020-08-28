@@ -1,4 +1,8 @@
-## 1.0.1 (Unreleased)
+## 1.0.2 (Unreleased)
+## 1.0.1 (August 28, 2020)
+
+* Terraform Registry release
+
 ## 1.0.0 (July 07, 2020)
 
 NEW DATA SOURCES:
