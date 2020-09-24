@@ -12,7 +12,7 @@ Manages an integration.
 ## Example Usage
 
 ```hcl
-data "prismacloud_integration" "example" {
+resource "prismacloud_integration" "example" {
     name = "SQS"
     integration_type = "amazon_sqs"
     description = "Made by Terraform"
