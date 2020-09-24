@@ -19,7 +19,8 @@ resource "prismacloud_policy" "example" {
         name = "my rule"
         criteria = "savedSearchId"
         parameters = {
-            "foo": "bar",
+            "savedSearch": "true",
+            "withIac": "false",
         }
         rule_type = "Network"
     }
@@ -56,7 +57,7 @@ One and only one of these must be present:
 * `api_name` - API name
 * `resource_id_path` - Resource ID path
 * `criteria` - (Required) Saved search ID that defines the rule criteria
-* `parameters` - (Required, map of strings) Parameters
+* `parameters` - (Required, map of strings) Parameters. Valid keys are `withIac` and `savedSearch` and value is `"true"` or `"false"`
 * `rule_type` - (Required) Type of rule or RQL query.  Valid values are `Config`, `AuditEvent`, or `Network`
 
 ### Remediation
