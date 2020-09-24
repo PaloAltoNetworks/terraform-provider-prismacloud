@@ -1,4 +1,7 @@
-## 1.0.2 (Unreleased)
+## 1.0.2 (September 24, 2020)
+
+* Documentation fixes
+
 ## 1.0.1 (August 28, 2020)
 
 * Terraform Registry release
