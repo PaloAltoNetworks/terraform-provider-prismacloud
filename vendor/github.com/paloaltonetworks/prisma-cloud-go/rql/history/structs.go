@@ -16,7 +16,7 @@ type Query struct {
 	Description string              `json:"description"`
 	SearchType  string              `json:"searchType"`
 	CloudType   string              `json:"cloudType,omitempty"`
-	Query       string              `json:'query"`
+	Query       string              `json:"query"`
 	Saved       bool                `json:"saved"`
 	TimeRange   timerange.TimeRange `json:"timeRange"`
 }
