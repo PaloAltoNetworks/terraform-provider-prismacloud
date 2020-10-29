@@ -26,7 +26,6 @@ There are multiple ways to specify provider config, and they may all be combined
 2) From the param's environment variable, where applicable.
 3) From the JSON config file, if specified.
 
-When retrieving params from the JSON configuration file, the param names are the same as the provider params, except that underscores in provider params become hyphens in the JSON config file.  For example, the provider param `json_web_token` is `json-web-token` in the config file.
 
 The following arguments are supported:
 
@@ -41,7 +40,7 @@ The following arguments are supported:
 * `logging` - Map of logging options for the API connection.  Valid values are `quiet` (disable logging), `action`, `path`, `send`, and `receive`.
 * `disable_reconnect` - (bool) Prisma Cloud invalidates authenticated sessions after 10minutes.  By default the provider will silently get a new JSON web token and continue deploying the plan.  If you do not want the provider to fetch a new JSON web token, set this to `true`.
 * `json_web_token` - (Env: `PRISMACLOUD_JSON_WEB_TOKEN`) A JSON web token.  These are only valid for 10 minutes once issued.  If this is specified but not the `username` / `password` then the provider will not have a way to reauthenticate once the JSON web token expires.
-* `json_config_file` - (Env: `PRISMACLOUD_JSON_CONFIG_FILE`) Retrieve the provider configuration from this JSON file.
+* `json_config_file` - (Env: `PRISMACLOUD_JSON_CONFIG_FILE`) Retrieve the provider configuration from this JSON file.  When retrieving params from the JSON configuration file, the param names are the same as the provider params, except that underscores in provider params become hyphens in the JSON config file.  For example, the provider param `json_web_token` is `json-web-token` in the config file.
 
 ## Support
 
