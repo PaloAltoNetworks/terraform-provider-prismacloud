@@ -1,3 +1,11 @@
+## 1.0.4 (October 29, 2020)
+
+* Adding support for proxy
+
+## 1.0.3 (October 21, 2020)
+
+* Minor bug fix
+
 ## 1.0.2 (September 24, 2020)
 
 * Documentation fixes
