@@ -142,6 +142,7 @@ func (c *Client) Initialize(filename string) error {
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: c.SkipSslCertVerification,
 			},
+			Proxy: http.ProxyFromEnvironment,
 		}
 	}
 
