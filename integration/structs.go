@@ -40,6 +40,9 @@ type IntegrationConfig struct {
 	// PagerDuty.
 	IntegrationKey string `json:"integrationKey,omitempty"`
 	AuthToken      string `json:"authToken,omitempty"`
+
+	// Slack
+	WebHookUrl string `json:"webhookUrl,omitempty"`
 }
 
 type Header struct {
