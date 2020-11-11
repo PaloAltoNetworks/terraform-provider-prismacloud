@@ -1,3 +1,7 @@
+## 1.0.5 (November 11, 2020)
+
+* Fixed AWS, Azure, GCP cloud account for API changes in Prisma Cloud
+
 ## 1.0.4 (October 29, 2020)
 
 * Adding support for proxy
