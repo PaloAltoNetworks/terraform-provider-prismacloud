@@ -77,6 +77,18 @@ func resourceCloudAccount() *schema.Resource {
 							Required:    true,
 							Description: "Unique identifier for an AWS resource (ARN)",
 						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "account",
+							Description: "Account type - organization or account",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "MONITOR",
+							Description: "Monitor or Monitor and Protect",
+						},
 					},
 				},
 			},
@@ -143,6 +155,19 @@ func resourceCloudAccount() *schema.Resource {
 							Required:    true,
 							Description: "Unique ID of the service principal object associated with the Prisma Cloud application that you create",
 						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "account",
+							Description: "Account type - organization or account",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "MONITOR",
+							Description: "Monitor or Monitor and Protect",
+							ForceNew:    true,
+						},
 					},
 				},
 			},
@@ -207,6 +232,18 @@ func resourceCloudAccount() *schema.Resource {
 							Description:      "Content of the JSON credentials file",
 							Sensitive:        true,
 							DiffSuppressFunc: gcpCredentialsMatch,
+						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "account",
+							Description: "Account type - organization or account",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "MONITOR",
+							Description: "Monitor or Monitor and Protect",
 						},
 					},
 				},
@@ -287,23 +324,27 @@ func gcpCredentialsMatch(k, old, new string, d *schema.ResourceData) bool {
 		prev.ClientCertUrl == cur.ClientCertUrl)
 }
 
-func parseCloudAccount(d *schema.ResourceData, id string) (string, string, interface{}) {
+func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 	if x := ResourceDataInterfaceMap(d, account.TypeAws); len(x) != 0 {
 		return account.TypeAws, x["name"].(string), account.Aws{
-			AccountId:  id,
-			Enabled:    x["enabled"].(bool),
-			ExternalId: x["external_id"].(string),
-			GroupIds:   ListToStringSlice(x["group_ids"].([]interface{})),
-			Name:       x["name"].(string),
-			RoleArn:    x["role_arn"].(string),
+			AccountId:      x["account_id"].(string),
+			Enabled:        x["enabled"].(bool),
+			ExternalId:     x["external_id"].(string),
+			GroupIds:       ListToStringSlice(x["group_ids"].([]interface{})),
+			Name:           x["name"].(string),
+			RoleArn:        x["role_arn"].(string),
+			ProtectionMode: x["protection_mode"].(string),
+			AccountType:    x["account_type"].(string),
 		}
 	} else if x := ResourceDataInterfaceMap(d, account.TypeAzure); len(x) != 0 {
 		return account.TypeAzure, x["name"].(string), account.Azure{
 			Account: account.CloudAccount{
-				AccountId: id,
-				Enabled:   x["enabled"].(bool),
-				GroupIds:  ListToStringSlice(x["group_ids"].([]interface{})),
-				Name:      x["name"].(string),
+				AccountId:      x["account_id"].(string),
+				Enabled:        x["enabled"].(bool),
+				GroupIds:       ListToStringSlice(x["group_ids"].([]interface{})),
+				Name:           x["name"].(string),
+				ProtectionMode: x["protection_mode"].(string),
+				AccountType:    x["account_type"].(string),
 			},
 			ClientId:           x["client_id"].(string),
 			Key:                x["key"].(string),
@@ -317,10 +358,12 @@ func parseCloudAccount(d *schema.ResourceData, id string) (string, string, inter
 
 		return account.TypeGcp, x["name"].(string), account.Gcp{
 			Account: account.CloudAccount{
-				AccountId: id,
-				Enabled:   x["enabled"].(bool),
-				GroupIds:  ListToStringSlice(x["group_ids"].([]interface{})),
-				Name:      x["name"].(string),
+				AccountId:      x["account_id"].(string),
+				Enabled:        x["enabled"].(bool),
+				GroupIds:       ListToStringSlice(x["group_ids"].([]interface{})),
+				Name:           x["name"].(string),
+				ProtectionMode: x["protection_mode"].(string),
+				AccountType:    x["account_type"].(string),
 			},
 			CompressionEnabled:     x["compression_enabled"].(bool),
 			DataflowEnabledProject: x["dataflow_enabled_project"].(string),
@@ -329,7 +372,7 @@ func parseCloudAccount(d *schema.ResourceData, id string) (string, string, inter
 		}
 	} else if x := ResourceDataInterfaceMap(d, account.TypeAlibaba); len(x) != 0 {
 		return account.TypeAlibaba, x["name"].(string), account.Alibaba{
-			AccountId: id,
+			AccountId: x["account_id"].(string),
 			GroupIds:  ListToStringSlice(x["group_ids"].([]interface{})),
 			Name:      x["name"].(string),
 			RamArn:    x["ram_arn"].(string),
@@ -346,12 +389,14 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 	switch v := obj.(type) {
 	case account.Aws:
 		val = map[string]interface{}{
-			"account_id":  v.AccountId,
-			"enabled":     v.Enabled,
-			"external_id": v.ExternalId,
-			"group_ids":   v.GroupIds,
-			"name":        v.Name,
-			"role_arn":    v.RoleArn,
+			"account_id":      v.AccountId,
+			"enabled":         v.Enabled,
+			"external_id":     v.ExternalId,
+			"group_ids":       v.GroupIds,
+			"name":            v.Name,
+			"role_arn":        v.RoleArn,
+			"protection_mode": v.ProtectionMode,
+			"account_type":    v.AccountType,
 		}
 	case account.Azure:
 		val = map[string]interface{}{
@@ -364,6 +409,8 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"monitor_flow_logs":    v.MonitorFlowLogs,
 			"tenant_id":            v.TenantId,
 			"service_principal_id": v.ServicePrincipalId,
+			"protection_mode":      v.Account.ProtectionMode,
+			"account_type":         v.Account.AccountType,
 		}
 	case account.Gcp:
 		b, _ := json.Marshal(v.Credentials)
@@ -376,6 +423,8 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"dataflow_enabled_project": v.DataflowEnabledProject,
 			"flow_log_storage_bucket":  v.FlowLogStorageBucket,
 			"credentials_json":         string(b),
+			"protection_mode":          v.Account.ProtectionMode,
+			"account_type":             v.Account.AccountType,
 		}
 	case account.Alibaba:
 		val = map[string]interface{}{
@@ -401,7 +450,7 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 
 func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
-	cloudType, name, obj := parseCloudAccount(d, "")
+	cloudType, name, obj := parseCloudAccount(d)
 
 	if err := account.Create(client, obj); err != nil {
 		return err
@@ -437,8 +486,7 @@ func readCloudAccount(d *schema.ResourceData, meta interface{}) error {
 func updateCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 
-	_, id := IdToTwoStrings(d.Id())
-	_, _, obj := parseCloudAccount(d, id)
+	_, _, obj := parseCloudAccount(d)
 
 	if err := account.Update(client, obj); err != nil {
 		return err
