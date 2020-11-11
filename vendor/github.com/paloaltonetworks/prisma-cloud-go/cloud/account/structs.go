@@ -34,19 +34,23 @@ type Group struct {
 }
 
 type Aws struct {
-	AccountId  string   `json:"accountId"`
-	Enabled    bool     `json:"enabled"`
-	ExternalId string   `json:"externalId"`
-	GroupIds   []string `json:"groupIds"`
-	Name       string   `json:"name"`
-	RoleArn    string   `json:"roleArn"`
+	AccountId      string   `json:"accountId"`
+	Enabled        bool     `json:"enabled"`
+	ExternalId     string   `json:"externalId"`
+	GroupIds       []string `json:"groupIds"`
+	Name           string   `json:"name"`
+	RoleArn        string   `json:"roleArn"`
+	ProtectionMode string   `json:"protectionMode"`
+	AccountType    string   `json:"accountType"`
 }
 
 type CloudAccount struct {
-	AccountId string   `json:"accountId"`
-	Enabled   bool     `json:"enabled"`
-	GroupIds  []string `json:"groupIds"`
-	Name      string   `json:"name"`
+	AccountId      string   `json:"accountId"`
+	Enabled        bool     `json:"enabled"`
+	GroupIds       []string `json:"groupIds"`
+	Name           string   `json:"name"`
+	ProtectionMode string   `json:"protectionMode"`
+	AccountType    string   `json:"accountType"`
 }
 
 type Azure struct {
