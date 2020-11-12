@@ -69,13 +69,15 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `alibaba_cloud` - Alibaba account type spec, defined [below](#alibaba-cloud).
 
 ### AWS
-
+-> AWS Org support is not available yet
 * `account_id` - (Required) AWS account ID.
-* `enabled` - (Optional, bool) Whether or not the account is enabled (defualt: `true`).
+* `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
 * `external_id` - (Required) AWS account external ID.
 * `group_ids` - (Required) List of account IDs to which you are assigning this account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `role_arn` - (Required) Unique identifier for an AWS resource (ARN).
+* `account_type` - (Optional) Defaults to "account" if not specified
+* `protection_mode` - (Optional) Defaults to "MONITOR"
 
 ### Azure
 
@@ -88,10 +90,12 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `monitor_flow_logs` - (Optional, bool) Automatically ingest flow logs.
 * `tenant_id` - (Required) Active Directory ID associated with Azure.
 * `service_principal_id` - (Required) Unique ID of the service principal object associated with the Prisma Cloud application that you create.
+* `account_type` - (Optional) Defaults to "account" if not specified
+* `protection_mode` - (Optional) Defaults to "MONITOR"
 
 ### GCP
-
-* `account_id` - (Required) GCP account ID.
+->GCP Org support is not available yet 
+* `account_id` - (Required) GCP project ID.
 * `enabled` - (Optional, bool) Whether or not the account is enabled (defualt: `true`).
 * `group_ids` - (Required) List of account IDs to which you are assigning this account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
@@ -99,6 +103,8 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `data_flow_enabled_project` - (Optional) GCP project for flow log compression.
 * `flow_log_storage_bucket` - (Optional) GCP Flow logs storage bucket.
 * `credentials_json` - (Required) Content of the JSON credentials file (read in using `file()`).
+* `account_type` - (Optional) Defaults to "account" if not specified
+* `protection_mode` - (Optional) Defaults to "MONITOR"
 
 ### Alibaba Cloud
 
