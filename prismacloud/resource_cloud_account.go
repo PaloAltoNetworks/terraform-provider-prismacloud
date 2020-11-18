@@ -139,6 +139,7 @@ func resourceCloudAccount() *schema.Resource {
 							Type:        schema.TypeString,
 							Required:    true,
 							Description: "Application ID key",
+							Sensitive:   true,
 						},
 						"monitor_flow_logs": {
 							Type:        schema.TypeBool,
