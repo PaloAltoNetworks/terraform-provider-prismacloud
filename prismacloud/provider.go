@@ -152,6 +152,12 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		return nil, fmt.Errorf("This provider requires a 64bit OS")
 	}
 
+	logSetting := make(map[string]bool)
+	logConfig := d.Get("logging").(map[string]interface{})
+	for key := range logConfig {
+		logSetting[key] = logConfig[key].(bool)
+	}
+
 	con := &pc.Client{
 		Url:                     d.Get("url").(string),
 		Username:                d.Get("username").(string),
@@ -163,6 +169,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		SkipSslCertVerification: d.Get("skip_ssl_cert_verification").(bool),
 		DisableReconnect:        d.Get("disable_reconnect").(bool),
 		JsonWebToken:            d.Get("json_web_token").(string),
+		Logging:                 logSetting,
 	}
 
 	err := con.Initialize(d.Get("json_config_file").(string))
