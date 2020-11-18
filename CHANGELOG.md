@@ -1,3 +1,8 @@
+## 1.0.7 (November 18, 2020)
+
+* Fixed notification config in alert rules
+* Fixed provider logging setting
+
 ## 1.0.6 (November 12, 2020)
 
 * Documentation fixes
