@@ -1,3 +1,7 @@
+## 1.0.8 (November 18, 2020)
+
+* Fixed azure key to sensitive
+
 ## 1.0.7 (November 18, 2020)
 
 * Fixed notification config in alert rules
