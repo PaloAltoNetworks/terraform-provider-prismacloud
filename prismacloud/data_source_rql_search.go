@@ -77,54 +77,54 @@ func dataSourceRqlSearch() *schema.Resource {
 				Computed:    true,
 				Description: "The description",
 			},
-            "config_data": {
-                Type: schema.TypeList,
-                Computed: true,
-                Description: "List of config data structs",
-                Elem: &schema.Resource{
-                    Schema: map[string] *schema.Schema{
-                        "state_id": {
-                            Type: schema.TypeString,
-                            Computed: true,
-                            Description: "The state ID",
-                        },
-                        "name": {
-                            Type: schema.TypeString,
-                            Computed: true,
-                            Description: "Name",
-                        },
-                        "url": {
-                            Type: schema.TypeString,
-                            Computed: true,
-                            Description: "The URL",
-                        },
-                    },
-                },
-            },
-            "event_data": {
-                Type: schema.TypeList,
-                Computed: true,
-                Description: "List of event data structs",
-                Elem: &schema.Resource{
-                    Schema: map[string] *schema.Schema{
-                        "account": {
-                            Type: schema.TypeString,
-                            Computed: true,
-                            Description: "Account",
-                        },
-                        "region_id": {
-                            Type: schema.TypeInt,
-                            Computed: true,
-                            Description: "Region ID",
-                        },
-                        "region_api_identifier": {
-                            Type: schema.TypeString,
-                            Computed: true,
-                            Description: "Region API identifier",
-                        },
-                    },
-                },
-            },
+			"config_data": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "List of config data structs",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"state_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "The state ID",
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Name",
+						},
+						"url": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "The URL",
+						},
+					},
+				},
+			},
+			"event_data": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "List of event data structs",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Account",
+						},
+						"region_id": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Region ID",
+						},
+						"region_api_identifier": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Region API identifier",
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -161,24 +161,24 @@ func dataSourceRqlSearchRead(d *schema.ResourceData, meta interface{}) error {
 		d.Set("cloud_type", resp.CloudType)
 		d.Set("name", resp.Name)
 		d.Set("description", resp.Description)
-        d.Set("event_data", nil)
+		d.Set("event_data", nil)
 
-        if len(resp.Data.Items) == 0 {
-            d.Set("config_data", nil)
-        } else {
-            list := make([]interface{}, 0, len(resp.Data.Items))
-            for _, x := range resp.Data.Items {
-                list = append(list, map[string] interface{}{
-                    "state_id": x.StateId,
-                    "name": x.Name,
-                    "url": x.Url,
-                })
-            }
+		if len(resp.Data.Items) == 0 {
+			d.Set("config_data", nil)
+		} else {
+			list := make([]interface{}, 0, len(resp.Data.Items))
+			for _, x := range resp.Data.Items {
+				list = append(list, map[string]interface{}{
+					"state_id": x.StateId,
+					"name":     x.Name,
+					"url":      x.Url,
+				})
+			}
 
-            if err = d.Set("config_data", list); err != nil {
-                log.Printf("[WARN] Error setting 'config_data' for %q: %s", d.Id(), err)
-            }
-        }
+			if err = d.Set("config_data", list); err != nil {
+				log.Printf("[WARN] Error setting 'config_data' for %q: %s", d.Id(), err)
+			}
+		}
 	case "network":
 		req := search.NetworkRequest{
 			Query:     query,
@@ -199,8 +199,8 @@ func dataSourceRqlSearchRead(d *schema.ResourceData, meta interface{}) error {
 		d.Set("cloud_type", resp.CloudType)
 		d.Set("name", resp.Name)
 		d.Set("description", resp.Description)
-        d.Set("config_data", nil)
-        d.Set("event_data", nil)
+		d.Set("config_data", nil)
+		d.Set("event_data", nil)
 	case "event":
 		req := search.EventRequest{
 			Query:     query,
@@ -221,24 +221,24 @@ func dataSourceRqlSearchRead(d *schema.ResourceData, meta interface{}) error {
 		d.Set("cloud_type", resp.CloudType)
 		d.Set("name", resp.Name)
 		d.Set("description", resp.Description)
-        d.Set("config_data", nil)
+		d.Set("config_data", nil)
 
-        if len(resp.Data.Items) == 0 {
-            d.Set("event_data", nil)
-        } else {
-            list := make([]interface{}, 0, len(resp.Data.Items))
-            for _, x := range resp.Data.Items {
-                list = append(list, map[string] interface{}{
-                    "account": x.Account,
-                    "region_id": x.RegionId,
-                    "region_api_identifier": x.RegionApiIdentifier,
-                })
-            }
+		if len(resp.Data.Items) == 0 {
+			d.Set("event_data", nil)
+		} else {
+			list := make([]interface{}, 0, len(resp.Data.Items))
+			for _, x := range resp.Data.Items {
+				list = append(list, map[string]interface{}{
+					"account":               x.Account,
+					"region_id":             x.RegionId,
+					"region_api_identifier": x.RegionApiIdentifier,
+				})
+			}
 
-            if err = d.Set("event_data", list); err != nil {
-                log.Printf("[WARN] Error setting 'event_data' for %q: %s", d.Id(), err)
-            }
-        }
+			if err = d.Set("event_data", list); err != nil {
+				log.Printf("[WARN] Error setting 'event_data' for %q: %s", d.Id(), err)
+			}
+		}
 	}
 
 	return nil
