@@ -5,7 +5,6 @@ import (
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/alert"
-	"github.com/paloaltonetworks/prisma-cloud-go/timerange"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -119,25 +118,9 @@ func dataSourceAlerts() *schema.Resource {
 
 func parseAlertsRequest(d *schema.ResourceData) *alert.Request {
 	ans := alert.Request{
-		Limit:  d.Get("limit").(int),
-		SortBy: ListToStringSlice(d.Get("sort_by").([]interface{})),
-	}
-
-	tr := ResourceDataInterfaceMap(d, "time_range")
-	if atr := ToInterfaceMap(tr, "absolute"); len(atr) != 0 {
-		ans.TimeRange.Value = timerange.Absolute{
-			Start: atr["start"].(int),
-			End:   atr["end"].(int),
-		}
-	} else if rtr := ToInterfaceMap(tr, "relative"); len(rtr) != 0 {
-		ans.TimeRange.Value = timerange.Relative{
-			Amount: rtr["amount"].(int),
-			Unit:   rtr["unit"].(string),
-		}
-	} else if tntr := ToInterfaceMap(tr, "to_now"); len(tntr) != 0 {
-		ans.TimeRange.Value = timerange.ToNow{
-			Unit: tntr["unit"].(string),
-		}
+		Limit:     d.Get("limit").(int),
+		SortBy:    ListToStringSlice(d.Get("sort_by").([]interface{})),
+		TimeRange: ParseTimeRange(ResourceDataInterfaceMap(d, "time_range")),
 	}
 
 	filters := d.Get("filters").([]interface{})
