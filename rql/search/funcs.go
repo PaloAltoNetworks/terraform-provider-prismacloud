@@ -26,7 +26,7 @@ func ConfigSearch(c pc.PrismaCloudClient, req ConfigRequest) (ConfigResponse, er
 	return resp, err
 }
 
-// ConfigSearch performs a config RQL search.
+// EventSearch performs a config RQL search.
 func EventSearch(c pc.PrismaCloudClient, req EventRequest) (EventResponse, error) {
 	c.Log(pc.LogAction, "(get) performing %s", eventSingular)
 
@@ -45,7 +45,7 @@ func EventSearch(c pc.PrismaCloudClient, req EventRequest) (EventResponse, error
 	return resp, err
 }
 
-// ConfigSearch performs a config RQL search.
+// NetworkSearch performs a config RQL search.
 func NetworkSearch(c pc.PrismaCloudClient, req NetworkRequest) (NetworkResponse, error) {
 	c.Log(pc.LogAction, "(get) performing %s", networkSingular)
 
@@ -58,7 +58,7 @@ func NetworkSearch(c pc.PrismaCloudClient, req NetworkRequest) (NetworkResponse,
 
 	path := make([]string, 0, len(BaseSuffix)+len(NetworkSuffix))
 	path = append(path, BaseSuffix...)
-	path = append(path, ConfigSuffix...)
+	path = append(path, NetworkSuffix...)
 
 	_, err := c.Communicate("POST", path, nil, req, &resp)
 	return resp, err
