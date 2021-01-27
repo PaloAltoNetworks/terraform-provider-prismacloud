@@ -5,6 +5,7 @@ import (
 )
 
 type ConfigRequest struct {
+	Id               string              `json:"id,omitempty"`
 	TimeRange        timerange.TimeRange `json:"timeRange"`
 	Query            string              `json:"query"`
 	Limit            int                 `json:"limit,omitempty"`
@@ -51,6 +52,7 @@ type ConfigItem struct {
 }
 
 type EventRequest struct {
+	Id               string              `json:"id,omitempty"`
 	TimeRange        timerange.TimeRange `json:"timeRange"`
 	Query            string              `json:"query"`
 	Limit            int                 `json:"limit,omitempty"`
@@ -105,6 +107,7 @@ type EventItem struct {
 }
 
 type NetworkRequest struct {
+	Id               string              `json:"id,omitempty"`
 	TimeRange        timerange.TimeRange `json:"timeRange"`
 	Query            string              `json:"query"`
 	Limit            int                 `json:"limit,omitempty"`
