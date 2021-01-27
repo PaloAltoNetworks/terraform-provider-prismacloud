@@ -1,6 +1,8 @@
 package prismacloud
 
 import (
+	"bytes"
+	"encoding/base64"
 	"strings"
 
 	"github.com/paloaltonetworks/prisma-cloud-go/timerange"
@@ -99,4 +101,26 @@ func ParseTimeRange(tr map[string]interface{}) timerange.TimeRange {
 	}
 
 	return timerange.TimeRange{}
+}
+
+func Base64Encode(v []interface{}) string {
+	var buf bytes.Buffer
+
+	for i := range v {
+		if i != 0 {
+			buf.WriteString("\n")
+		}
+		buf.WriteString(v[i].(string))
+	}
+
+	return base64.StdEncoding.EncodeToString(buf.Bytes())
+}
+
+func Base64Decode(v string) []string {
+	joined, err := base64.StdEncoding.DecodeString(v)
+	if err != nil {
+		return nil
+	}
+
+	return strings.Split(string(joined), "\n")
 }
