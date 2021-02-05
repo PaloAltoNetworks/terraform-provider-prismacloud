@@ -2,7 +2,6 @@ package prismacloud
 
 import (
 	"log"
-	"strings"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/rql/search"

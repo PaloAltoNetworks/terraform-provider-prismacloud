@@ -143,6 +143,9 @@ func timeRangeSchema(style string) *schema.Schema {
 		model.Schema["to_now"].Computed = true
 		to_now_resource.Schema["unit"].Computed = true
 		to_now_resource.Schema["unit"].ValidateFunc = nil
+	case "resource_saved_search":
+		ans.ForceNew = true
+		fallthrough
 	default:
 		ans.Required = true
 
