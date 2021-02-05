@@ -1,8 +1,5 @@
 ---
-layout: "prismacloud"
 page_title: "Provider: prismacloud"
-description: |-
-  Provider prismacloud is used to interact with Palo Alto Networks Prisma Cloud platform.
 ---
 
 # Provider prismacloud
