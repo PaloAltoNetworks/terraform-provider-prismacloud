@@ -18,6 +18,11 @@ func totalSchema(desc string) *schema.Schema {
 	}
 }
 
+/*
+This function may need to be revisited..  Not happy with the "style" param
+and it makes an assumption that the param this time range is being saved to
+is `time_range`.
+*/
 func timeRangeSchema(style string) *schema.Schema {
 	absolute_resource := &schema.Resource{
 		Schema: map[string]*schema.Schema{
@@ -122,20 +127,6 @@ func timeRangeSchema(style string) *schema.Schema {
 	}
 
 	switch style {
-	case "data_source_alerts":
-		ans.Required = true
-
-		model.Schema["absolute"].Optional = true
-		absolute_resource.Schema["start"].Required = true
-		absolute_resource.Schema["end"].Required = true
-
-		model.Schema["relative"].Optional = true
-		relative_resource.Schema["amount"].Required = true
-		relative_resource.Schema["unit"].Required = true
-		delete(relative_resource.Schema, "relative_time_type")
-
-		model.Schema["to_now"].Optional = true
-		to_now_resource.Schema["unit"].Required = true
 	case "data_source_rql_historic_search":
 		ans.Computed = true
 
@@ -152,6 +143,23 @@ func timeRangeSchema(style string) *schema.Schema {
 		model.Schema["to_now"].Computed = true
 		to_now_resource.Schema["unit"].Computed = true
 		to_now_resource.Schema["unit"].ValidateFunc = nil
+	case "resource_saved_search":
+		ans.ForceNew = true
+		fallthrough
+	default:
+		ans.Required = true
+
+		model.Schema["absolute"].Optional = true
+		absolute_resource.Schema["start"].Required = true
+		absolute_resource.Schema["end"].Required = true
+
+		model.Schema["relative"].Optional = true
+		relative_resource.Schema["amount"].Required = true
+		relative_resource.Schema["unit"].Required = true
+		delete(relative_resource.Schema, "relative_time_type")
+
+		model.Schema["to_now"].Optional = true
+		to_now_resource.Schema["unit"].Required = true
 	}
 
 	return ans
