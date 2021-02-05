@@ -31,8 +31,30 @@ The following arguments are supported:
 * `search_type` - (Required) The search type.  Valid values are `config`
   (default) and `event`.
 * `query` - (Required) The RQL query.
-* `time_range` - (Required) The time range spec, as defined below.
 * `limit` - (int) Limit rules (default: `10`).
+* `time_range` - (Required) The RQL time range spec, as defined [below](#time-range).
+
+### Time Range
+
+Only one of these can be defined:
+
+* `absolute` - An absolute time range spec, as defined [below](#absolute-time-range).
+* `relative` - A relative time range spec, as defined [below](#relative-time-range).
+* `to_now` - A "To Now" time range spec, as defined [below](#to-now-time-range).
+
+### Absolute Time Range
+
+* `start` - (Required, int) Start time.
+* `end` - (Required, int) End time.
+
+### Relative Time Range
+
+* `amount` - (Required, int) The time number.
+* `unit` - (Required) The time unit.
+
+### To Now Time Range
+
+* `unit` - (Required) The time unit.
 
 ## Attribute Reference
 
