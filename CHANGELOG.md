@@ -1,3 +1,10 @@
+## 1.1.0 (February 5, 2021)
+
+NEW RESOURCES:
+
+* `prismacloud_rql_search`
+* `prismacloud_saved_search`
+
 ## 1.0.8 (November 18, 2020)
 
 * Fixed azure key to sensitive
