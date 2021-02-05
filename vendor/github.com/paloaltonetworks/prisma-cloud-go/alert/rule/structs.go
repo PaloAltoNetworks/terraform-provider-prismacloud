@@ -49,7 +49,7 @@ type NotificationConfig struct {
 	LastUpdated        int      `json:"lastUpdated"`
 	LastSentTs         int      `json:"last_send_ts"`
 	Type               string   `json:"type"`
-	TemplateId         string   `json:"templateId"`
+	TemplateId         string   `json:"templateId,omitempty"`
 	Timezone           Timezone `json:"timezone"`
 	DayOfMonth         int      `json:"dayOfMonth"`
 	RruleSchedule      string   `json:"rruleSchedule"`
