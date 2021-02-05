@@ -20,12 +20,18 @@ func resourceRqlSearch() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			// Input.
 			"search_type": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				Description:  "The search type",
-				Default:      "config",
-				ValidateFunc: validation.StringInSlice([]string{"config", "network", "event"}, false),
-				ForceNew:     true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The search type",
+				Default:     "config",
+				ValidateFunc: validation.StringInSlice([]string{
+					"config",
+					// Remove "network" as an option until the network return structure
+					// is added to the prisma-cloud-go library.
+					//"network",
+					"event",
+				}, false),
+				ForceNew: true,
 			},
 			"query": {
 				Type:        schema.TypeString,
