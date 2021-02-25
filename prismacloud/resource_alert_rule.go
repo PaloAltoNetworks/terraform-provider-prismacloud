@@ -360,7 +360,7 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 			tmap := item.(map[string]interface{})
 			tags = append(tags, rule.Tag{
 				Key:    tmap["key"].(string),
-				Values: ListToStringSlice(tmap["key"].([]interface{})),
+				Values: ListToStringSlice(tmap["values"].([]interface{})),
 			})
 		}
 	}
