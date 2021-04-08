@@ -349,10 +349,20 @@ func createIntegration(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
+	PollApiUntilSuccess(func() error {
+		_, err := integration.Identify(client, o.Name)
+		return err
+	})
+
 	id, err := integration.Identify(client, o.Name)
 	if err != nil {
 		return err
 	}
+
+	PollApiUntilSuccess(func() error {
+		_, err := integration.Get(client, id)
+		return err
+	})
 
 	d.SetId(id)
 	return readIntegration(d, meta)

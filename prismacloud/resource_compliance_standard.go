@@ -111,10 +111,20 @@ func createComplianceStandard(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
+	PollApiUntilSuccess(func() error {
+		_, err := standard.Identify(client, o.Name)
+		return err
+	})
+
 	csId, err := standard.Identify(client, o.Name)
 	if err != nil {
 		return err
 	}
+
+	PollApiUntilSuccess(func() error {
+		_, err := standard.Get(client, csId)
+		return err
+	})
 
 	d.SetId(csId)
 	return readComplianceStandard(d, meta)

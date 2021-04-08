@@ -155,10 +155,20 @@ func createUserRole(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
+	PollApiUntilSuccess(func() error {
+		_, err := role.Identify(client, obj.Name)
+		return err
+	})
+
 	id, err := role.Identify(client, obj.Name)
 	if err != nil {
 		return err
 	}
+
+	PollApiUntilSuccess(func() error {
+		_, err := role.Get(client, id)
+		return err
+	})
 
 	d.SetId(id)
 	return readUserRole(d, meta)

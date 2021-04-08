@@ -125,10 +125,20 @@ func createComplianceStandardRequirement(d *schema.ResourceData, meta interface{
 		return err
 	}
 
+	PollApiUntilSuccess(func() error {
+		_, err := requirement.Identify(client, o.ComplianceId, o.Name)
+		return err
+	})
+
 	csrId, err := requirement.Identify(client, o.ComplianceId, o.Name)
 	if err != nil {
 		return err
 	}
+
+	PollApiUntilSuccess(func() error {
+		_, err := requirement.Get(client, csrId)
+		return err
+	})
 
 	d.SetId(TwoStringsToId(o.ComplianceId, csrId))
 	return readComplianceStandardRequirement(d, meta)

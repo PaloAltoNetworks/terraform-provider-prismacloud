@@ -160,10 +160,20 @@ func createAccountGroup(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
+	PollApiUntilSuccess(func() error {
+		_, err := group.Identify(client, obj.Name)
+		return err
+	})
+
 	id, err := group.Identify(client, obj.Name)
 	if err != nil {
 		return err
 	}
+
+	PollApiUntilSuccess(func() error {
+		_, err := group.Get(client, id)
+		return err
+	})
 
 	d.SetId(id)
 	return readAccountGroup(d, meta)

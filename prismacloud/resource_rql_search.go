@@ -153,6 +153,17 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 
+		PollApiUntilSuccess(func() error {
+			r := search.ConfigRequest{
+				Id:        resp.Id,
+				Query:     query,
+				Limit:     limit,
+				TimeRange: tr,
+			}
+			_, err := search.ConfigSearch(client, r)
+			return err
+		})
+
 		id = buildRqlSearchId(searchType, query, resp.Id)
 	case "network":
 		req := search.NetworkRequest{
@@ -166,6 +177,17 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 
+		PollApiUntilSuccess(func() error {
+			r := search.NetworkRequest{
+				Id:        resp.Id,
+				Query:     query,
+				Limit:     limit,
+				TimeRange: tr,
+			}
+			_, err := search.NetworkSearch(client, r)
+			return err
+		})
+
 		id = buildRqlSearchId(searchType, query, resp.Id)
 	case "event":
 		req := search.EventRequest{
@@ -178,6 +200,17 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		if err != nil {
 			return err
 		}
+
+		PollApiUntilSuccess(func() error {
+			r := search.EventRequest{
+				Id:        resp.Id,
+				Query:     query,
+				Limit:     limit,
+				TimeRange: tr,
+			}
+			_, err := search.EventSearch(client, r)
+			return err
+		})
 
 		id = buildRqlSearchId(searchType, query, resp.Id)
 	}

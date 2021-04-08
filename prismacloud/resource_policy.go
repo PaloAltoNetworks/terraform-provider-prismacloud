@@ -526,10 +526,20 @@ func createPolicy(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
+	PollApiUntilSuccess(func() error {
+		_, err := policy.Identify(client, obj.Name)
+		return err
+	})
+
 	id, err := policy.Identify(client, obj.Name)
 	if err != nil {
 		return err
 	}
+
+	PollApiUntilSuccess(func() error {
+		_, err := policy.Get(client, id)
+		return err
+	})
 
 	d.SetId(id)
 	return readPolicy(d, meta)

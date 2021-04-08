@@ -145,10 +145,20 @@ func createComplianceStandardRequirementSection(d *schema.ResourceData, meta int
 		return err
 	}
 
+	PollApiUntilSuccess(func() error {
+		_, err := section.Get(client, o.RequirementId, o.SectionId)
+		return err
+	})
+
 	liveObj, err := section.Get(client, o.RequirementId, o.SectionId)
 	if err != nil {
 		return err
 	}
+
+	PollApiUntilSuccess(func() error {
+		_, err := section.GetId(client, o.RequirementId, liveObj.Id)
+		return err
+	})
 
 	d.SetId(TwoStringsToId(o.RequirementId, liveObj.Id))
 	return readComplianceStandardRequirementSection(d, meta)

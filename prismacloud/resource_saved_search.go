@@ -66,6 +66,11 @@ func createSavedSearch(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
+	PollApiUntilSuccess(func() error {
+		_, err := history.Get(client, req.Id)
+		return err
+	})
+
 	d.SetId(req.Id)
 
 	return readSavedSearch(d, meta)
