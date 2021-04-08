@@ -5,6 +5,6 @@ require (
 	github.com/paloaltonetworks/prisma-cloud-go v0.4.0
 )
 
-//replace github.com/paloaltonetworks/prisma-cloud-go => ../prisma-cloud-go
+replace github.com/paloaltonetworks/prisma-cloud-go => ../prisma-cloud-go
 
 go 1.13
