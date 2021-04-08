@@ -20,3 +20,13 @@ type Query struct {
 	Saved       bool                `json:"saved"`
 	TimeRange   timerange.TimeRange `json:"timeRange"`
 }
+
+// SavedSearch is to create a saved search.  Always have Saved as false.
+type SavedSearch struct {
+	Name        string              `json:"name"`
+	Id          string              `json:"id"`
+	TimeRange   timerange.TimeRange `json:"timeRange"`
+	Query       string              `json:"query"`
+	Saved       bool                `json:"saved"`
+	Description string              `json:"description,omitempty"`
+}
