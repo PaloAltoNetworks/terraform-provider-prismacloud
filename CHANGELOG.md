@@ -1,3 +1,7 @@
+## 1.1.1 (April 9, 2021)
+
+* Added new poller to handle master/replica delays in API
+
 ## 1.1.0 (February 5, 2021)
 
 NEW RESOURCES:
