@@ -1,3 +1,7 @@
+## 1.1.2 (April 19, 2021)
+
+* Fixed self ref policy id in compliance section of policy
+
 ## 1.1.1 (April 9, 2021)
 
 * Added new poller to handle master/replica delays in API
