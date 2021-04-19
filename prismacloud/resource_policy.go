@@ -312,7 +312,7 @@ func resourcePolicy() *schema.Resource {
 						},
 						"policy_id": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Policy ID",
 						},
 						"compliance_id": {
@@ -400,7 +400,7 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 			RequirementDescription: cmd["requirement_description"].(string),
 			SectionId:              cmd["section_id"].(string),
 			SectionDescription:     cmd["section_description"].(string),
-			PolicyId:               cmd["policy_id"].(string),
+			PolicyId:               id,
 			ComplianceId:           cmd["compliance_id"].(string),
 			SectionLabel:           cmd["section_label"].(string),
 			CustomAssigned:         cmd["custom_assigned"].(bool),
