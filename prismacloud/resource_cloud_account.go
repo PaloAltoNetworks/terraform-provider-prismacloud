@@ -89,6 +89,18 @@ func resourceCloudAccount() *schema.Resource {
 							Default:     "MONITOR",
 							Description: "Monitor or Monitor and Protect",
 						},
+						"disable_on_destroy": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "To off-board an account",
+							Default:     false,
+						},
+						"update_on_create": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "If true and the account already exists, the account will be updated rather than failing on the initial creation of this resource",
+							Default:     false,
+						},
 					},
 				},
 			},
@@ -169,6 +181,18 @@ func resourceCloudAccount() *schema.Resource {
 							Description: "Monitor or Monitor and Protect",
 							ForceNew:    true,
 						},
+						"disable_on_destroy": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "To off-board an account",
+							Default:     false,
+						},
+						"update_on_create": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "If true and the account already exists, the account will be updated rather than failing on the initial creation of this resource",
+							Default:     false,
+						},
 					},
 				},
 			},
@@ -246,6 +270,18 @@ func resourceCloudAccount() *schema.Resource {
 							Default:     "MONITOR",
 							Description: "Monitor or Monitor and Protect",
 						},
+						"disable_on_destroy": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "To off-board an account",
+							Default:     false,
+						},
+						"update_on_create": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "If true and the account already exists, the account will be updated rather than failing on the initial creation of this resource",
+							Default:     false,
+						},
 					},
 				},
 			},
@@ -292,6 +328,18 @@ func resourceCloudAccount() *schema.Resource {
 							Description: "Whether or not the account is enabled",
 							Default:     true,
 						},
+						"disable_on_destroy": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "To off-board an account",
+							Default:     false,
+						},
+						"update_on_create": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "If true and the account already exists, the account will be updated rather than failing on the initial creation of this resource",
+							Default:     false,
+						},
 					},
 				},
 			},
@@ -328,14 +376,14 @@ func gcpCredentialsMatch(k, old, new string, d *schema.ResourceData) bool {
 func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 	if x := ResourceDataInterfaceMap(d, account.TypeAws); len(x) != 0 {
 		return account.TypeAws, x["name"].(string), account.Aws{
-			AccountId:      x["account_id"].(string),
-			Enabled:        x["enabled"].(bool),
-			ExternalId:     x["external_id"].(string),
-			GroupIds:       ListToStringSlice(x["group_ids"].([]interface{})),
-			Name:           x["name"].(string),
-			RoleArn:        x["role_arn"].(string),
-			ProtectionMode: x["protection_mode"].(string),
-			AccountType:    x["account_type"].(string),
+			AccountId:        x["account_id"].(string),
+			Enabled:          x["enabled"].(bool),
+			ExternalId:       x["external_id"].(string),
+			GroupIds:         ListToStringSlice(x["group_ids"].([]interface{})),
+			Name:             x["name"].(string),
+			RoleArn:          x["role_arn"].(string),
+			ProtectionMode:   x["protection_mode"].(string),
+			AccountType:      x["account_type"].(string),
 		}
 	} else if x := ResourceDataInterfaceMap(d, account.TypeAzure); len(x) != 0 {
 		return account.TypeAzure, x["name"].(string), account.Azure{
@@ -373,32 +421,34 @@ func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 		}
 	} else if x := ResourceDataInterfaceMap(d, account.TypeAlibaba); len(x) != 0 {
 		return account.TypeAlibaba, x["name"].(string), account.Alibaba{
-			AccountId: x["account_id"].(string),
-			GroupIds:  ListToStringSlice(x["group_ids"].([]interface{})),
-			Name:      x["name"].(string),
-			RamArn:    x["ram_arn"].(string),
-			Enabled:   x["enabled"].(bool),
+			AccountId:        x["account_id"].(string),
+			GroupIds:         ListToStringSlice(x["group_ids"].([]interface{})),
+			Name:             x["name"].(string),
+			RamArn:           x["ram_arn"].(string),
+			Enabled:          x["enabled"].(bool),
 		}
 	}
-
 	return "", "", nil
 }
 
 func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 	var val map[string]interface{}
-
+	disable := d.Get("disable_on_destroy")
+	log.Printf("[DEBUG] disable_on_destroy is ", disable)
 	switch v := obj.(type) {
 	case account.Aws:
 		val = map[string]interface{}{
-			"account_id":      v.AccountId,
-			"enabled":         v.Enabled,
-			"external_id":     v.ExternalId,
-			"group_ids":       v.GroupIds,
-			"name":            v.Name,
-			"role_arn":        v.RoleArn,
-			"protection_mode": v.ProtectionMode,
-			"account_type":    v.AccountType,
+			"account_id":         v.AccountId,
+			"enabled":            v.Enabled,
+			"external_id":        v.ExternalId,
+			"group_ids":          v.GroupIds,
+			"name":               v.Name,
+			"role_arn":           v.RoleArn,
+			"protection_mode":    v.ProtectionMode,
+			"account_type":       v.AccountType,
 		}
+		val["disable_on_destroy"] = ResourceDataInterfaceMap(d,account.TypeAws)["disable_on_destroy"]
+		val["update_on_create"] = ResourceDataInterfaceMap(d, account.TypeAws)["update_on_create"]
 	case account.Azure:
 		val = map[string]interface{}{
 			"account_id":           v.Account.AccountId,
@@ -413,6 +463,8 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"protection_mode":      v.Account.ProtectionMode,
 			"account_type":         v.Account.AccountType,
 		}
+		val["disable_on_destroy"] = ResourceDataInterfaceMap(d,account.TypeAzure)["disable_on_destroy"]
+		val["update_on_create"] = ResourceDataInterfaceMap(d, account.TypeAzure)["update_on_create"]
 	case account.Gcp:
 		b, _ := json.Marshal(v.Credentials)
 		val = map[string]interface{}{
@@ -427,14 +479,18 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"protection_mode":          v.Account.ProtectionMode,
 			"account_type":             v.Account.AccountType,
 		}
+		val["disable_on_destroy"] = ResourceDataInterfaceMap(d,account.TypeGcp)["disable_on_destroy"]
+		val["update_on_create"] = ResourceDataInterfaceMap(d, account.TypeGcp)["update_on_create"]
 	case account.Alibaba:
 		val = map[string]interface{}{
-			"account_id": v.AccountId,
-			"group_ids":  v.GroupIds,
-			"name":       v.Name,
-			"ram_arn":    v.RamArn,
-			"enabled":    v.Enabled,
+			"account_id":         v.AccountId,
+			"group_ids":          v.GroupIds,
+			"name":               v.Name,
+			"ram_arn":            v.RamArn,
+			"enabled":            v.Enabled,
 		}
+		val["disable_on_destroy"] = ResourceDataInterfaceMap(d,account.TypeAlibaba)["disable_on_destroy"]
+		val["update_on_create"] = ResourceDataInterfaceMap(d, account.TypeAlibaba)["update_on_create"]
 	}
 
 	for _, key := range []string{account.TypeAws, account.TypeAzure, account.TypeGcp, account.TypeAlibaba} {
@@ -452,16 +508,38 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	cloudType, name, obj := parseCloudAccount(d)
-
 	if err := account.Create(client, obj); err != nil {
-		return err
+		cloudAccountType := ""
+		switch cloudType {
+		case account.TypeAws:
+			cloudAccountType = "aws"
+		case account.TypeAzure:
+			cloudAccountType = "azure"
+		case account.TypeGcp:
+			cloudAccountType = "gcp"
+		case account.TypeAlibaba:
+			cloudAccountType = "alibaba_cloud"
+		}
+		duplicateError := pc.PrismaCloudErrorList{
+			Errors:     []pc.PrismaCloudError{{Message: "duplicate_cloud_account", Severity: "error", Subject: ""}},
+			Method:     "POST",
+			StatusCode: 400,
+			Path:       "https://" + client.Url + "/cloud/" + cloudAccountType,
+		}
+		updateIfExists := ResourceDataInterfaceMap(d, cloudType)["update_on_create"]
+		if updateIfExists == true && duplicateError.Error() == err.Error() {
+			if err0 := account.Update(client, obj); err0 != nil {
+				return err0
+			}
+		} else {
+			return err
+		}
 	}
 
 	PollApiUntilSuccess(func() error {
-		_, err := account.Identify(client, cloudType, name)
+		_, err 	:= account.Identify(client, cloudType, name)
 		return err
 	})
-
 	id, err := account.Identify(client, cloudType, name)
 	if err != nil {
 		return err
@@ -479,7 +557,6 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 func readCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
-
 	obj, err := account.Get(client, cloudType, id)
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
@@ -488,35 +565,56 @@ func readCloudAccount(d *schema.ResourceData, meta interface{}) error {
 		}
 		return err
 	}
-
 	saveCloudAccount(d, cloudType, obj)
-
 	return nil
 }
-
 func updateCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
-
 	_, _, obj := parseCloudAccount(d)
-
 	if err := account.Update(client, obj); err != nil {
 		return err
 	}
-
 	return readCloudAccount(d, meta)
 }
 
 func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
-
-	err := account.Delete(client, cloudType, id)
-	if err != nil {
-		if err != pc.ObjectNotFoundError {
+	_, _, obj := parseCloudAccount(d)
+	if cloudType == account.TypeAws && ResourceDataInterfaceMap(d, account.TypeAws)["disable_on_destroy"] == true {
+		accountType := obj.(account.Aws)
+		accountType.Enabled = false
+		if err := account.Update(client, accountType); err != nil{
 			return err
 		}
+	} else if cloudType == account.TypeAzure && ResourceDataInterfaceMap(d, account.TypeAzure)["disable_on_destroy"] == true {
+		accountType := obj.(account.Azure)
+		accountType.Account.Enabled = false
+		if err := account.Update(client, accountType); err != nil{
+			return err
+		}
+	} else if cloudType == account.TypeGcp && ResourceDataInterfaceMap(d, account.TypeGcp)["disable_on_destroy"] == true {
+		accountType := obj.(account.Gcp)
+		accountType.Account.Enabled = false
+		if err := account.Update(client, accountType); err != nil{
+			return err
+		}
+	} else if cloudType == account.TypeAlibaba && ResourceDataInterfaceMap(d, account.TypeAlibaba)["disable_on_destroy"] == true {
+		accountType := obj.(account.Alibaba)
+		accountType.Enabled = false
+		if err := account.Update(client, accountType); err != nil{
+			return err
+		}
+	} else {
+		err := account.Delete(client, cloudType, id)
+		if err != nil {
+			if err != pc.ObjectNotFoundError {
+				return err
+			}
+		}
+		d.SetId("")
+		return nil
 	}
 
-	d.SetId("")
 	return nil
 }
