@@ -375,7 +375,6 @@ func gcpCredentialsMatch(k, old, new string, d *schema.ResourceData) bool {
 
 func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 	if x := ResourceDataInterfaceMap(d, account.TypeAws); len(x) != 0 {
-
 		return account.TypeAws, x["name"].(string), account.Aws{
 			AccountId:      x["account_id"].(string),
 			Enabled:        x["enabled"].(bool),
@@ -463,10 +462,8 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 		}
 		val["disable_on_destroy"] = ResourceDataInterfaceMap(d, account.TypeAzure)["disable_on_destroy"]
 		val["update_on_create"] = ResourceDataInterfaceMap(d, account.TypeAzure)["update_on_create"]
-
 	case account.Gcp:
 		b, _ := json.Marshal(v.Credentials)
-		log.Printf("gcp in parse")
 		val = map[string]interface{}{
 			"account_id":               v.Account.AccountId,
 			"enabled":                  v.Account.Enabled,
@@ -506,8 +503,6 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 }
 
 func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
-	azurekey := ResourceDataInterfaceMap(d, account.TypeAzure)["key"].(string)
-	log.Printf("azure key %d", azurekey)
 	client := meta.(*pc.Client)
 	cloudType, name, obj := parseCloudAccount(d)
 	updateIfExists := true
@@ -565,7 +560,6 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 }
 
 func readCloudAccount(d *schema.ResourceData, meta interface{}) error {
-	log.Printf("read is called")
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
 	obj, err := account.Get(client, cloudType, id)
@@ -583,15 +577,11 @@ func readCloudAccount(d *schema.ResourceData, meta interface{}) error {
 }
 
 func updateCloudAccount(d *schema.ResourceData, meta interface{}) error {
-	log.Printf("update is called")
-	azurekey := ResourceDataInterfaceMap(d, account.TypeAzure)["key"].(string)
-	log.Printf("azure key %d", azurekey)
 	client := meta.(*pc.Client)
 	_, _, obj := parseCloudAccount(d)
 	if err := account.Update(client, obj); err != nil {
 		return err
 	}
-	log.Printf("update is done")
 	return readCloudAccount(d, meta)
 }
 
@@ -649,7 +639,5 @@ func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 	d.SetId("")
-	return nil
-
 	return nil
 }
