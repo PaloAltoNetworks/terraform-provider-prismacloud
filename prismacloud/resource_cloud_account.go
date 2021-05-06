@@ -506,7 +506,6 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 }
 
 func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
-	log.Printf(" create is called")
 	azurekey := ResourceDataInterfaceMap(d, account.TypeAzure)["key"].(string)
 	log.Printf("azure key %d", azurekey)
 	client := meta.(*pc.Client)
