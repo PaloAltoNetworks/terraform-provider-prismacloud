@@ -404,6 +404,7 @@ func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 	} else if x := ResourceDataInterfaceMap(d, account.TypeGcp); len(x) != 0 {
 		var creds account.GcpCredentials
 		_ = json.Unmarshal([]byte(x["credentials_json"].(string)), &creds)
+		
 		return account.TypeGcp, x["name"].(string), account.Gcp{
 			Account: account.CloudAccount{
 				AccountId:      x["account_id"].(string),
@@ -427,11 +428,13 @@ func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 			Enabled:   x["enabled"].(bool),
 		}
 	}
+
 	return "", "", nil
 }
 
 func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 	var val map[string]interface{}
+
 	switch v := obj.(type) {
 	case account.Aws:
 		val = map[string]interface{}{
@@ -562,6 +565,7 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 func readCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
+
 	obj, err := account.Get(client, cloudType, id)
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
@@ -578,10 +582,13 @@ func readCloudAccount(d *schema.ResourceData, meta interface{}) error {
 
 func updateCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
+
 	_, _, obj := parseCloudAccount(d)
+
 	if err := account.Update(client, obj); err != nil {
 		return err
 	}
+
 	return readCloudAccount(d, meta)
 }
 
@@ -638,6 +645,7 @@ func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 	}
+
 	d.SetId("")
 	return nil
 }
