@@ -95,12 +95,6 @@ func resourceCloudAccount() *schema.Resource {
 							Description: "To off-board an account",
 							Default:     false,
 						},
-						"update_on_create": {
-							Type:        schema.TypeBool,
-							Optional:    true,
-							Description: "If true and the account already exists, the account will be updated rather than failing on the initial creation of this resource",
-							Default:     false,
-						},
 					},
 				},
 			},
@@ -187,12 +181,6 @@ func resourceCloudAccount() *schema.Resource {
 							Description: "To off-board an account",
 							Default:     false,
 						},
-						"update_on_create": {
-							Type:        schema.TypeBool,
-							Optional:    true,
-							Description: "If true and the account already exists, the account will be updated rather than failing on the initial creation of this resource",
-							Default:     false,
-						},
 					},
 				},
 			},
@@ -276,12 +264,6 @@ func resourceCloudAccount() *schema.Resource {
 							Description: "To off-board an account",
 							Default:     false,
 						},
-						"update_on_create": {
-							Type:        schema.TypeBool,
-							Optional:    true,
-							Description: "If true and the account already exists, the account will be updated rather than failing on the initial creation of this resource",
-							Default:     false,
-						},
 					},
 				},
 			},
@@ -332,12 +314,6 @@ func resourceCloudAccount() *schema.Resource {
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Description: "To off-board an account",
-							Default:     false,
-						},
-						"update_on_create": {
-							Type:        schema.TypeBool,
-							Optional:    true,
-							Description: "If true and the account already exists, the account will be updated rather than failing on the initial creation of this resource",
 							Default:     false,
 						},
 					},
@@ -447,7 +423,6 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"account_type":    v.AccountType,
 		}
 		val["disable_on_destroy"] = ResourceDataInterfaceMap(d,account.TypeAws)["disable_on_destroy"]
-		val["update_on_create"] = ResourceDataInterfaceMap(d, account.TypeAws)["update_on_create"]
 	case account.Azure:
 		val = map[string]interface{}{
 			"account_id":           v.Account.AccountId,
@@ -463,7 +438,6 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"account_type":         v.Account.AccountType,
 		}
 		val["disable_on_destroy"] = ResourceDataInterfaceMap(d,account.TypeAzure)["disable_on_destroy"]
-		val["update_on_create"] = ResourceDataInterfaceMap(d, account.TypeAzure)["update_on_create"]
 	case account.Gcp:
 		b, _ := json.Marshal(v.Credentials)
 		val = map[string]interface{}{
@@ -479,7 +453,6 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"account_type":             v.Account.AccountType,
 		}
 		val["disable_on_destroy"] = ResourceDataInterfaceMap(d,account.TypeGcp)["disable_on_destroy"]
-		val["update_on_create"] = ResourceDataInterfaceMap(d, account.TypeGcp)["update_on_create"]
 	case account.Alibaba:
 		val = map[string]interface{}{
 			"account_id": v.AccountId,
@@ -489,7 +462,6 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"enabled":    v.Enabled,
 		}
 		val["disable_on_destroy"] = ResourceDataInterfaceMap(d,account.TypeAlibaba)["disable_on_destroy"]
-		val["update_on_create"] = ResourceDataInterfaceMap(d, account.TypeAlibaba)["update_on_create"]
 	}
 
 	for _, key := range []string{account.TypeAws, account.TypeAzure, account.TypeGcp, account.TypeAlibaba} {
@@ -526,8 +498,7 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			StatusCode: 400,
 			Path:       "https://" + client.Url + "/cloud/" + cloudAccountType,
 		}
-		updateIfExists := ResourceDataInterfaceMap(d, cloudType)["update_on_create"]
-		if updateIfExists == true && duplicateError.Error() == err.Error() {
+		if duplicateError.Error() == err.Error() {
 			if err0 := account.Update(client, obj); err0 != nil {
 				return err0
 			}
