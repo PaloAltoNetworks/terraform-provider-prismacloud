@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"time"
+	"strings"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account"
@@ -481,24 +482,7 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	cloudType, name, obj := parseCloudAccount(d)
 
 	if err := account.Create(client, obj); err != nil {
-		cloudAccountType := ""
-		switch cloudType {
-		case account.TypeAws:
-			cloudAccountType = "aws"
-		case account.TypeAzure:
-			cloudAccountType = "azure"
-		case account.TypeGcp:
-			cloudAccountType = "gcp"
-		case account.TypeAlibaba:
-			cloudAccountType = "alibaba_cloud"
-		}
-		duplicateError := pc.PrismaCloudErrorList{
-			Errors:     []pc.PrismaCloudError{{Message: "duplicate_cloud_account", Severity: "error", Subject: ""}},
-			Method:     "POST",
-			StatusCode: 400,
-			Path:       "https://" + client.Url + "/cloud/" + cloudAccountType,
-		}
-		if duplicateError.Error() == err.Error() {
+		if strings.Contains(err.Error(), "duplicate_cloud_account") {
 			if err0 := account.Update(client, obj); err0 != nil {
 				return err0
 			}
