@@ -3,6 +3,7 @@ package prismacloud
 import (
 	"encoding/json"
 	"log"
+	"strings"
 	"time"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
@@ -92,7 +93,7 @@ func resourceCloudAccount() *schema.Resource {
 						"disable_on_destroy": {
 							Type:        schema.TypeBool,
 							Optional:    true,
-							Description: "To off-board an account",
+							Description: "To disable the account on terraform destroy",
 							Default: false,
 						},
 					},
@@ -178,7 +179,7 @@ func resourceCloudAccount() *schema.Resource {
 						"disable_on_destroy": {
 							Type:        schema.TypeBool,
 							Optional:    true,
-							Description: "To off-board an account",
+							Description: "To disable the account on terraform destroy",
 							Default: false,
 						},
 					},
@@ -261,7 +262,7 @@ func resourceCloudAccount() *schema.Resource {
 						"disable_on_destroy": {
 							Type:        schema.TypeBool,
 							Optional:    true,
-							Description: "To off-board an account",
+							Description: "To disable the account on terraform destroy",
 							Default: false,
 						},
 					},
@@ -313,7 +314,7 @@ func resourceCloudAccount() *schema.Resource {
 						"disable_on_destroy": {
 							Type:        schema.TypeBool,
 							Optional:    true,
-							Description: "To off-board an account",
+							Description: "To disable the account on terraform destroy",
 							Default: false,
 						},
 					},
@@ -481,27 +482,8 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	cloudType, name, obj := parseCloudAccount(d)
 
-	cloudaccountType := ""
-	switch cloudType {
-	case account.TypeAws:
-		cloudaccountType = "aws"
-	case account.TypeAzure:
-		cloudaccountType = "azure"
-	case account.TypeGcp:
-		cloudaccountType = "gcp"
-	case account.TypeAlibaba:
-		cloudaccountType = "alibaba_cloud"
-	}
-
-	duplicateError := pc.PrismaCloudErrorList{
-		Errors: []pc.PrismaCloudError{{Message:  "duplicate_cloud_account", Severity: "error", Subject:  ""}},
-		Method:     "POST",
-		StatusCode: 400,
-		Path:       "https://"  +client.Url + "/cloud/" + cloudaccountType,
-	}
-
 	if err := account.Create(client, obj); err != nil {
-		if err.Error() == duplicateError.Error() {
+		if strings.Contains(err.Error(),"duplicate_cloud_account" ){
 			if err := account.Update(client, obj); err != nil {
 				return err
 			}
