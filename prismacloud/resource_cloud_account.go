@@ -3,6 +3,7 @@ package prismacloud
 import (
 	"encoding/json"
 	"log"
+	"strings"
 	"time"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
@@ -29,6 +30,14 @@ func resourceCloudAccount() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+
+			"disable_on_destroy": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "to disable cloud account instead of deleting on calling destroy",
+				Default: false,
+			},
+
 			// AWS type.
 			account.TypeAws: {
 				Type:        schema.TypeList,
@@ -454,7 +463,13 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	cloudType, name, obj := parseCloudAccount(d)
 
 	if err := account.Create(client, obj); err != nil {
-		return err
+		if strings.Contains(err.Error(), "duplicate_cloud_account") {
+			if err := account.Update(client, obj); err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -509,6 +524,47 @@ func updateCloudAccount(d *schema.ResourceData, meta interface{}) error {
 func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
+	disable := d.Get("disable_on_destroy").(bool)
+
+	if disable {
+		switch cloudType {
+			case account.TypeAws:
+				cloudAccount, _ := account.Get(client, cloudType, id)
+				cloudAccountAws := cloudAccount.(account.Aws)
+				cloudAccountAws.Enabled = false
+				if err := account.Update(client, cloudAccountAws); err != nil {
+					return err
+				}
+				return nil
+
+			case account.TypeAzure:
+				cloudAccount, _ := account.Get(client, cloudType, id)
+				cloudAccountAzure := cloudAccount.(account.Azure)
+				cloudAccountAzure.Account.Enabled = false
+				if err := account.Update(client, cloudAccountAzure); err != nil {
+					return err
+				}
+				return nil
+
+			case account.TypeGcp:
+				cloudAccount, _ := account.Get(client, cloudType, id)
+				cloudAccountGcp := cloudAccount.(account.Gcp)
+				cloudAccountGcp.Account.Enabled = false
+				if err := account.Update(client, cloudAccountGcp); err != nil {
+					return err
+				}
+				return nil
+
+			case account.TypeAlibaba:
+				cloudAccount, _ := account.Get(client, cloudType, id)
+				cloudAccountAlibaba := cloudAccount.(account.Alibaba)
+				cloudAccountAlibaba.Enabled = false
+				if err := account.Update(client, cloudAccountAlibaba); err != nil {
+					return err
+				}
+				return nil
+		}
+	}
 
 	err := account.Delete(client, cloudType, id)
 	if err != nil {
