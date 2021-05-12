@@ -483,8 +483,8 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 
 	if err := account.Create(client, obj); err != nil {
 		if strings.Contains(err.Error(), "duplicate_cloud_account") {
-			if err0 := account.Update(client, obj); err0 != nil {
-				return err0
+			if updateErr := account.Update(client, obj); updateErr != nil {
+				return updateErr
 			}
 		} else {
 			return err
