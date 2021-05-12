@@ -454,7 +454,17 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	cloudType, name, obj := parseCloudAccount(d)
 
 	if err := account.Create(client, obj); err != nil {
+<<<<<<< HEAD
 		return err
+=======
+		if strings.Contains(err.Error(), "duplicate_cloud_account") {
+			if updateErr := account.Update(client, obj); updateErr != nil {
+				return updateErr
+			}
+		} else {
+			return err
+		}
+>>>>>>> b292d5a (Allow prismacloud_cloud_account to disable the account on terraform destroy and allow prismacloud_cloud_account to update the account on create)
 	}
 
 	PollApiUntilSuccess(func() error {
