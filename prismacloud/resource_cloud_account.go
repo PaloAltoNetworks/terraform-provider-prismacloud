@@ -30,11 +30,11 @@ func resourceCloudAccount() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"disable_on_destroy" : {
-				Type: schema.TypeBool,
-				Optional: true,
-				Default: false,
-				Description : "Disable account on destroy or not",
+			"disable_on_destroy": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "To disable cloud account instead of deleting on calling destroy",
 			},
 			// AWS type.
 			account.TypeAws: {
@@ -461,11 +461,11 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	cloudType, name, obj := parseCloudAccount(d)
 
 	if err := account.Create(client, obj); err != nil {
-		if strings.Contains(err.Error(),"duplicate_cloud_account" ){
+		if strings.Contains(err.Error(),"duplicate_cloud_account") {
 			if err := account.Update(client, obj); err != nil {
 				return err
 			}
-		} else{
+		} else {
 			return err
 		}
 	}
@@ -527,37 +527,37 @@ func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 
 	switch cloudType {
 	case account.TypeAws:
-		cloudObjectType := obj.(account.Aws)
+		cloudAccount := obj.(account.Aws)
 		if disable {
-			cloudObjectType.Enabled = false
-			if err := account.Update(client, cloudObjectType); err != nil {
+			cloudAccount.Enabled = false
+			if err := account.Update(client, cloudAccount); err != nil {
 				return err
 			}
 			return nil
 		}
 	case account.TypeAzure:
-		cloudObjectType := obj.(account.Azure)
+		cloudAccount := obj.(account.Azure)
 		if disable {
-			cloudObjectType.Account.Enabled = false
-			if err := account.Update(client, cloudObjectType); err != nil {
+			cloudAccount.Account.Enabled = false
+			if err := account.Update(client, cloudAccount); err != nil {
 				return err
 			}
 			return nil
 		}
 	case account.TypeGcp:
-		cloudObjectType := obj.(account.Gcp)
+		cloudAccount := obj.(account.Gcp)
 		if disable {
-			cloudObjectType.Account.Enabled = false
-			if err := account.Update(client, cloudObjectType); err != nil {
+			cloudAccount.Account.Enabled = false
+			if err := account.Update(client, cloudAccount); err != nil {
 				return err
 			}
 			return nil
 		}
 	case account.TypeAlibaba:
-		cloudObjectType := obj.(account.Alibaba)
+		cloudAccount := obj.(account.Alibaba)
 		if disable {
-			cloudObjectType.Enabled = false
-			if err := account.Update(client, cloudObjectType); err != nil {
+			cloudAccount.Enabled = false
+			if err := account.Update(client, cloudAccount); err != nil {
 				return err
 			}
 			return nil
