@@ -8,5 +8,5 @@ const (
 
 var BaseSuffix = []string{"search"}
 var ConfigSuffix = []string{"config"}
-var NetworkSuffix = []string{"network"}
+var NetworkSuffix = []string{""}
 var EventSuffix = []string{"event"}
