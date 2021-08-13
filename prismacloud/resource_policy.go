@@ -56,7 +56,7 @@ func resourcePolicy() *schema.Resource {
 			},
 			"system_default": {
 				Type:        schema.TypeBool,
-				Optional:    true,
+				Computed:    true,
 				Description: "If policy is a system default policy or not",
 			},
 			"description": {
@@ -169,7 +169,7 @@ func resourcePolicy() *schema.Resource {
 			},
 			"remediable": {
 				Type:        schema.TypeBool,
-				Optional:    true,
+				Computed:    true,
 				Description: "Is remediable or not",
 			},
 			"rule": {
@@ -277,12 +277,12 @@ func resourcePolicy() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"standard_name": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Compliance standard name",
 						},
 						"standard_description": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Compliance standard description",
 						},
 						"requirement_id": {
@@ -292,7 +292,7 @@ func resourcePolicy() *schema.Resource {
 						},
 						"requirement_name": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Requirement name",
 						},
 						"requirement_description": {
@@ -307,7 +307,7 @@ func resourcePolicy() *schema.Resource {
 						},
 						"section_description": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Section description",
 						},
 						"policy_id": {
@@ -343,7 +343,6 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 		PolicyId:               id,
 		Name:                   d.Get("name").(string),
 		PolicyType:             d.Get("policy_type").(string),
-		SystemDefault:          d.Get("system_default").(bool),
 		Description:            d.Get("description").(string),
 		Severity:               d.Get("severity").(string),
 		Recommendation:         d.Get("recommendation").(string),
@@ -353,7 +352,6 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 		Overridden:             d.Get("overridden").(bool),
 		Deleted:                d.Get("deleted").(bool),
 		RestrictAlertDismissal: d.Get("restrict_alert_dismissal").(bool),
-		Remediable:             d.Get("remediable").(bool),
 		Rule: policy.Rule{
 			Name:           rspec["name"].(string),
 			CloudType:      rspec["cloud_type"].(string),
@@ -393,13 +391,9 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 	for _, csmi := range cms {
 		cmd := csmi.(map[string]interface{})
 		ans.ComplianceMetadata = append(ans.ComplianceMetadata, policy.ComplianceMetadata{
-			StandardName:           cmd["standard_name"].(string),
-			StandardDescription:    cmd["standard_description"].(string),
 			RequirementId:          cmd["requirement_id"].(string),
-			RequirementName:        cmd["requirement_name"].(string),
 			RequirementDescription: cmd["requirement_description"].(string),
 			SectionId:              cmd["section_id"].(string),
-			SectionDescription:     cmd["section_description"].(string),
 			PolicyId:               id,
 			ComplianceId:           cmd["compliance_id"].(string),
 			SectionLabel:           cmd["section_label"].(string),
