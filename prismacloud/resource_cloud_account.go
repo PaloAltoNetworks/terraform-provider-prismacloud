@@ -35,7 +35,7 @@ func resourceCloudAccount() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Description: "to disable cloud account instead of deleting on calling destroy",
-				Default: false,
+				Default:     false,
 			},
 
 			// AWS type.
@@ -69,7 +69,7 @@ func resourceCloudAccount() *schema.Resource {
 							Sensitive:   true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -127,7 +127,7 @@ func resourceCloudAccount() *schema.Resource {
 							Default:     true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -207,7 +207,7 @@ func resourceCloudAccount() *schema.Resource {
 							Default:     true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -278,7 +278,7 @@ func resourceCloudAccount() *schema.Resource {
 							Description: "Alibaba account ID",
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
