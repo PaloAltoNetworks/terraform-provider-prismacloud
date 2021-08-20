@@ -69,7 +69,7 @@ func dataSourceCloudAccount() *schema.Resource {
 							Sensitive:   true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -119,7 +119,7 @@ func dataSourceCloudAccount() *schema.Resource {
 							Description: "Whether or not the account is enabled",
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -189,7 +189,7 @@ func dataSourceCloudAccount() *schema.Resource {
 							Description: "Whether or not the account is enabled",
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -252,7 +252,7 @@ func dataSourceCloudAccount() *schema.Resource {
 							Description: "Alibaba account ID",
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
