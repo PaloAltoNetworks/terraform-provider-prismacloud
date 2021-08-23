@@ -49,7 +49,6 @@ There should be one and only one target block:
 
 ### Notification Config
 
-* `config_id` - Alert rule notification config ID
 * `frequency` - Frequency.  Valid values are `as_it_happens`, `daily`, `weekly`, or `monthly`.
 * `enabled` - (bool) Scan enabled
 * `recipients` - List of unique email addresses to notify
@@ -58,17 +57,7 @@ There should be one and only one target block:
 * `include_remediation` - (bool) Include remediation in detailed report
 * `config_type` - Config type.  Valid values are `email`, `slack`, `splunk`, `amazon_sqs`, `jira`, `microsoft_teams`, `webhook`, `aws_security_hub`, `google_cscc`, `service_now`, `pager_duty`, or `demisto`
 * `template_id` - Template ID
-* `timezone_id` - Timezone ID
-* `day_of_month` - (int) Day of month
 * `r_rule_schedule` - R rule schedule
-* `frequency_from_r_rule` - Frequency from R rule
-* `hour_of_day` - (int) Hour of day
-* `days_of_week` - List of days of week, as defined [below](#days-of-week)
-
-### Days Of Week
-
-* `day` - Day
-* `offset` - (int) Offset
 
 ## Attribute Reference
 
@@ -82,8 +71,21 @@ There should be one and only one target block:
 
 In each `notification_config` section, the following attributes are available:
 
+* `config_id` - Alert rule notification config ID
 * `last_updated` - (int) Last updated
 * `last_sent_ts` - (int) Time of last notification in miliseconds
+* `timezone_id` - Timezone ID
+* `day_of_month` - (int) Day of month
+* `frequency_from_r_rule` - Frequency from R rule
+* `hour_of_day` - (int) Hour of day
+* `days_of_week` - List of days of week, as defined [below](#days-of-week)
+
+### Days Of Week
+
+* `day` - Day
+* `offset` - (int) Offset
+
+
 
 ## Import
 
