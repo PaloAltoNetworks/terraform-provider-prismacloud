@@ -52,7 +52,7 @@ type NotificationConfig struct {
 	TemplateId         string   `json:"templateId,omitempty"`
 	Timezone           Timezone `json:"timezone"`
 	DayOfMonth         int      `json:"dayOfMonth"`
-	RruleSchedule      string   `json:"rruleSchedule"`
+	RruleSchedule      string   `json:"rruleSchedule,omitempty"`
 	FrequencyFromRrule string   `json:"frequencyFromRRule"`
 	HourOfDay          int      `json:"hourOfDay"`
 	DaysOfWeek         []Day    `json:"daysOfWeek"`
