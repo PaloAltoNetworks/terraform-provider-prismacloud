@@ -73,7 +73,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 							Sensitive:   true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -147,7 +147,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 							Description: "Whether or not the account is enabled",
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -217,7 +217,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 							Description: "Whether or not the account is enabled",
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -247,10 +247,10 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 						// Use a json string until this feature is added:
 						// https://github.com/hashicorp/terraform-plugin-sdk/issues/248
 						"credentials_json": {
-							Type:             schema.TypeString,
-							Computed:         true,
-							Description:      "Content of the JSON credentials file",
-							Sensitive:        true,
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Content of the JSON credentials file",
+							Sensitive:   true,
 						},
 						"account_type": {
 							Type:        schema.TypeString,

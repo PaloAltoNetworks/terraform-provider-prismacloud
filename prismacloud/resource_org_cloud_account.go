@@ -68,7 +68,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 							Sensitive:   true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -153,7 +153,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 							Default:     true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -240,7 +240,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 							Default:     true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -447,7 +447,7 @@ func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) 
 			AccountId:        x["account_id"].(string),
 			Enabled:          x["enabled"].(bool),
 			ExternalId:       x["external_id"].(string),
-			GroupIds:         ListToStringSlice(x["group_ids"].([]interface{})),
+			GroupIds:         SetToStringSlice(x["group_ids"].(*schema.Set)),
 			Name:             x["name"].(string),
 			RoleArn:          x["role_arn"].(string),
 			ProtectionMode:   x["protection_mode"].(string),
@@ -477,7 +477,7 @@ func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) 
 				Name:           x["name"].(string),
 				ProtectionMode: x["protection_mode"].(string),
 				AccountType:    x["account_type"].(string),
-				GroupIds:       ListToStringSlice(x["group_ids"].([]interface{})),
+				GroupIds:       SetToStringSlice(x["group_ids"].(*schema.Set)),
 			},
 			ClientId:           x["client_id"].(string),
 			TenantId:           x["tenant_id"].(string),
@@ -497,7 +497,7 @@ func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) 
 				Name:           x["name"].(string),
 				ProtectionMode: x["protection_mode"].(string),
 				AccountType:    x["account_type"].(string),
-				GroupIds:       ListToStringSlice(x["group_ids"].([]interface{})),
+				GroupIds:       SetToStringSlice(x["group_ids"].(*schema.Set)),
 			},
 			CompressionEnabled:       x["compression_enabled"].(bool),
 			DataflowEnabledProject:   x["dataflow_enabled_project"].(string),

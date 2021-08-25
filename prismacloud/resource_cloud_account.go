@@ -35,7 +35,7 @@ func resourceCloudAccount() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Description: "to disable cloud account instead of deleting on calling destroy",
-				Default: false,
+				Default:     false,
 			},
 
 			// AWS type.
@@ -69,7 +69,7 @@ func resourceCloudAccount() *schema.Resource {
 							Sensitive:   true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -127,7 +127,7 @@ func resourceCloudAccount() *schema.Resource {
 							Default:     true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -207,7 +207,7 @@ func resourceCloudAccount() *schema.Resource {
 							Default:     true,
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -278,7 +278,7 @@ func resourceCloudAccount() *schema.Resource {
 							Description: "Alibaba account ID",
 						},
 						"group_ids": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Required:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
@@ -340,7 +340,7 @@ func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 			AccountId:      x["account_id"].(string),
 			Enabled:        x["enabled"].(bool),
 			ExternalId:     x["external_id"].(string),
-			GroupIds:       ListToStringSlice(x["group_ids"].([]interface{})),
+			GroupIds:       SetToStringSlice(x["group_ids"].(*schema.Set)),
 			Name:           x["name"].(string),
 			RoleArn:        x["role_arn"].(string),
 			ProtectionMode: x["protection_mode"].(string),
@@ -351,7 +351,7 @@ func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 			Account: account.CloudAccount{
 				AccountId:      x["account_id"].(string),
 				Enabled:        x["enabled"].(bool),
-				GroupIds:       ListToStringSlice(x["group_ids"].([]interface{})),
+				GroupIds:       SetToStringSlice(x["group_ids"].(*schema.Set)),
 				Name:           x["name"].(string),
 				ProtectionMode: x["protection_mode"].(string),
 				AccountType:    x["account_type"].(string),
@@ -370,7 +370,7 @@ func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 			Account: account.CloudAccount{
 				AccountId:      x["account_id"].(string),
 				Enabled:        x["enabled"].(bool),
-				GroupIds:       ListToStringSlice(x["group_ids"].([]interface{})),
+				GroupIds:       SetToStringSlice(x["group_ids"].(*schema.Set)),
 				Name:           x["name"].(string),
 				ProtectionMode: x["protection_mode"].(string),
 				AccountType:    x["account_type"].(string),
@@ -383,7 +383,7 @@ func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 	} else if x := ResourceDataInterfaceMap(d, account.TypeAlibaba); len(x) != 0 {
 		return account.TypeAlibaba, x["name"].(string), account.Alibaba{
 			AccountId: x["account_id"].(string),
-			GroupIds:  ListToStringSlice(x["group_ids"].([]interface{})),
+			GroupIds:  SetToStringSlice(x["group_ids"].(*schema.Set)),
 			Name:      x["name"].(string),
 			RamArn:    x["ram_arn"].(string),
 			Enabled:   x["enabled"].(bool),
@@ -528,41 +528,41 @@ func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 
 	if disable {
 		switch cloudType {
-			case account.TypeAws:
-				cloudAccount, _ := account.Get(client, cloudType, id)
-				cloudAccountAws := cloudAccount.(account.Aws)
-				cloudAccountAws.Enabled = false
-				if err := account.Update(client, cloudAccountAws); err != nil {
-					return err
-				}
-				return nil
+		case account.TypeAws:
+			cloudAccount, _ := account.Get(client, cloudType, id)
+			cloudAccountAws := cloudAccount.(account.Aws)
+			cloudAccountAws.Enabled = false
+			if err := account.Update(client, cloudAccountAws); err != nil {
+				return err
+			}
+			return nil
 
-			case account.TypeAzure:
-				cloudAccount, _ := account.Get(client, cloudType, id)
-				cloudAccountAzure := cloudAccount.(account.Azure)
-				cloudAccountAzure.Account.Enabled = false
-				if err := account.Update(client, cloudAccountAzure); err != nil {
-					return err
-				}
-				return nil
+		case account.TypeAzure:
+			cloudAccount, _ := account.Get(client, cloudType, id)
+			cloudAccountAzure := cloudAccount.(account.Azure)
+			cloudAccountAzure.Account.Enabled = false
+			if err := account.Update(client, cloudAccountAzure); err != nil {
+				return err
+			}
+			return nil
 
-			case account.TypeGcp:
-				cloudAccount, _ := account.Get(client, cloudType, id)
-				cloudAccountGcp := cloudAccount.(account.Gcp)
-				cloudAccountGcp.Account.Enabled = false
-				if err := account.Update(client, cloudAccountGcp); err != nil {
-					return err
-				}
-				return nil
+		case account.TypeGcp:
+			cloudAccount, _ := account.Get(client, cloudType, id)
+			cloudAccountGcp := cloudAccount.(account.Gcp)
+			cloudAccountGcp.Account.Enabled = false
+			if err := account.Update(client, cloudAccountGcp); err != nil {
+				return err
+			}
+			return nil
 
-			case account.TypeAlibaba:
-				cloudAccount, _ := account.Get(client, cloudType, id)
-				cloudAccountAlibaba := cloudAccount.(account.Alibaba)
-				cloudAccountAlibaba.Enabled = false
-				if err := account.Update(client, cloudAccountAlibaba); err != nil {
-					return err
-				}
-				return nil
+		case account.TypeAlibaba:
+			cloudAccount, _ := account.Get(client, cloudType, id)
+			cloudAccountAlibaba := cloudAccount.(account.Alibaba)
+			cloudAccountAlibaba.Enabled = false
+			if err := account.Update(client, cloudAccountAlibaba); err != nil {
+				return err
+			}
+			return nil
 		}
 	}
 
