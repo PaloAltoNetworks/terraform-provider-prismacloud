@@ -28,7 +28,6 @@ resource "prismacloud_policy" "example" {
 
 * `name` - (Required) Policy name
 * `policy_type` - (Required) Policy type.  Valid values are `config`, `audit_event`, or `network`
-* `system_default` - (bool) If policy is a system default policy or not
 * `description` - Description
 * `severity` - Severity.  Valid values are `low` (default), `medium`, or `high`.
 * `recommendation` - Remediation recommendation
@@ -38,7 +37,6 @@ resource "prismacloud_policy" "example" {
 * `overridden` - (bool) Overridden
 * `deleted` - (bool) Deleted
 * `restrict_alert_dismissal` - (bool) Restrict alert dismissal
-* `remediable` - (bool) Is remediable or not
 * `rule` - (Required) Model for the rule, as defined [below](#rule)
 * `remediation` - Model for remediation, as defined [below](#remediation)
 * `compliance_metadata` - List of compliance data.  Each item has compliance standard, requirement, and/or section information, as defined [below](#compliance-metadata)
@@ -68,14 +66,9 @@ This section may be present or may be ommitted:
 
 ### Compliance Metadata
 
-* `standard_name` - Compliance standard name
-* `standard_description` - Compliance standard description
 * `requirement_id` - Requirement ID
-* `requirement_name` - Requirement name
 * `requirement_description` - Requirement description
 * `section_id` - Section ID
-* `section_description` - Section description
-* `policy_id` - Policy ID
 * `compliance_id` - Compliance ID
 * `section_label` - Section label
 * `custom_assigned` - (bool) Custom assigned
@@ -91,6 +84,19 @@ This section may be present or may be ommitted:
 * `open_alerts_count` - (int) Open alerts count
 * `owner` - Owner
 * `policy_mode` - Policy mode
+* `system_default` - (bool) If policy is a system default policy or not
+* `remediable` - (bool) Is remediable or not
+In each `Compliance Metadata` section, the following attributes are available:
+
+  
+### Compliance Metadata
+
+* `standard_name` - Compliance standard name
+* `standard_description` - Compliance standard description
+* `requirement_name` - Requirement name
+* `section_description` - Section description
+* `policy_id` - Policy ID
+
 
 ## Import
 
