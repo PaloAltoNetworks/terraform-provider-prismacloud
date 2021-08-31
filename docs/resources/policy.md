@@ -27,7 +27,7 @@ resource "prismacloud_policy" "example" {
 ## Argument Reference
 
 * `name` - (Required) Policy name
-* `policy_type` - (Required) Policy type.  Valid values are `config`, `audit_event`, or `network`
+* `policy_type` - (Required) Policy type.  Valid values are `config`, `audit_event`, `iam`, or `network`
 * `system_default` - (bool) If policy is a system default policy or not
 * `description` - Description
 * `severity` - Severity.  Valid values are `low` (default), `medium`, or `high`.
@@ -55,7 +55,7 @@ One and only one of these must be present:
 * `resource_id_path` - Resource ID path
 * `criteria` - (Required) Saved search ID that defines the rule criteria
 * `parameters` - (Required, map of strings) Parameters. Valid keys are `withIac` and `savedSearch` and value is `"true"` or `"false"`
-* `rule_type` - (Required) Type of rule or RQL query.  Valid values are `Config`, `AuditEvent`, or `Network`
+* `rule_type` - (Required) Type of rule or RQL query.  Valid values are `Config`, `AuditEvent`, `IAM`, or `Network`
 
 ### Remediation
 

@@ -94,9 +94,7 @@ func ParseTimeRange(tr map[string]interface{}) timerange.TimeRange {
 		}
 	} else if data := ToInterfaceMap(tr, "to_now"); len(data) != 0 {
 		return timerange.TimeRange{
-			Value: timerange.ToNow{
-				Unit: data["unit"].(string),
-			},
+			Value: data["unit"].(string),
 		}
 	}
 

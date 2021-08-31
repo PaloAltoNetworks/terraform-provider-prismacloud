@@ -50,6 +50,7 @@ func resourcePolicy() *schema.Resource {
 						policy.PolicyTypeConfig,
 						policy.PolicyTypeAuditEvent,
 						policy.PolicyTypeNetwork,
+						policy.PolicyTypeIAM,
 					},
 					false,
 				),
@@ -97,6 +98,7 @@ func resourcePolicy() *schema.Resource {
 					},
 					false,
 				),
+				Default: "all",
 			},
 			"labels": {
 				Type:        schema.TypeSet,
@@ -232,6 +234,7 @@ func resourcePolicy() *schema.Resource {
 									policy.RuleTypeConfig,
 									policy.RuleTypeAuditEvent,
 									policy.RuleTypeNetwork,
+									policy.RuleTypeIAM,
 								},
 								false,
 							),

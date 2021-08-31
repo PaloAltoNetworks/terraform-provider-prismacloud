@@ -147,7 +147,8 @@ func timeRangeSchema(style string) *schema.Schema {
 		ans.ForceNew = true
 		fallthrough
 	default:
-		ans.Required = true
+		ans.Optional = true
+		ans.Computed = true
 
 		model.Schema["absolute"].Optional = true
 		absolute_resource.Schema["start"].Required = true
