@@ -247,10 +247,10 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 						// Use a json string until this feature is added:
 						// https://github.com/hashicorp/terraform-plugin-sdk/issues/248
 						"credentials_json": {
-							Type:             schema.TypeString,
-							Computed:         true,
-							Description:      "Content of the JSON credentials file",
-							Sensitive:        true,
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Content of the JSON credentials file",
+							Sensitive:   true,
 						},
 						"account_type": {
 							Type:        schema.TypeString,
@@ -319,7 +319,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 						"account_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "Azure account ID",
+							Description: "Oci account ID",
 						},
 						"enabled": {
 							Type:        schema.TypeBool,
@@ -364,7 +364,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 						"user_ocid": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "OCI identity user name that you define. Can be an existing user that has the right privileges",
+							Description: "OCI identity user ocid that you define. Can be an existing user that has the right privileges",
 						},
 					},
 				},

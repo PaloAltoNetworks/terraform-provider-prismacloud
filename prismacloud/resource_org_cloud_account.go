@@ -355,7 +355,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 						"account_id": {
 							Type:        schema.TypeString,
 							Required:    true,
-							Description: "Azure account ID",
+							Description: "Org account ID",
 						},
 						"enabled": {
 							Type:        schema.TypeBool,
@@ -407,7 +407,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 						"user_ocid": {
 							Type:        schema.TypeString,
 							Required:    true,
-							Description: "OCI identity user name that you define. Can be an existing user that has the right privileges",
+							Description: "OCI identity user Ocid that you define. Can be an existing user that has the right privileges",
 						},
 					},
 				},
