@@ -36,6 +36,15 @@ func resourceAccountGroup() *schema.Resource {
 				Optional:    true,
 				Description: "Description",
 			},
+			"account_ids": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "Cloud account IDs",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+
 			"last_modified_by": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -46,14 +55,7 @@ func resourceAccountGroup() *schema.Resource {
 				Computed:    true,
 				Description: "Last modified timestamp",
 			},
-			"account_ids": {
-				Type:        schema.TypeList,
-				Computed:    true,
-				Description: "Cloud account IDs",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
+
 			/*
 				"accounts": {
 					Type:        schema.TypeList,
@@ -104,11 +106,22 @@ func resourceAccountGroup() *schema.Resource {
 }
 
 func parseAccountGroup(d *schema.ResourceData, id string) group.Group {
+	accountIDs := make([]string, 0)
+	if d.Get("account_ids") != nil {
+		switch i := d.Get("account_ids").(type) {
+		case []interface{}:
+			for _, accountID := range i {
+				accountIDs = append(accountIDs, accountID.(string))
+			}
+		case []string:
+			accountIDs = i
+		}
+	}
 	return group.Group{
 		Id:          id,
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
-		AccountIds:  []string{},
+		AccountIds:  accountIDs,
 	}
 }
 
@@ -212,8 +225,16 @@ func deleteAccountGroup(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
-	err := group.Delete(client, id)
-	if err != nil {
+	// Before deleting an account-group, we need to remove all associated cloud accounts from the
+	// account group. This is a restriction within Prisma Cloud
+	// Error 409: Error(msg:cannot_delete_an_account_group_associated_with_cloud_accounts severity:error subject:)
+	obj := parseAccountGroup(d, id)
+	obj.AccountIds = make([]string, 0)
+	if err := group.Update(client, obj); err != nil {
+		return err
+	}
+
+	if err := group.Delete(client, id); err != nil {
 		if err != pc.ObjectNotFoundError {
 			return err
 		}
