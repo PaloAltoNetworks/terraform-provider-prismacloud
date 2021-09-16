@@ -10,6 +10,7 @@ import (
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account"
+	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account/org"
 	"github.com/paloaltonetworks/prisma-cloud-go/settings/enterprise"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -76,6 +77,14 @@ func cloudAccountFromEnv(style, label, name string, groups []string) (string, er
 		account.TypeAlibaba: []string{
 			"PRISMACLOUD_ALIBABA_ACCOUNT_ID",
 			"PRISMACLOUD_ALIBABA_RAM_ARN",
+		},
+		org.TypeOci: []string{
+			"PRISMACLOUD_OCI_ACCOUNT_ID",
+			"PRISMACLOUD_OCI_GROUP_NAME",
+			"PRISMACLOUD_OCI_HOME_REGION",
+			"PRISMACLOUD_OCI_USER_NAME",
+			"PRISMACLOUD_OCI_USER_OCID",
+			"PRISMACLOUD_OCI_POLICY_NAME",
 		},
 	}
 
@@ -161,6 +170,165 @@ resource "prismacloud_cloud_account" %q {
 			name,
 			os.Getenv("PRISMACLOUD_ALIBABA_RAM_ARN"),
 		))
+	case org.TypeOci:
+
+	}
+
+	buf.WriteString(`
+        group_ids = [`)
+	for _, g := range groups {
+		buf.WriteString(fmt.Sprintf(`
+            %s,`, g))
+	}
+	buf.WriteString(`
+        ]
+    }
+}`)
+
+	return buf.String(), nil
+}
+func cloudAccountOrgFromEnv(style, label, name string, groups []string) (string, error) {
+	ctDescorg := map[string]string{
+		org.TypeAwsOrg:   "AWSORG",
+		org.TypeAzureOrg: "AZUREORG",
+		org.TypeGcpOrg:   "GCPORg",
+		org.TypeOci:      "OCI",
+	}
+
+	evMaporg := map[string][]string{
+		org.TypeAwsOrg: []string{
+			"PRISMACLOUD_AWSORG_ACCOUNT_ID",
+			"PRISMACLOUD_AWSORG_EXTERNAL_ID",
+			"PRISMACLOUD_AWSORG_ROLE_ARN",
+			"PRISMACLOUD_AWSORG_MEMBER_ROLE_NAME",
+			"PRISMACLOUD_AWSORG_MEMBER_EXTERNAL_ID",
+		},
+		org.TypeAzureOrg: []string{
+			"PRISMACLOUD_AZUREORG_ACCOUNT_ID",
+			"PRISMACLOUD_AZUREORG_CLIENT_ID",
+			"PRISMACLOUD_AZUREORG_KEY",
+			"PRISMACLOUD_AZUREORG_MONITOR_FLOW_LOGS",
+			"PRISMACLOUD_AZUREORG_TENANT_ID",
+			"PRISMACLOUD_AZUREORG_SERVICE_PRINCIPAL_ID",
+		},
+		org.TypeGcpOrg: []string{
+			"PRISMACLOUD_GCPORG_ACCOUNT_ID",
+			"PRISMACLOUD_GCPORG_COMPRESSION_ENABLED",
+			"PRISMACLOUD_GCPORG_DATAFLOW_ENABLED_PROJECT",
+			"PRISMACLOUD_GCPORG_FLOW_LOG_STORAGE_BUCKET",
+			"PRISMACLOUD_GCPORG_CREDENTIALS_FILE",
+			"PRISMACLOUD_GCPORG_ORGANIAATION_NAME",
+		},
+		org.TypeOci: []string{
+			"PRISMACLOUD_OCI_ACCOUNT_ID",
+			"PRISMACLOUD_OCI_GROUP_NAME",
+			"PRISMACLOUD_OCI_HOME_REGION",
+			"PRISMACLOUD_OCI_USER_NAME",
+			"PRISMACLOUD_OCI_USER_OCID",
+			"PRISMACLOUD_OCI_POLICY_NAME",
+		},
+	}
+
+	vlistorg, ok := evMaporg[style]
+	if !ok {
+		return "", fmt.Errorf("unknown style %q", style)
+	}
+
+	missingorg := make([]string, 0, len(vlistorg))
+	for _, key := range vlistorg {
+		if _, ok := os.LookupEnv(key); !ok {
+			missingorg = append(missingorg, key)
+		}
+	}
+
+	if len(missingorg) != 0 {
+		msg := strings.Join(missingorg, ", ")
+		return "", fmt.Errorf("%s test requires these environment variables: %s", ctDescorg[style], msg)
+	}
+
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf(`
+resource "prismacloud_org_cloud_account" %q {
+    %s {`, label, style))
+	switch style {
+	case org.TypeAwsOrg:
+		buf.WriteString(fmt.Sprintf(`
+        account_id = %q
+        enabled = false
+        external_id = %q
+        name = %q
+        role_arn = %q
+		member_role_name = %q
+		member_external_id = %q`,
+			os.Getenv("PRISMACLOUD_AWSORG_ACCOUNT_ID"),
+			os.Getenv("PRISMACLOUD_AWSORG_EXTERNAL_ID"),
+			name,
+			os.Getenv("PRISMACLOUD_AWSORG_ROLE_ARN"),
+			os.Getenv("PRISMACLOUD_AWSORG_MEMBER_ROLE_NAME"),
+			os.Getenv("PRISMACLOUD_AWSORG_MEMBER_EXTERNAL_ID"),
+		))
+
+	case org.TypeAzureOrg:
+		mfl, _ := strconv.ParseBool(os.Getenv("PRISMACLOUD_AZUREORG_MONITOR_FLOW_LOGS"))
+		buf.WriteString(fmt.Sprintf(`
+        account_id = %q
+        enabled = false
+        name = %q
+        client_id = %q
+        key = %q
+        monitor_flow_logs = %t
+        tenant_id = %q
+        service_principal_id = %q
+		monitor_flow_logs = %q`,
+			os.Getenv("PRISMACLOUD_AZUREORG_ACCOUNT_ID"),
+			name,
+			os.Getenv("PRISMACLOUD_AZUREORG_CLIENT_ID"),
+			os.Getenv("PRISMACLOUD_AZUREORG_KEY"),
+			mfl,
+			os.Getenv("PRISMACLOUD_AZUREORG_TENANT_ID"),
+			os.Getenv("PRISMACLOUD_AZUREORG_SERVICE_PRINCIPAL_ID"),
+			os.Getenv("PRISMACLOUD_AZUREORG_MONITOR_FLOW_LOGS"),
+		))
+	case org.TypeGcpOrg:
+		ce, _ := strconv.ParseBool(os.Getenv("PRISMACLOUD_GCPORG_COMPRESSION_ENABLED"))
+
+		buf.WriteString(fmt.Sprintf(`
+        account_id = %q
+        enabled = false
+        name = %q
+        compression_enabled = %t
+        dataflow_enabled_project = %q
+        flow_log_storage_bucket = %q
+        credentials_json = file(%q)
+		organization_name = %q `,
+			os.Getenv("PRISMACLOUD_GCPORG_ACCOUNT_ID"),
+			name,
+			ce,
+			os.Getenv("PRISMACLOUD_GCPORG_DATAFLOW_ENABLED_PROJECT"),
+			os.Getenv("PRISMACLOUD_GCPORG_FLOW_LOG_STORAGE_BUCKET"),
+			os.Getenv("PRISMACLOUD_GCPORG_CREDENTIALS_FILE"),
+			os.Getenv("PRISMACLOUD_GCPORG_ORGANIZATION_NAME"),
+		))
+	case org.TypeOci:
+		buf.WriteString(fmt.Sprintf(`
+        account_id = %q
+		enabled = false
+		group_name = %q
+		home_region = %q
+		policy_name = %q
+		user_name = %q
+		user_ocid = %q
+        name = %q
+		enabled = false`,
+			os.Getenv("PRISMACLOUD_OCI_ACCOUNT_ID"),
+			os.Getenv("PRISMACLOUD_OCI_GROUP_NAME"),
+			os.Getenv("PRISMACLOUD_OCI_HOME_REGION"),
+			os.Getenv("PRISMACLOUD_OCI_POLICY_NAME"),
+			os.Getenv("PRISMACLOUD_OCI_USER_NAME"),
+			os.Getenv("PRISMACLOUD_OCI_USER_OCID"),
+			name,
+		))
+
 	}
 
 	buf.WriteString(`
