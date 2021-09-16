@@ -50,6 +50,7 @@ func resourcePolicy() *schema.Resource {
 						policy.PolicyTypeConfig,
 						policy.PolicyTypeAuditEvent,
 						policy.PolicyTypeNetwork,
+						policy.PolicyTypeAnomaly,
 					},
 					false,
 				),
@@ -232,6 +233,7 @@ func resourcePolicy() *schema.Resource {
 									policy.RuleTypeConfig,
 									policy.RuleTypeAuditEvent,
 									policy.RuleTypeNetwork,
+									policy.RuleTypeAnomaly,
 								},
 								false,
 							),
@@ -270,7 +272,7 @@ func resourcePolicy() *schema.Resource {
 				},
 			},
 			"compliance_metadata": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Optional:    true,
 				Description: "List of compliance data. Each item has compliance standard, requirement, and/or section information",
 				Elem: &schema.Resource{
@@ -386,7 +388,7 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 		}
 	}
 
-	cms := d.Get("compliance_metadata").([]interface{})
+	cms := d.Get("compliance_metadata").(*schema.Set).List()
 	ans.ComplianceMetadata = make([]policy.ComplianceMetadata, 0, len(cms))
 	for _, csmi := range cms {
 		cmd := csmi.(map[string]interface{})
