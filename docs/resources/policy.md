@@ -32,7 +32,7 @@ resource "prismacloud_policy" "example" {
 * `description` - Description
 * `severity` - Severity.  Valid values are `low` (default), `medium`, or `high`.
 * `recommendation` - Remediation recommendation
-* `cloud_type` - Cloud type
+* `cloud_type` - Cloud type (Optional for policies having RQL query with multiway joins, otherwise required) - valid values are `aws`,`azure`,`gcp`,`alibaba_cloud` and `all` 
 * `labels` - List of labels
 * `enabled` - (bool) Enabled
 * `overridden` - (bool) Overridden
