@@ -210,6 +210,16 @@ func dataSourceIntegration() *schema.Resource {
 							Computed:    true,
 							Description: "PagerDuty integration key",
 						},
+						"source_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "GCP Source ID for Google CSCC integration",
+						},
+						"org_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "GCP Organization ID for Google CSCC integration",
+						},
 					},
 				},
 			},
