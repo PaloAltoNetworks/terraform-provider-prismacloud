@@ -319,7 +319,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 						"account_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "Azure account ID",
+							Description: "Oci account ID",
 						},
 						"enabled": {
 							Type:        schema.TypeBool,
@@ -364,7 +364,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 						"user_ocid": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "OCI identity user name that you define. Can be an existing user that has the right privileges",
+							Description: "OCI identity user ocid that you define. Can be an existing user that has the right privileges",
 						},
 					},
 				},

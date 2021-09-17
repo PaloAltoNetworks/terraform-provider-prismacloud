@@ -11,6 +11,7 @@ Manage a cloud account on the Prisma Cloud platform.
 ```hcl
 # Single AWS account type.
 resource "prismacloud_cloud_account" "aws_example" {
+    disable_on_destroy = true
     aws {
         name = "myAwsAccountName"
         account_id = "accountIdHere"
@@ -60,13 +61,13 @@ resource "prismacloud_cloud_account" "csv" {
 
 The type of cloud account to add.  You need to specify one and only one of these cloud types.
 
+* `disable_on_destroy` - (Optional, bool) To disable cloud account instead of deleting when calling Terraform destroy (default: `false`).
 * `aws` - AWS account type spec, defined [below](#aws).
 * `azure` - Azure account type spec, defined [below](#azure).
 * `gcp` - GCP account type spec, defined [below](#gcp).
 * `alibaba_cloud` - Alibaba account type spec, defined [below](#alibaba-cloud).
 
 ### AWS
--> AWS Org support is not available yet
 * `account_id` - (Required) AWS account ID.
 * `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
 * `external_id` - (Required) AWS account external ID.
@@ -91,7 +92,6 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `protection_mode` - (Optional) Defaults to "MONITOR"
 
 ### GCP
-->GCP Org support is not available yet 
 * `account_id` - (Required) GCP project ID.
 * `enabled` - (Optional, bool) Whether or not the account is enabled (defualt: `true`).
 * `group_ids` - (Required) List of account IDs to which you are assigning this account.
