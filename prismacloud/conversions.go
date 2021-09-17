@@ -80,6 +80,7 @@ func ToInterfaceMap(m map[string]interface{}, k string) map[string]interface{} {
 func ParseTimeRange(tr map[string]interface{}) timerange.TimeRange {
 	if data := ToInterfaceMap(tr, "absolute"); len(data) != 0 {
 		return timerange.TimeRange{
+			Type: "absolute",
 			Value: timerange.Absolute{
 				Start: data["start"].(int),
 				End:   data["end"].(int),
@@ -87,6 +88,7 @@ func ParseTimeRange(tr map[string]interface{}) timerange.TimeRange {
 		}
 	} else if data := ToInterfaceMap(tr, "relative"); len(data) != 0 {
 		return timerange.TimeRange{
+			Type: "relative",
 			Value: timerange.Relative{
 				Amount: data["amount"].(int),
 				Unit:   data["unit"].(string),
@@ -94,9 +96,8 @@ func ParseTimeRange(tr map[string]interface{}) timerange.TimeRange {
 		}
 	} else if data := ToInterfaceMap(tr, "to_now"); len(data) != 0 {
 		return timerange.TimeRange{
-			Value: timerange.ToNow{
-				Unit: data["unit"].(string),
-			},
+			Type:  "to_now",
+			Value: data["unit"].(string),
 		}
 	}
 
