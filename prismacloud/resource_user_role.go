@@ -103,11 +103,41 @@ func resourceUserRole() *schema.Resource {
 					},
 				},
 			},
+			"additional_attributes": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "Additional Parameters",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"only_allow_ci_access": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Allows only CI Access",
+						},
+						"only_allow_compute_access": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Give access to only compute tab and access key tab",
+						},
+						"only_allow_read_access": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Allow only read access",
+						},
+						"has_defender_permissions": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Has defender Permissions",
+						},
+					},
+				},
+			},
 		},
 	}
 }
 
 func parseUserRole(d *schema.ResourceData) *role.Role {
+	aspec := d.Get("additional_attributes").([]interface{})[0].(map[string]interface{})
 	return &role.Role{
 		Name:                    d.Get("name").(string),
 		Description:             d.Get("description").(string),
@@ -115,6 +145,12 @@ func parseUserRole(d *schema.ResourceData) *role.Role {
 		AccountGroupIds:         SetToStringSlice(d.Get("account_group_ids").(*schema.Set)),
 		AssociatedUsers:         SetToStringSlice(d.Get("associated_users").(*schema.Set)),
 		RestrictDismissalAccess: d.Get("restrict_dismissal_access").(bool),
+		AdditionalAttributes: role.AdditionalAttributes{
+			OnlyAllowCIAccess:      aspec["only_allow_ci_access"].(bool),
+			OnlyAllowComputeAccess: aspec["only_allow_compute_access"].(bool),
+			OnlyAllowReadAccess:    aspec["only_allow_read_access"].(bool),
+			HasDefenderPermissions: aspec["has_defender_permissions"].(bool),
+		},
 	}
 }
 
@@ -127,6 +163,16 @@ func saveUserRole(d *schema.ResourceData, obj role.Role) {
 	d.Set("role_type", obj.RoleType)
 	d.Set("last_modified_by", obj.LastModifiedBy)
 	d.Set("last_modified_ts", obj.LastModifiedTs)
+
+	add_attr := map[string]interface{}{
+		"only_allow_ci_access":      obj.AdditionalAttributes.OnlyAllowCIAccess,
+		"only_allow_compute_access": obj.AdditionalAttributes.OnlyAllowComputeAccess,
+		"only_allow_read_access":    obj.AdditionalAttributes.OnlyAllowReadAccess,
+		"has_defender_permissions":  obj.AdditionalAttributes.HasDefenderPermissions,
+	}
+	if err := d.Set("additional_attributes", []interface{}{add_attr}); err != nil {
+		log.Printf("[WARN] Error setting 'rule' for %q: %s", d.Id(), err)
+	}
 	if err = d.Set("account_group_ids", StringSliceToSet(obj.AccountGroupIds)); err != nil {
 		log.Printf("[WARN] Error setting 'account_group_ids' field for %q: %s", d.Id(), err)
 	}
