@@ -53,6 +53,7 @@ One and only one of these must be present:
 * `resource_id_path` - Resource ID path
 * `criteria` - (Required) Saved search ID that defines the rule criteria
 * `parameters` - (Required, map of strings) Parameters. Valid keys are `withIac` and `savedSearch` and value is `"true"` or `"false"`
+  (`SavedSearch` is true when we are using savedsearch and it is false when we directly give search query and `withIac` is true for build policies otherwise false)
 * `rule_type` - (Required) Type of rule or RQL query.  Valid values are `Config`, `AuditEvent`, or `Network`
 
 ### Remediation
