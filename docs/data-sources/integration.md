@@ -61,6 +61,8 @@ One of the following must be specified:
 * `headers` - Webhook headers, as defined [below](#headers).
 * `auth_token` - PagerDuty authentication token for the event collector.
 * `integration_key` - PagerDuty integration key.
+* `source_id` - GCP Source ID for Google CSCC integration.
+* `org_id` - GCP Organization ID for Google CSCC integration.
 
 ### Headers
 
