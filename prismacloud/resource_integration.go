@@ -214,6 +214,16 @@ func resourceIntegration() *schema.Resource {
 							Optional:    true,
 							Description: "PagerDuty integration key",
 						},
+						"source_id": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "GCP Source ID for Google CSCC integration",
+						},
+						"org_id": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "GCP Organization ID for Google CSCC integration",
+						},
 					},
 				},
 			},
@@ -265,6 +275,8 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 			Headers:        headers,
 			AuthToken:      ic["auth_token"].(string),
 			IntegrationKey: ic["integration_key"].(string),
+			SourceId:       ic["source_id"].(string),
+			OrgId:          ic["org_id"].(string),
 		},
 		Enabled: d.Get("enabled").(bool),
 	}
@@ -314,6 +326,8 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 		"headers":         nil,
 		"auth_token":      o.IntegrationConfig.AuthToken,
 		"integration_key": o.IntegrationConfig.IntegrationKey,
+		"source_id":       o.IntegrationConfig.SourceId,
+		"org_id":          o.IntegrationConfig.OrgId,
 	}
 	if len(o.IntegrationConfig.Tables) != 0 {
 		tables := make(map[string]interface{})

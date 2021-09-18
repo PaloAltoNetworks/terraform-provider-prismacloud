@@ -87,7 +87,9 @@ This section may be present or may be ommitted:
 * `policy_mode` - Policy mode
 * `system_default` - (bool) If policy is a system default policy or not
 * `remediable` - (bool) Is remediable or not
+
   In each `Compliance Metadata` section, the following attributes are available:
+
 
 
 ### Compliance Metadata

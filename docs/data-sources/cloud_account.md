@@ -27,6 +27,7 @@ The following are the params that this data source supports.  At least one of th
 
 The cloud type given above determines which of the attributes are populated:
 
+* `disable_on_destroy` - (bool) To disable cloud account instead of deleting when calling Terraform destroy.
 * `aws` - AWS account type spec, defined [below](#aws).
 * `azure` - Azure account type spec, defined [below](#azure).
 * `gcp` - GCP account type spec, defined [below](#gcp).
