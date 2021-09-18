@@ -516,7 +516,7 @@ func saveAlertRule(d *schema.ResourceData, o rule.Rule) {
 				"last_sent_ts":          nc.LastSentTs,
 				"config_type":           nc.Type,
 				"template_id":           nc.TemplateId,
-				"timezone_id":           nc.Timezone.Id,
+				"timezone_id":           nc.TimezoneId,
 				"day_of_month":          nc.DayOfMonth,
 				"r_rule_schedule":       nc.RruleSchedule,
 				"frequency_from_r_rule": nc.FrequencyFromRrule,
