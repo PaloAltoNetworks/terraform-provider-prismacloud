@@ -534,7 +534,6 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 			TimeRange: tr,
 		}
 
-		_, err := search.NetworkSearch(client, req)
 		resp, err := search.NetworkSearch(client, req)
 		if err != nil {
 			return err
