@@ -27,7 +27,7 @@ resource "prismacloud_policy" "example" {
 ## Argument Reference
 
 * `name` - (Required) Policy name
-* `policy_type` - (Required) Policy type.  Valid values are `config`, `audit_event`, or `network`
+* `policy_type` - (Required) Policy type.  Valid values are `config`, `audit_event`, `iam`, `network`, or `anomaly`
 * `description` - Description
 * `severity` - Severity.  Valid values are `low` (default), `medium`, or `high`.
 * `recommendation` - Remediation recommendation
@@ -53,8 +53,8 @@ One and only one of these must be present:
 * `resource_id_path` - Resource ID path
 * `criteria` - (Required) Saved search ID that defines the rule criteria
 * `parameters` - (Required, map of strings) Parameters. Valid keys are `withIac` and `savedSearch` and value is `"true"` or `"false"`
-  (`SavedSearch` is true when we are using savedsearch and it is false when we directly give search query and `withIac` is true for build policies otherwise false)
-* `rule_type` - (Required) Type of rule or RQL query.  Valid values are `Config`, `AuditEvent`, or `Network`
+(`SavedSearch` is true when we are using savedsearch and it is false when we directly give search query and `withIac` is true for build policies otherwise false)
+* `rule_type` - (Required) Type of rule or RQL query.  Valid values are `Config`, `AuditEvent`, `IAM`, `Network`, or `Anomaly`
 
 ### Remediation
 
@@ -87,9 +87,9 @@ This section may be present or may be ommitted:
 * `policy_mode` - Policy mode
 * `system_default` - (bool) If policy is a system default policy or not
 * `remediable` - (bool) Is remediable or not
+
 In each `Compliance Metadata` section, the following attributes are available:
 
-  
 ### Compliance Metadata
 
 * `standard_name` - Compliance standard name
