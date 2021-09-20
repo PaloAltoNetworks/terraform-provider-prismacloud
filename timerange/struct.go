@@ -3,6 +3,7 @@ package timerange
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 // TimeRange is the time range model for Prisma Cloud.
@@ -19,7 +20,7 @@ func (o *TimeRange) SetType() error {
 		o.Type = TypeAbsolute
 	case Relative:
 		o.Type = TypeRelative
-	case ToNow:
+	case string:
 		o.Type = TypeToNow
 	case nil:
 		return fmt.Errorf("time range must be specified")
@@ -54,9 +55,7 @@ func (o *TimeRange) SetValue() error {
 		o.Value = v
 	case TypeToNow:
 		v := ToNow{}
-		if err = json.Unmarshal(body, &v); err != nil {
-			return err
-		}
+		v.Unit, _ = strconv.Unquote(string(body))
 		o.Value = v
 	}
 
