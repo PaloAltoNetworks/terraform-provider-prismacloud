@@ -57,7 +57,7 @@ func resourceAlertRule() *schema.Resource {
 				},
 			},
 			"policy_labels": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Optional:    true,
 				Description: "Policy labels",
 				Elem: &schema.Schema{
@@ -65,7 +65,7 @@ func resourceAlertRule() *schema.Resource {
 				},
 			},
 			"excluded_policies": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Optional:    true,
 				Description: "List of policies to exclude from scan",
 				Elem: &schema.Schema{
@@ -119,7 +119,7 @@ func resourceAlertRule() *schema.Resource {
 				Description: "Owner",
 			},
 			"notification_channels": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: "List of notification channels",
 				Elem: &schema.Schema{
@@ -145,7 +145,7 @@ func resourceAlertRule() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_groups": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Optional:    true,
 							Description: "List of account groups",
 							Elem: &schema.Schema{
@@ -153,7 +153,7 @@ func resourceAlertRule() *schema.Resource {
 							},
 						},
 						"excluded_accounts": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Optional:    true,
 							Description: "List of excluded accounts",
 							Elem: &schema.Schema{
@@ -161,7 +161,7 @@ func resourceAlertRule() *schema.Resource {
 							},
 						},
 						"regions": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Optional:    true,
 							Description: "List of regions",
 							Elem: &schema.Schema{
@@ -201,7 +201,7 @@ func resourceAlertRule() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"config_id": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Alert rule notification config ID",
 						},
 						"frequency": {
@@ -224,7 +224,7 @@ func resourceAlertRule() *schema.Resource {
 							Description: "Scan enabled",
 						},
 						"recipients": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Optional:    true,
 							Description: "List of unique email addresses to notify",
 							Elem: &schema.Schema{
@@ -285,12 +285,12 @@ func resourceAlertRule() *schema.Resource {
 						},
 						"timezone_id": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Timezone ID",
 						},
 						"day_of_month": {
 							Type:        schema.TypeInt,
-							Optional:    true,
+							Computed:    true,
 							Description: "Day of month",
 						},
 						"r_rule_schedule": {
@@ -300,17 +300,17 @@ func resourceAlertRule() *schema.Resource {
 						},
 						"frequency_from_r_rule": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Frequency from R rule",
 						},
 						"hour_of_day": {
 							Type:        schema.TypeInt,
-							Optional:    true,
+							Computed:    true,
 							Description: "Hour of day",
 						},
 						"days_of_week": {
 							Type:        schema.TypeList,
-							Optional:    true,
+							Computed:    true,
 							Description: "Days of week",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -339,17 +339,17 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 
 	accountGroups := []string{}
 	if tg := tgt["account_groups"]; tg != nil {
-		accountGroups = ListToStringSlice(tg.([]interface{}))
+		accountGroups = SetToStringSlice(tg.(*schema.Set))
 	}
 
 	var excludedAccounts []string
 	if ea := tgt["excluded_accounts"]; ea != nil {
-		excludedAccounts = ListToStringSlice(ea.([]interface{}))
+		excludedAccounts = SetToStringSlice(ea.(*schema.Set))
 	}
 
 	var regions []string
 	if r := tgt["regions"]; r != nil {
-		regions = ListToStringSlice(r.([]interface{}))
+		regions = SetToStringSlice(r.(*schema.Set))
 	}
 
 	var tags []rule.Tag
@@ -372,8 +372,8 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 		Enabled:            d.Get("enabled").(bool),
 		ScanAll:            d.Get("scan_all").(bool),
 		Policies:           SetToStringSlice(d.Get("policies").(*schema.Set)),
-		PolicyLabels:       ListToStringSlice(d.Get("policy_labels").([]interface{})),
-		ExcludedPolicies:   ListToStringSlice(d.Get("excluded_policies").([]interface{})),
+		PolicyLabels:       SetToStringSlice(d.Get("policy_labels").(*schema.Set)),
+		ExcludedPolicies:   SetToStringSlice(d.Get("excluded_policies").(*schema.Set)),
 		Target: rule.Target{
 			AccountGroups:    accountGroups,
 			ExcludedAccounts: excludedAccounts,
@@ -417,22 +417,17 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 			}
 
 			ans.NotificationConfig = append(ans.NotificationConfig, rule.NotificationConfig{
-				Id:                 nc["config_id"].(string),
 				Frequency:          nc["frequency"].(string),
 				Enabled:            nc["enabled"].(bool),
-				Recipients:         ListToStringSlice(nc["recipients"].([]interface{})),
+				Recipients:         SetToStringSlice(nc["recipients"].(*schema.Set)),
 				DetailedReport:     nc["detailed_report"].(bool),
 				WithCompression:    nc["with_compression"].(bool),
 				IncludeRemediation: nc["include_remediation"].(bool),
 				Type:               nc["config_type"].(string),
 				TemplateId:         nc["template_id"].(string),
-				TimezoneId:         nc["timezone_id"].(string),
-				DayOfMonth:         nc["day_of_month"].(int),
 				RruleSchedule:      nc["r_rule_schedule"].(string),
-				FrequencyFromRrule: nc["frequency_from_r_rule"].(string),
-				HourOfDay:          nc["hour_of_day"].(int),
-				DaysOfWeek:         days,
 			})
+
 		}
 	}
 

@@ -53,7 +53,7 @@ func dataSourceAlertRule() *schema.Resource {
 				},
 			},
 			"policy_labels": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: "Policy labels",
 				Elem: &schema.Schema{
@@ -61,7 +61,7 @@ func dataSourceAlertRule() *schema.Resource {
 				},
 			},
 			"excluded_policies": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: "List of policies to exclude from scan",
 				Elem: &schema.Schema{
@@ -114,7 +114,7 @@ func dataSourceAlertRule() *schema.Resource {
 				Description: "Owner",
 			},
 			"notification_channels": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: "List of notification channels",
 				Elem: &schema.Schema{
@@ -138,7 +138,7 @@ func dataSourceAlertRule() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_groups": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of account groups",
 							Elem: &schema.Schema{
@@ -146,7 +146,7 @@ func dataSourceAlertRule() *schema.Resource {
 							},
 						},
 						"excluded_accounts": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of excluded accounts",
 							Elem: &schema.Schema{
@@ -154,7 +154,7 @@ func dataSourceAlertRule() *schema.Resource {
 							},
 						},
 						"regions": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of regions",
 							Elem: &schema.Schema{
@@ -208,7 +208,7 @@ func dataSourceAlertRule() *schema.Resource {
 							Description: "Scan enabled",
 						},
 						"recipients": {
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Computed:    true,
 							Description: "List of unique email addresses to notify",
 							Elem: &schema.Schema{
