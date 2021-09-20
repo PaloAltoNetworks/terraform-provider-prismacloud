@@ -217,7 +217,7 @@ func cloudAccountOrgFromEnv(style, label, name string, groups []string) (string,
 			"PRISMACLOUD_GCPORG_DATAFLOW_ENABLED_PROJECT",
 			"PRISMACLOUD_GCPORG_FLOW_LOG_STORAGE_BUCKET",
 			"PRISMACLOUD_GCPORG_CREDENTIALS_FILE",
-			"PRISMACLOUD_GCPORG_ORGANIAATION_NAME",
+			"PRISMACLOUD_GCPORG_ORGANIZATION_NAME",
 		},
 		org.TypeOci: []string{
 			"PRISMACLOUD_OCI_ACCOUNT_ID",
@@ -333,9 +333,11 @@ resource "prismacloud_org_cloud_account" %q {
 
 	buf.WriteString(`
         group_ids = [`)
-	for _, g := range groups {
-		buf.WriteString(fmt.Sprintf(`
+	if style != org.TypeOci {
+		for _, g := range groups {
+			buf.WriteString(fmt.Sprintf(`
             %s,`, g))
+		}
 	}
 	buf.WriteString(`
         ]

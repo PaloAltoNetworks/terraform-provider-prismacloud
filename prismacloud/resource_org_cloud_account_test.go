@@ -126,13 +126,13 @@ func TestAccCloudAccountOci(t *testing.T) {
 		CheckDestroy: testAccCloudorgAccountDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCloudorgAccountConfig(org.TypeOci, g1, g2, name, []string{"prismacloud_account_group.x.group_id"}),
+				Config: testAccCloudorgAccountConfig(org.TypeOci, g1, g2, name, nil),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckCloudAccountOciExists("prismacloud_org_cloud_account.test", &o),
 				),
 			},
 			{
-				Config: testAccCloudorgAccountConfig(org.TypeOci, g1, g2, name, []string{"prismacloud_account_group.x.group_id", "prismacloud_account_group.y.group_id"}),
+				Config: testAccCloudorgAccountConfig(org.TypeOci, g1, g2, name, nil),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckCloudAccountOciExists("prismacloud_org_cloud_account.test", &o),
 				),
