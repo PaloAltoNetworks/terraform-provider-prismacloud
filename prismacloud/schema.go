@@ -90,31 +90,19 @@ func timeRangeSchema(style string) *schema.Schema {
 				Type:        schema.TypeList,
 				Description: "An absolute time range",
 				MaxItems:    1,
-				ConflictsWith: []string{
-					"time_range.relative",
-					"time_range.to_now",
-				},
-				Elem: absolute_resource,
+				Elem:        absolute_resource,
 			},
 			"relative": {
 				Type:        schema.TypeList,
 				Description: "Relative time range",
 				MaxItems:    1,
-				ConflictsWith: []string{
-					"time_range.absolute",
-					"time_range.to_now",
-				},
-				Elem: relative_resource,
+				Elem:        relative_resource,
 			},
 			"to_now": {
 				Type:        schema.TypeList,
 				Description: "From some time in the past to now",
 				MaxItems:    1,
-				ConflictsWith: []string{
-					"time_range.absolute",
-					"time_range.relative",
-				},
-				Elem: to_now_resource,
+				Elem:        to_now_resource,
 			},
 		},
 	}
@@ -161,6 +149,36 @@ func timeRangeSchema(style string) *schema.Schema {
 
 		model.Schema["to_now"].Optional = true
 		to_now_resource.Schema["unit"].Required = true
+	}
+
+	switch style {
+	case "resource_report", "data_source_report":
+		model.Schema["absolute"].ConflictsWith = []string{
+			"target.time_range.relative",
+			"target.time_range.to_now",
+		}
+		model.Schema["relative"].ConflictsWith = []string{
+			"target.time_range.absolute",
+			"target.time_range.to_now",
+		}
+		model.Schema["to_now"].ConflictsWith = []string{
+			"target.time_range.absolute",
+			"target.time_range.relative",
+		}
+
+	default:
+		model.Schema["absolute"].ConflictsWith = []string{
+			"time_range.relative",
+			"time_range.to_now",
+		}
+		model.Schema["relative"].ConflictsWith = []string{
+			"time_range.absolute",
+			"time_range.to_now",
+		}
+		model.Schema["to_now"].ConflictsWith = []string{
+			"time_range.absolute",
+			"time_range.relative",
+		}
 	}
 
 	return ans

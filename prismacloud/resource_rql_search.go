@@ -28,7 +28,7 @@ func resourceRqlSearch() *schema.Resource {
 					"config",
 					// Remove "network" as an option until the network return structure
 					// is added to the prisma-cloud-go library.
-					//"network",
+					"network",
 					"event",
 					"iam",
 				}, false),
@@ -334,6 +334,26 @@ func resourceRqlSearch() *schema.Resource {
 									},
 								},
 							},
+			"network_data": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "List of network data structs",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Account",
+						},
+						"region_id": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Region ID",
+						},
+						"account_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "account_name",
 						},
 					},
 				},
@@ -485,6 +505,7 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		d.Set("description", resp.Description)
 		d.Set("event_data", nil)
 		d.Set("iam_data", nil)
+		d.Set("network_data", nil)
 
 		if len(resp.Data.Items) == 0 {
 			d.Set("config_data", nil)
@@ -510,9 +531,37 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 			TimeRange: tr,
 		}
 
-		_, err := search.NetworkSearch(client, req)
+		resp, err := search.NetworkSearch(client, req)
 		if err != nil {
 			return err
+		}
+
+		if err = d.Set("group_by", resp.GroupBy); err != nil {
+			log.Printf("[WARN] Error setting 'group_by' for %q: %s", d.Id(), err)
+		}
+		d.Set("search_id", resp.Id)
+		d.Set("cloud_type", resp.CloudType)
+		d.Set("name", resp.Name)
+		d.Set("description", resp.Description)
+		d.Set("event_data", nil)
+		d.Set("config_data", nil)
+    d.Set("iam_data", nil)
+
+		if len(resp.Data.Items) == 0 {
+			d.Set("network_data", nil)
+		} else {
+			list := make([]interface{}, 0, len(resp.Data.Items))
+			for _, x := range resp.Data.Items {
+				list = append(list, map[string]interface{}{
+					"account":      x.Account,
+					"region_id":    x.RegionId,
+					"account_name": x.AccountName,
+				})
+			}
+
+			if err = d.Set("network_data", list); err != nil {
+				log.Printf("[WARN] Error setting 'network_data' for %q: %s", d.Id(), err)
+			}
 		}
 	case "event":
 		req := search.EventRequest{
@@ -536,6 +585,7 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		d.Set("description", resp.Description)
 		d.Set("config_data", nil)
 		d.Set("iam_data", nil)
+		d.Set("network_data", nil)
 
 		if len(resp.Data.Items) == 0 {
 			d.Set("event_data", nil)
@@ -571,6 +621,7 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		d.Set("saved", resp.Saved)
 		d.Set("config_data", nil)
 		d.Set("event_data", nil)
+    d.Set("network_data", nil)
 
 		tr := flattenTimeRange(resp.TimeRange)
 		if err = d.Set("time_range", tr); err != nil {

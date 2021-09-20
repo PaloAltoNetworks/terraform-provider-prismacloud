@@ -36,6 +36,14 @@ func resourceAccountGroup() *schema.Resource {
 				Optional:    true,
 				Description: "Description",
 			},
+			"account_ids": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "Cloud account IDs",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"last_modified_by": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -46,69 +54,62 @@ func resourceAccountGroup() *schema.Resource {
 				Computed:    true,
 				Description: "Last modified timestamp",
 			},
-			"account_ids": {
-				Type:        schema.TypeList,
-				Computed:    true,
-				Description: "Cloud account IDs",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
 			/*
-				"accounts": {
-					Type:        schema.TypeList,
-					Computed:    true,
-					Description: "Associated cloud accounts",
-					Elem: &schema.Resource{
-						Schema: map[string]*schema.Schema{
-							"account_id": {
-								Type:        schema.TypeString,
-								Computed:    true,
-								Description: "Associated cloud account ID",
-							},
-							"name": {
-								Type:        schema.TypeString,
-								Computed:    true,
-								Description: "Associated cloud account name",
-							},
-							"account_type": {
-								Type:        schema.TypeString,
-								Computed:    true,
-								Description: "Associated cloud account type",
-							},
-						},
-					},
-				},
-				"alert_rules": {
-					Type:        schema.TypeList,
-					Computed:    true,
-					Description: "Singly associated alert rules which cannot exist in the system without the account group",
-					Elem: &schema.Resource{
-						Schema: map[string]*schema.Schema{
-							"alert_id": {
-								Type:        schema.TypeString,
-								Computed:    true,
-								Description: "The alert ID",
-							},
-							"name": {
-								Type:        schema.TypeString,
-								Computed:    true,
-								Description: "Alert name",
-							},
-						},
-					},
-				},
+			   "accounts": {
+			      Type:        schema.TypeList,
+			      Computed:    true,
+			      Description: "Associated cloud accounts",
+			      Elem: &schema.Resource{
+			         Schema: map[string]*schema.Schema{
+			            "account_id": {
+			               Type:        schema.TypeString,
+			               Computed:    true,
+			               Description: "Associated cloud account ID",
+			            },
+			            "name": {
+			               Type:        schema.TypeString,
+			               Computed:    true,
+			               Description: "Associated cloud account name",
+			            },
+			            "account_type": {
+			               Type:        schema.TypeString,
+			               Computed:    true,
+			               Description: "Associated cloud account type",
+			            },
+			         },
+			      },
+			   },
+			   "alert_rules": {
+			      Type:        schema.TypeList,
+			      Computed:    true,
+			      Description: "Singly associated alert rules which cannot exist in the system without the account group",
+			      Elem: &schema.Resource{
+			         Schema: map[string]*schema.Schema{
+			            "alert_id": {
+			               Type:        schema.TypeString,
+			               Computed:    true,
+			               Description: "The alert ID",
+			            },
+			            "name": {
+			               Type:        schema.TypeString,
+			               Computed:    true,
+			               Description: "Alert name",
+			            },
+			         },
+			      },
+			   },
 			*/
 		},
 	}
 }
 
 func parseAccountGroup(d *schema.ResourceData, id string) group.Group {
+	account_ids := d.Get("account_ids")
 	return group.Group{
 		Id:          id,
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
-		AccountIds:  []string{},
+		AccountIds:  SetToStringSlice(account_ids.(*schema.Set)),
 	}
 }
 
@@ -201,7 +202,7 @@ func updateAccountGroup(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	obj := parseAccountGroup(d, d.Id())
 
-	if err := group.UpdateUsingLiveAccountIds(client, obj); err != nil {
+	if err := group.Update(client, obj); err != nil {
 		return err
 	}
 
@@ -212,8 +213,13 @@ func deleteAccountGroup(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
-	err := group.Delete(client, id)
-	if err != nil {
+	obj := parseAccountGroup(d, id)
+	obj.AccountIds = make([]string, 0)
+	if err := group.Update(client, obj); err != nil {
+		return err
+	}
+
+	if err := group.Delete(client, id); err != nil {
 		if err != pc.ObjectNotFoundError {
 			return err
 		}

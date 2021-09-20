@@ -45,7 +45,7 @@ func dataSourceAccountGroup() *schema.Resource {
 				Description: "Last modified timestamp",
 			},
 			"account_ids": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: "Cloud account IDs",
 				Elem: &schema.Schema{
