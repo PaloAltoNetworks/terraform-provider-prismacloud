@@ -16,7 +16,6 @@ func resourceRqlSearch() *schema.Resource {
 		Read:   readRqlSearch,
 		Update: createUpdateRqlSearch,
 		Delete: deleteRqlSearch,
-
 		Schema: map[string]*schema.Schema{
 			// Input.
 			"search_type": {
@@ -28,6 +27,7 @@ func resourceRqlSearch() *schema.Resource {
 					"config",
 					// Remove "network" as an option until the network return structure
 					// is added to the prisma-cloud-go library.
+					//"network",
 					"network",
 					"event",
 					"iam",
@@ -47,7 +47,6 @@ func resourceRqlSearch() *schema.Resource {
 				Description: "Limit results",
 				Default:     10,
 			},
-
 			// Output.
 			"group_by": {
 				Type:        schema.TypeList,
@@ -126,6 +125,30 @@ func resourceRqlSearch() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 							Description: "Region API identifier",
+						},
+					},
+				},
+			},
+			"network_data": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "List of network data structs",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Account",
+						},
+						"region_id": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Region ID",
+						},
+						"account_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "account_name",
 						},
 					},
 				},
@@ -334,26 +357,6 @@ func resourceRqlSearch() *schema.Resource {
 									},
 								},
 							},
-			"network_data": {
-				Type:        schema.TypeList,
-				Computed:    true,
-				Description: "List of network data structs",
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"account": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: "Account",
-						},
-						"region_id": {
-							Type:        schema.TypeInt,
-							Computed:    true,
-							Description: "Region ID",
-						},
-						"account_name": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: "account_name",
 						},
 					},
 				},
@@ -504,8 +507,8 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		d.Set("name", resp.Name)
 		d.Set("description", resp.Description)
 		d.Set("event_data", nil)
-		d.Set("iam_data", nil)
 		d.Set("network_data", nil)
+		d.Set("iam_data", nil)
 
 		if len(resp.Data.Items) == 0 {
 			d.Set("config_data", nil)
@@ -531,6 +534,7 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 			TimeRange: tr,
 		}
 
+		_, err := search.NetworkSearch(client, req)
 		resp, err := search.NetworkSearch(client, req)
 		if err != nil {
 			return err
@@ -545,7 +549,7 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		d.Set("description", resp.Description)
 		d.Set("event_data", nil)
 		d.Set("config_data", nil)
-    d.Set("iam_data", nil)
+		d.Set("iam_data", nil)
 
 		if len(resp.Data.Items) == 0 {
 			d.Set("network_data", nil)
@@ -570,12 +574,10 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 			Limit:     limit,
 			TimeRange: tr,
 		}
-
 		resp, err := search.EventSearch(client, req)
 		if err != nil {
 			return err
 		}
-
 		if err = d.Set("group_by", resp.GroupBy); err != nil {
 			log.Printf("[WARN] Error setting 'group_by' for %q: %s", d.Id(), err)
 		}
@@ -584,8 +586,8 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		d.Set("name", resp.Name)
 		d.Set("description", resp.Description)
 		d.Set("config_data", nil)
-		d.Set("iam_data", nil)
 		d.Set("network_data", nil)
+		d.Set("iam_data", nil)
 
 		if len(resp.Data.Items) == 0 {
 			d.Set("event_data", nil)
@@ -598,7 +600,6 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 					"region_api_identifier": x.RegionApiIdentifier,
 				})
 			}
-
 			if err = d.Set("event_data", list); err != nil {
 				log.Printf("[WARN] Error setting 'event_data' for %q: %s", d.Id(), err)
 			}
@@ -620,8 +621,8 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		d.Set("description", resp.Description)
 		d.Set("saved", resp.Saved)
 		d.Set("config_data", nil)
+		d.Set("network_data", nil)
 		d.Set("event_data", nil)
-    d.Set("network_data", nil)
 
 		tr := flattenTimeRange(resp.TimeRange)
 		if err = d.Set("time_range", tr); err != nil {
@@ -689,10 +690,8 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 
 		}
 	}
-
 	return nil
 }
-
 func deleteRqlSearch(d *schema.ResourceData, meta interface{}) error {
 	// There is no way to delete a search, so this is a no-op.
 	return nil
