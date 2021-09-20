@@ -43,6 +43,10 @@ type IntegrationConfig struct {
 
 	// Slack
 	WebHookUrl string `json:"webhookUrl,omitempty"`
+
+	// Google CSCC
+	SourceId string `json:"sourceId,omitempty"`
+	OrgId    string `json:"orgId,omitempty"`
 }
 
 type Header struct {
