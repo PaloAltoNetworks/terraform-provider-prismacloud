@@ -24,6 +24,14 @@ resource "prismacloud_user_role" "example" {
 * `account_group_ids` - (Optional) List of accessible account group IDs.
 * `associated_users` - (Optional) List of associated application users which cannot exist in the system without the user role.
 * `restrict_dismissal_access` - (Optional, bool) Restrict dismissal access.
+* `additional_attributes` - (Optional) An Additional attributesspec, as defined [below](#Additional Attributes).
+
+## Additional Attributes
+
+* `only_allow_ci_access` - (Optional, bool) - Allows only CI Access
+* `only_allow_read_access` - (Optional, bool) - Allow read only access (True for Account Group Read Only user role)
+* `has_defender_permissions`- (Optional, bool) - Has defender Permissions (True for Cloud Provisioning Admin user Role)
+* `only_allow_compute_access`- (Optional, bool) - Access to only the Compute tab and Access keys
 
 ## Attribute Reference
 
