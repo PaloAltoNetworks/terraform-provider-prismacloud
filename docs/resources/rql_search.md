@@ -29,10 +29,10 @@ resource "prismacloud_rql_search" "example" {
 The following arguments are supported:
 
 * `search_type` - (Required) The search type. Valid values are `config`
-  (default) `event` and `iam`.
+  (default) `event`, `network` and `iam`.
 * `query` - (Required) The RQL query.
 * `limit` - (int) Limit rules (default: `10`).
-* `time_range` - (Required for config and event RQL search) The RQL time range spec, as defined [below](#time-range).
+* `time_range` - (Required for config, event and network RQL search) The RQL time range spec, as defined [below](#time-range).
 
 ### Time Range
 
@@ -67,6 +67,7 @@ The following attributes are supported:
 * `description` - Description.
 * `config_data` - (for `search_type="config"`, list) List of config_data specs, as defined below.
 * `event_data` - (For `search_type="event"`, list) List of event_data specs, as defined below.
+* `network_data` - (For `search_type="network"`, list) List of network_data specs, as defined below.
 * `iam_data` - (For `search_type="iam"`, list) List of iam_data specs, as defined below.
 
 `config_data` supports the following attributes:
@@ -80,6 +81,12 @@ The following attributes are supported:
 * `account` - Account.
 * `region_id` - (int) Region ID.
 * `region_api_identifier` - Region API identifier.
+
+`network_data` supports the following attributes:
+
+* `account` - Account.
+* `region_id` - (int) Region ID.
+* `account_name` - Account Name.
 
 `iam_data` supports the following attributes:
 
