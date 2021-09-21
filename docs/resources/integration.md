@@ -37,6 +37,9 @@ Refer to the [Prisma Cloud integration documentation](https://api.docs.prismaclo
 * `base_url` - Qualys Security Operations Center server API URL (without "http(s)")
 * `password` - (Qualys/ServiceNow) Password
 * `host_url` - ServiceNow URL.
+* `secret_key` - Secret Key for Jira.
+* `oauth_token` - Oauth Token for Jira.
+* `consumer_key` - Jira Consumer Key.
 * `tables` - (Map of bools) Key/value pairs that identify the ServiceNow module tables with which to integrate (e.g. - incident, sn_si_incident, or em_event).
 * `version` - ServiceNow release version.
 * `url` - Webhook URL.

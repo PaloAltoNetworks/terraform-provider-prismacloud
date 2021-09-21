@@ -2,6 +2,7 @@ package prismacloud
 
 import (
 	"log"
+	"strings"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
@@ -155,7 +156,32 @@ func resourceIntegration() *schema.Resource {
 						"host_url": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "ServiceNow URL",
+							Description: "ServiceNow URL/Jira Url",
+						},
+						"jira_username":{
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Jira account Username",
+						},
+						"jira_password":{
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Jira account password",
+						},
+						"secret_key":{
+							Type: 		schema.TypeString,
+							Optional:    true,
+							Description: "Jira Secret Key",
+						},
+						"oauth_token": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Jira Auth token",
+						},
+						"consumer_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Jira consumer key",
 						},
 						"tables": {
 							Type:        schema.TypeMap,
@@ -258,12 +284,13 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 		}
 	}
 
+
 	return integration.Integration{
 		Id:              id,
 		Name:            d.Get("name").(string),
 		Description:     d.Get("description").(string),
 		IntegrationType: d.Get("integration_type").(string),
-		IntegrationConfig: integration.IntegrationConfig{
+		IntegrationConfig : integration.IntegrationConfig{
 			QueueUrl:       ic["queue_url"].(string),
 			Login:          ic["login"].(string),
 			BaseUrl:        ic["base_url"].(string),
@@ -277,6 +304,11 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 			IntegrationKey: ic["integration_key"].(string),
 			SourceId:       ic["source_id"].(string),
 			OrgId:          ic["org_id"].(string),
+			ConsumerKey: 	ic["consumer_key"].(string),
+		},
+		JiraSecretKey: integration.SecretKeyJira{
+			JiraUserName:   ic["jira_username"].(string),
+			JiraPassword:   ic["jira_password"].(string),
 		},
 		Enabled: d.Get("enabled").(bool),
 	}
@@ -328,7 +360,16 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 		"integration_key": o.IntegrationConfig.IntegrationKey,
 		"source_id":       o.IntegrationConfig.SourceId,
 		"org_id":          o.IntegrationConfig.OrgId,
+		"consumer_key":    o.IntegrationConfig.ConsumerKey,
 	}
+	jskey := map[string]interface{}{
+		"jira_username" : o.JiraSecretKey.JiraUserName,
+		"jira_password" : o.JiraSecretKey.JiraPassword,
+	}
+	if err = d.Set("reason", []interface{}{jskey}); err != nil {
+		log.Printf("[WARN] Error setting 'jira secret key' for %s: %s", d.Id(), err)
+	}
+
 	if len(o.IntegrationConfig.Tables) != 0 {
 		tables := make(map[string]interface{})
 		for _, t := range o.IntegrationConfig.Tables {
@@ -357,7 +398,32 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 
 func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
+
 	o := parseIntegration(d, "")
+	log.Printf("create is called %d", o)
+	o.AuthUrlJira.HostUrl = o.IntegrationConfig.HostUrl
+	o.AuthUrlJira.ConsumerKey = o.IntegrationConfig.ConsumerKey
+	authurl, err := integration.JiraAuthurl(client, o.AuthUrlJira)
+	if err != nil{
+		return err
+	}
+	token := strings.Split(authurl, "=")
+	o.JiraSecretKey.OauthToken = token[1]
+	o.JiraSecretKey.Approve = "Allow"
+	log.Printf("%d secret key", o.JiraSecretKey)
+	secretKey, err := integration.JiraSecretKey(client, o.JiraSecretKey)
+	if err != nil{
+		return err
+	}
+	o.JiraToken.AuthenticationUrl = authurl
+	o.JiraToken.HostUrl = o.IntegrationConfig.HostUrl
+	o.JiraToken.ConsumerKey = o.IntegrationConfig.ConsumerKey
+	o.JiraToken.SecretKey = secretKey
+	o.JiraToken.TmpToken = token[1]
+
+	//jiraauthdetails := fmt.Sprintln(o.IntegrationConfig.JiraUserName, ":", o.IntegrationConfig.JiraPassword)
+	//jiraauthdetails:= "qa@redlock.io:nGISud3RdTZNCQ49DC6TA8B5"
+	//encodedjiraauthdetails := base64.StdEncoding.EncodeToString([]byte(jiraauthdetails))
 
 	if err := integration.Create(client, o); err != nil {
 		return err
@@ -372,6 +438,9 @@ func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	//ans, err1 := integration.Get(client, id)
+	//log.Printf("%d ans and %d err", ans, err1)
 
 	PollApiUntilSuccess(func() error {
 		_, err := integration.Get(client, id)
