@@ -63,3 +63,16 @@ func NetworkSearch(c pc.PrismaCloudClient, req NetworkRequest) (NetworkResponse,
 	_, err := c.Communicate("POST", path, nil, req, &resp)
 	return resp, err
 }
+
+// IamSearch performs an iam RQL search.
+func IamSearch(c pc.PrismaCloudClient, req IamRequest) (IamResponse, error) {
+	c.Log(pc.LogAction, "(get) performing %s", iamSingular)
+
+	var resp IamResponse
+
+	path := make([]string, 0, len(IamSuffix))
+	path = append(path, IamSuffix...)
+
+	_, err := c.Communicate("POST", path, nil, req, &resp)
+	return resp, err
+}

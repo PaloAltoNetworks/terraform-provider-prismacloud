@@ -39,8 +39,8 @@ type Tag struct {
 }
 
 type NotificationConfig struct {
-	Id                 string   `json:"id"`
-	Frequency          string   `json:"frequency"`
+	Id                 string   `json:"id,omitempty"`
+	Frequency          string   `json:"frequency,omitempty"`
 	Enabled            bool     `json:"enabled"`
 	Recipients         []string `json:"recipients"`
 	DetailedReport     bool     `json:"detailedReport"`
@@ -50,18 +50,12 @@ type NotificationConfig struct {
 	LastSentTs         int      `json:"last_send_ts"`
 	Type               string   `json:"type"`
 	TemplateId         string   `json:"templateId,omitempty"`
-	Timezone           Timezone `json:"timezone"`
-	DayOfMonth         int      `json:"dayOfMonth"`
-	RruleSchedule      string   `json:"rruleSchedule"`
-	FrequencyFromRrule string   `json:"frequencyFromRRule"`
-	HourOfDay          int      `json:"hourOfDay"`
-	DaysOfWeek         []Day    `json:"daysOfWeek"`
-}
-
-type Timezone struct {
-	Id string `json:"id"`
-	// TODO(gfreeman): add the rules when the data structure is known.
-	//Rules interface{} `json:"rules"`
+	TimezoneId         string   `json:"timezone,omitempty"`
+	DayOfMonth         int      `json:"dayOfMonth,omitempty"`
+	RruleSchedule      string   `json:"rruleSchedule,omitempty"`
+	FrequencyFromRrule string   `json:"frequencyFromRRule,omitempty"`
+	HourOfDay          int      `json:"hourOfDay,omitempty"`
+	DaysOfWeek         []Day    `json:"daysOfWeek,omitempty"`
 }
 
 type Day struct {

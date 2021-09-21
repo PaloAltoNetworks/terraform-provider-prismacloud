@@ -115,10 +115,91 @@ type NetworkRequest struct {
 }
 
 type NetworkResponse struct {
-	GroupBy     []string `json:"groupBy"`
-	Id          string   `json:"id"`
-	CloudType   string   `json:"cloudType"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	SearchType  string   `json:"searchType"`
+	GroupBy     []string    `json:"groupBy"`
+	Id          string      `json:"id"`
+	CloudType   string      `json:"cloudType"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	SearchType  string      `json:"searchType"`
+	Data        NetworkData `json:"data"`
+}
+
+type NetworkData struct {
+	Items []NetworkItem `json:"items"`
+}
+
+type NetworkItem struct {
+	Account     string `json:"account"`
+	RegionId    string `json:"regionId"`
+	AccountName string `json:"accountName"`
+	Ip          string `json:"ip"`
+	Name        string `json:"name"`
+	StateId     int    `json:"stateId"`
+	StateName   string `json:"stateName"`
+	Source      string `json:"source"`
+}
+
+type IamRequest struct {
+	Id    string `json:"id,omitempty"`
+	Query string `json:"query"`
+	Limit int    `json:"limit,omitempty"`
+}
+
+type IamResponse struct {
+	Id          string              `json:"id,omitempty"`
+	Name        string              `json:"name,omitempty"`
+	Description string              `json:"description,omitempty"`
+	SearchType  string              `json:"searchType,omitempty"`
+	Saved       bool                `json:"saved,omitempty"`
+	TimeRange   timerange.TimeRange `json:"timeRange,omitempty"`
+	Data        IamData             `json:"data,omitempty"`
+}
+
+type IamData struct {
+	Items []IamItem `json:"items"`
+}
+
+type IamItem struct {
+	AccessedResourcesCount          int         `json:"accessedResourcesCount"`
+	DestCloudAccount                string      `json:"destCloudAccount"`
+	DestCloudRegion                 string      `json:"destCloudRegion"`
+	DestCloudResourceRrn            string      `json:"destCloudResourceRrn"`
+	DestCloudServiceName            string      `json:"destCloudServiceName"`
+	DestCloudType                   string      `json:"destCloudType"`
+	DestResourceId                  string      `json:"destResourceId"`
+	DestResourceName                string      `json:"destResourceName"`
+	DestResourceType                string      `json:"destResourceType"`
+	EffectiveActionName             string      `json:"effectiveActionName"`
+	Exceptions                      []Exception `json:"exceptions"`
+	GrantedByCloudEntityId          string      `json:"grantedByCloudEntityId"`
+	GrantedByCloudEntityName        string      `json:"grantedByCloudEntityName"`
+	GrantedByCloudEntityRrn         string      `json:"grantedByCloudEntityRrn"`
+	GrantedByCloudEntityType        string      `json:"grantedByCloudEntityType"`
+	GrantedByCloudPolicyId          string      `json:"grantedByCloudPolicyId"`
+	GrantedByCloudPolicyName        string      `json:"grantedByCloudPolicyName"`
+	GrantedByCloudPolicyRrn         string      `json:"grantedByCloudPolicyRrn"`
+	GrantedByCloudPolicyType        string      `json:"grantedByCloudPolicyType"`
+	GrantedByCloudType              string      `json:"grantedByCloudType"`
+	MessageId                       string      `json:"id"`
+	IsWildCardDestCloudResourceName bool        `json:"isWildCardDestCloudResourceName"`
+	LastAccessDate                  string      `json:"lastAccessDate"`
+	SourceCloudAccount              string      `json:"sourceCloudAccount"`
+	SourceCloudRegion               string      `json:"sourceCloudRegion"`
+	SourceCloudResourceRrn          string      `json:"sourceCloudResourceRrn"`
+	SourceCloudServiceName          string      `json:"sourceCloudServiceName"`
+	SourceCloudType                 string      `json:"sourceCloudType"`
+	SourceIdpDomain                 string      `json:"sourceIdpDomain"`
+	SourceIdpEmail                  string      `json:"sourceIdpEmail"`
+	SourceIdpGroup                  string      `json:"sourceIdpGroup"`
+	SourceIdpRrn                    string      `json:"sourceIdpRrn"`
+	SourceIdpService                string      `json:"sourceIdpService"`
+	SourceIdpUsername               string      `json:"sourceIdpUsername"`
+	SourcePublic                    bool        `json:"sourcePublic"`
+	SourceResourceId                string      `json:"sourceResourceId"`
+	SourceResourceName              string      `json:"sourceResourceName"`
+	SourceResourceType              string      `json:"sourceResourceType"`
+}
+
+type Exception struct {
+	MessageCode string `json:"messageCode"`
 }

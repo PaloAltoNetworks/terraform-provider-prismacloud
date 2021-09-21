@@ -4,7 +4,9 @@ type Policy struct {
 	PolicyId               string               `json:"policyId,omitempty"`
 	Name                   string               `json:"name"`
 	PolicyType             string               `json:"policyType"`
+	PolicySubTypes         []string             `json:"policySubTypes,omitempty"`
 	SystemDefault          bool                 `json:"systemDefault,omitempty"`
+	PolicyUpi              string               `json:"policyUpi,omitempty"`
 	Description            string               `json:"description,omitempty"`
 	Severity               string               `json:"severity"`
 	Rule                   Rule                 `json:"rule"`
