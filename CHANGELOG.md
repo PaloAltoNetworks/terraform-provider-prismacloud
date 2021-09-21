@@ -1,3 +1,7 @@
+## 1.1.3 (Sep 21, 2021)
+
+* Added support for AWS orgs, anomaly policies, adding cloud accounts, numerous fixes to alert rules syntax, and bug fixes.  Documentation updated.
+
 ## 1.1.2 (April 19, 2021)
 
 * Fixed self ref policy id in compliance section of policy
