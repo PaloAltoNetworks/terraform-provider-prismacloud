@@ -233,7 +233,7 @@ func parseReport(d *schema.ResourceData, id string) report.Report {
 	}
 
 	var accounts []string
-	if accs := tgt["excluded_accounts"]; accs != nil {
+	if accs := tgt["accounts"]; accs != nil {
 		accounts = SetToStringSlice(accs.(*schema.Set))
 	}
 
@@ -300,6 +300,9 @@ func saveReport(d *schema.ResourceData, obj report.Report) {
 	d.Set("last_scheduled", obj.LastScheduled)
 	d.Set("total_instance_count", obj.TotalInstanceCount)
 
+	trgt := ResourceDataInterfaceMap(d, "target")
+	tr := trgt["time_range"].([]interface{})
+
 	// Target.
 	tgt := map[string]interface{}{
 		"account_groups":           obj.Target.AccountGroups,
@@ -313,7 +316,7 @@ func saveReport(d *schema.ResourceData, obj report.Report) {
 		"schedule":                 obj.Target.Schedule,
 		"schedule_enabled":         obj.Target.ScheduleEnabled,
 		"notification_template_id": obj.Target.NotificationTemplateId,
-		"time_range":               flattenTimeRange(obj.Target.TimeRange),
+		"time_range":               tr,
 	}
 
 	if err := d.Set("target", []interface{}{tgt}); err != nil {
