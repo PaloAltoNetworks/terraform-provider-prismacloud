@@ -76,6 +76,6 @@ You must specify at least one of the following:
 * `section_id` - Section ID
 * `section_description` - Section description
 * `policy_id` - Policy ID
-* `compliance_id` - Compliance ID
+* `compliance_id` - Compliance Section UUID
 * `section_label` - Section label
 * `custom_assigned` - (bool) Custom assigned

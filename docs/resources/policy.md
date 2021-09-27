@@ -70,7 +70,7 @@ This section may be present or may be ommitted:
 * `requirement_id` - Requirement ID
 * `requirement_description` - Requirement description
 * `section_id` - Section ID
-* `compliance_id` - Compliance ID
+* `compliance_id` - (Required) Compliance Section UUID
 * `section_label` - Section label
 * `custom_assigned` - (bool) Custom assigned
 

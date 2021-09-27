@@ -23,7 +23,6 @@ func resourceComplianceStandardRequirement() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Compliance standard ID",
-				ForceNew:    true,
 			},
 			"csr_id": {
 				Type:        schema.TypeString,

@@ -25,7 +25,6 @@ func resourceComplianceStandardRequirementSection() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Compliance standard requirement ID",
-				ForceNew:    true,
 			},
 			"csrs_id": {
 				Type:        schema.TypeString,
