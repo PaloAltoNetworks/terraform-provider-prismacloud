@@ -1,11 +1,13 @@
 package prismacloud
 
 import (
-"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-pc "github.com/paloaltonetworks/prisma-cloud-go"
-"github.com/paloaltonetworks/prisma-cloud-go/integration"
-"log"
-"strings"
+	"log"
+	"strings"
+
+	pc "github.com/paloaltonetworks/prisma-cloud-go"
+	"github.com/paloaltonetworks/prisma-cloud-go/integration"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceIntegration() *schema.Resource {
@@ -278,28 +280,28 @@ func parseIntegration(d *schema.ResourceData, id string, c pc.PrismaCloudClient)
 	var secretKey string
 	var oauthToken string
 	log.Printf("%d secretkey", secretKey)
-	if d.Get("integration_type") == "jira"{
+	if d.Get("integration_type") == "jira" {
 		var authjiraurl integration.AuthUrl
 		authjiraurl.HostUrl = ic["host_url"].(string)
 		authjiraurl.ConsumerKey = ic["consumer_key"].(string)
 		authurlresponse, _ := integration.JiraAuthurl(c, authjiraurl)
 
-		var seckeyjira  integration.SecretKeyJira
+		var seckeyjira integration.SecretKeyJira
 		tokenfromUrl := strings.Split(authurlresponse, "=")[1]
 		token := tokenfromUrl[:len(tokenfromUrl)-1]
 		seckeyjira.OauthToken = token
 		seckeyjira.JiraUserName = d.Get("jira_username").(string)
 		seckeyjira.JiraPassword = d.Get("jira_password").(string)
-		secretKey, _ = integration.JiraSecretKey(c, seckeyjira, ic["host_url"].(string) )
+		secretKey, _ = integration.JiraSecretKey(c, seckeyjira, ic["host_url"].(string))
 
-		var oauthtoken  integration.OauthTokenJira
-		oauthtoken.AuthenticationUrl = authurlresponse[1: len(authurlresponse) -1]
+		var oauthtoken integration.OauthTokenJira
+		oauthtoken.AuthenticationUrl = authurlresponse[1 : len(authurlresponse)-1]
 		oauthtoken.HostUrl = ic["host_url"].(string)
 		oauthtoken.ConsumerKey = ic["consumer_key"].(string)
 		oauthtoken.SecretKey = secretKey
 		oauthtoken.TmpToken = token
 		tokenresponse, _ := integration.JiraOauthToken(c, oauthtoken)
-		oauthToken = tokenresponse[1:len(tokenresponse)-1]
+		oauthToken = tokenresponse[1 : len(tokenresponse)-1]
 	}
 
 	var tables []map[string]bool
@@ -348,7 +350,7 @@ func parseIntegration(d *schema.ResourceData, id string, c pc.PrismaCloudClient)
 			OrgId:          ic["org_id"].(string),
 			ConsumerKey:    ic["consumer_key"].(string),
 			SecretKey:      secretKey,
-			OauthToken:    	oauthToken,
+			OauthToken:     oauthToken,
 		},
 		Enabled: d.Get("enabled").(bool),
 	}
