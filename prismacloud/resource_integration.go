@@ -434,6 +434,7 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	o := parseIntegration(d, "", client)
+
 	if err := integration.Create(client, o); err != nil {
 		return err
 	}
@@ -478,6 +479,7 @@ func updateIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	id := d.Id()
 	o := parseIntegration(d, id, client)
+
 	if err := integration.Update(client, o); err != nil {
 		return err
 	}
