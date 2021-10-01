@@ -45,7 +45,7 @@ Refer to the [Prisma Cloud integration documentation](https://api.docs.prismaclo
 * `source_id` - GCP Source ID for Google CSCC integration.
 * `org_id` - GCP Organization ID for Google CSCC integration.
 * `host_url` - ServiceNow/Jira URL.
-* `customer_key` - Customer Key for Jira integration.
+* `consumer_key` - Consumer Key for Jira integration.
 * `jira_username` - Jira Username for Jira integration.
 * `jira_password` - Jira App password Jira integration.
 
