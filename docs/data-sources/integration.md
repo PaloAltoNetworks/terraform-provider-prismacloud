@@ -57,7 +57,7 @@ One of the following must be specified:
 * `host_url` - ServiceNow URL/ Jira URL.
 * `secret_key` - Secret Key for Jira.
 * `oauth_token` - Oauth Token for Jira.
-* `consumer_key` - Jira Consumer Key.  
+* `consumer_key` - Consumer Key for jira Integration.  
 * `tables` - (Map of bools) Key/value pairs that identify the ServiceNow module tables with which to integrate (e.g. - incident, sn_si_incident, or em_event).
 * `version` - ServiceNow release version.
 * `url` - Webhook URL.
