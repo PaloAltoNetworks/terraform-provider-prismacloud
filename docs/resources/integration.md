@@ -36,7 +36,7 @@ Refer to the [Prisma Cloud integration documentation](https://api.docs.prismaclo
 * `login` - (Qualys/ServiceNow) Login.
 * `base_url` - Qualys Security Operations Center server API URL (without "http(s)")
 * `password` - (Qualys/ServiceNow) Password
-* `host_url` - ServiceNow URL.
+* `host_url` - ServiceNow/Jira URL.
 * `secret_key` - Secret Key for Jira.
 * `oauth_token` - Oauth Token for Jira.
 * `consumer_key` - Jira Consumer Key.

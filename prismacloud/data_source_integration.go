@@ -153,8 +153,8 @@ func dataSourceIntegration() *schema.Resource {
 							Computed:    true,
 							Description: "ServiceNow URL",
 						},
-						"secret_key":{
-							Type: 		schema.TypeString,
+						"secret_key": {
+							Type:        schema.TypeString,
 							Computed:    true,
 							Description: "Jira Secret Key",
 						},

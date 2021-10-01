@@ -125,12 +125,12 @@ func resourceIntegration() *schema.Resource {
 			},
 			"jira_password": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				Description: "Jira account password",
 			},
 			"jira_username": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				Description: "Jira account Username",
 			},
 
