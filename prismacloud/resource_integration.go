@@ -1,13 +1,11 @@
 package prismacloud
 
 import (
-	"log"
-	"strings"
-
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
-
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"log"
+	"strings"
 )
 
 func resourceIntegration() *schema.Resource {
@@ -125,6 +123,34 @@ func resourceIntegration() *schema.Resource {
 					},
 				},
 			},
+			"jira_password": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Jira account password",
+			},
+			"jira_username": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Jira account Username",
+			},
+
+			"oauth_token": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Jira account password",
+			},
+			"approve": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Jira account Username",
+			},
+
+			"oauth_callback": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Jira account password",
+			},
+
 			"integration_config": {
 				Type:        schema.TypeList,
 				Required:    true,
@@ -158,18 +184,8 @@ func resourceIntegration() *schema.Resource {
 							Optional:    true,
 							Description: "ServiceNow URL/Jira Url",
 						},
-						"jira_username":{
+						"secret_key": {
 							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Jira account Username",
-						},
-						"jira_password":{
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Jira account password",
-						},
-						"secret_key":{
-							Type: 		schema.TypeString,
 							Optional:    true,
 							Description: "Jira Secret Key",
 						},
@@ -257,8 +273,35 @@ func resourceIntegration() *schema.Resource {
 	}
 }
 
-func parseIntegration(d *schema.ResourceData, id string) integration.Integration {
+func parseIntegration(d *schema.ResourceData, id string, c pc.PrismaCloudClient) integration.Integration {
 	ic := ResourceDataInterfaceMap(d, "integration_config")
+	var secretKey string
+	var oauthToken string
+	log.Printf("%d secretkey", secretKey)
+	if d.Get("integration_type") == "jira"{
+		var authjiraurl integration.AuthUrl
+		authjiraurl.HostUrl = ic["host_url"].(string)
+		authjiraurl.ConsumerKey = ic["consumer_key"].(string)
+		authurlresponse, _ := integration.JiraAuthurl(c, authjiraurl)
+
+		var seckeyjira  integration.SecretKeyJira
+		tokenfromUrl := strings.Split(authurlresponse, "=")[1]
+		token := tokenfromUrl[:len(tokenfromUrl)-1]
+		seckeyjira.OauthToken = token
+		seckeyjira.JiraUserName = d.Get("jira_username").(string)
+		seckeyjira.JiraPassword = d.Get("jira_password").(string)
+		secretKey, _ = integration.JiraSecretKey(c, seckeyjira, ic["host_url"].(string) )
+
+		var oauthtoken  integration.OauthTokenJira
+		oauthtoken.AuthenticationUrl = authurlresponse[1: len(authurlresponse) -1]
+		oauthtoken.HostUrl = ic["host_url"].(string)
+		oauthtoken.ConsumerKey = ic["consumer_key"].(string)
+		oauthtoken.SecretKey = secretKey
+		oauthtoken.TmpToken = token
+		tokenresponse, _ := integration.JiraOauthToken(c, oauthtoken)
+		oauthToken = tokenresponse[1:len(tokenresponse)-1]
+	}
+
 	var tables []map[string]bool
 	var headers []integration.Header
 
@@ -284,13 +327,12 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 		}
 	}
 
-
 	return integration.Integration{
 		Id:              id,
 		Name:            d.Get("name").(string),
 		Description:     d.Get("description").(string),
 		IntegrationType: d.Get("integration_type").(string),
-		IntegrationConfig : integration.IntegrationConfig{
+		IntegrationConfig: integration.IntegrationConfig{
 			QueueUrl:       ic["queue_url"].(string),
 			Login:          ic["login"].(string),
 			BaseUrl:        ic["base_url"].(string),
@@ -304,11 +346,9 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 			IntegrationKey: ic["integration_key"].(string),
 			SourceId:       ic["source_id"].(string),
 			OrgId:          ic["org_id"].(string),
-			ConsumerKey: 	ic["consumer_key"].(string),
-		},
-		JiraSecretKey: integration.SecretKeyJira{
-			JiraUserName:   ic["jira_username"].(string),
-			JiraPassword:   ic["jira_password"].(string),
+			ConsumerKey:    ic["consumer_key"].(string),
+			SecretKey:      secretKey,
+			OauthToken:    	oauthToken,
 		},
 		Enabled: d.Get("enabled").(bool),
 	}
@@ -361,13 +401,8 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 		"source_id":       o.IntegrationConfig.SourceId,
 		"org_id":          o.IntegrationConfig.OrgId,
 		"consumer_key":    o.IntegrationConfig.ConsumerKey,
-	}
-	jskey := map[string]interface{}{
-		"jira_username" : o.JiraSecretKey.JiraUserName,
-		"jira_password" : o.JiraSecretKey.JiraPassword,
-	}
-	if err = d.Set("reason", []interface{}{jskey}); err != nil {
-		log.Printf("[WARN] Error setting 'jira secret key' for %s: %s", d.Id(), err)
+		"secret_key":      o.IntegrationConfig.SecretKey,
+		"oauth_token":     o.IntegrationConfig.OauthToken,
 	}
 
 	if len(o.IntegrationConfig.Tables) != 0 {
@@ -398,33 +433,7 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 
 func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
-
-	o := parseIntegration(d, "")
-	log.Printf("create is called %d", o)
-	o.AuthUrlJira.HostUrl = o.IntegrationConfig.HostUrl
-	o.AuthUrlJira.ConsumerKey = o.IntegrationConfig.ConsumerKey
-	authurl, err := integration.JiraAuthurl(client, o.AuthUrlJira)
-	if err != nil{
-		return err
-	}
-	token := strings.Split(authurl, "=")
-	o.JiraSecretKey.OauthToken = token[1]
-	o.JiraSecretKey.Approve = "Allow"
-	log.Printf("%d secret key", o.JiraSecretKey)
-	secretKey, err := integration.JiraSecretKey(client, o.JiraSecretKey)
-	if err != nil{
-		return err
-	}
-	o.JiraToken.AuthenticationUrl = authurl
-	o.JiraToken.HostUrl = o.IntegrationConfig.HostUrl
-	o.JiraToken.ConsumerKey = o.IntegrationConfig.ConsumerKey
-	o.JiraToken.SecretKey = secretKey
-	o.JiraToken.TmpToken = token[1]
-
-	//jiraauthdetails := fmt.Sprintln(o.IntegrationConfig.JiraUserName, ":", o.IntegrationConfig.JiraPassword)
-	//jiraauthdetails:= "qa@redlock.io:nGISud3RdTZNCQ49DC6TA8B5"
-	//encodedjiraauthdetails := base64.StdEncoding.EncodeToString([]byte(jiraauthdetails))
-
+	o := parseIntegration(d, "", client)
 	if err := integration.Create(client, o); err != nil {
 		return err
 	}
@@ -438,10 +447,6 @@ func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-
-	//ans, err1 := integration.Get(client, id)
-	//log.Printf("%d ans and %d err", ans, err1)
-
 	PollApiUntilSuccess(func() error {
 		_, err := integration.Get(client, id)
 		return err
@@ -472,8 +477,7 @@ func readIntegration(d *schema.ResourceData, meta interface{}) error {
 func updateIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	id := d.Id()
-	o := parseIntegration(d, id)
-
+	o := parseIntegration(d, id, client)
 	if err := integration.Update(client, o); err != nil {
 		return err
 	}
