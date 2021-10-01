@@ -1,11 +1,11 @@
 package prismacloud
 
 import (
+	"log"
+	"strings"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
-	"log"
-	"strings"
 )
 
 func resourceIntegration() *schema.Resource {
@@ -133,24 +133,6 @@ func resourceIntegration() *schema.Resource {
 				Optional:    true,
 				Description: "Jira account Username",
 			},
-
-			"oauth_token": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Jira account password",
-			},
-			"approve": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Jira account Username",
-			},
-
-			"oauth_callback": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Jira account password",
-			},
-
 			"integration_config": {
 				Type:        schema.TypeList,
 				Required:    true,
@@ -282,15 +264,20 @@ func parseIntegration(d *schema.ResourceData, id string, c pc.PrismaCloudClient)
 		var authjiraurl integration.AuthUrl
 		authjiraurl.HostUrl = ic["host_url"].(string)
 		authjiraurl.ConsumerKey = ic["consumer_key"].(string)
-		authurlresponse, _ := integration.JiraAuthurl(c, authjiraurl)
-
+		authurlresponse, err := integration.JiraAuthurl(c, authjiraurl)
+		if err != nil{
+			log.Printf("[WARN] Error getting Jira Auth URl %s", err)
+		}
 		var seckeyjira  integration.SecretKeyJira
 		tokenfromUrl := strings.Split(authurlresponse, "=")[1]
 		token := tokenfromUrl[:len(tokenfromUrl)-1]
 		seckeyjira.OauthToken = token
 		seckeyjira.JiraUserName = d.Get("jira_username").(string)
 		seckeyjira.JiraPassword = d.Get("jira_password").(string)
-		secretKey, _ = integration.JiraSecretKey(c, seckeyjira, ic["host_url"].(string) )
+		secretKey, err = integration.JiraSecretKey(c, seckeyjira, ic["host_url"].(string))
+		if err != nil{
+			log.Printf("[WARN] Error getting Jira secret Key %s", err)
+		}
 
 		var oauthtoken  integration.OauthTokenJira
 		oauthtoken.AuthenticationUrl = authurlresponse[1: len(authurlresponse) -1]
@@ -298,7 +285,11 @@ func parseIntegration(d *schema.ResourceData, id string, c pc.PrismaCloudClient)
 		oauthtoken.ConsumerKey = ic["consumer_key"].(string)
 		oauthtoken.SecretKey = secretKey
 		oauthtoken.TmpToken = token
-		tokenresponse, _ := integration.JiraOauthToken(c, oauthtoken)
+		tokenresponse, err := integration.JiraOauthToken(c, oauthtoken)
+		if err != nil{
+			log.Printf("[WARN] Error getting Jira Oauth Token %s", err)
+		}
+
 		oauthToken = tokenresponse[1:len(tokenresponse)-1]
 	}
 
@@ -434,6 +425,7 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 
 func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
+
 	o := parseIntegration(d, "", client)
 	if err := integration.Create(client, o); err != nil {
 		return err
@@ -448,6 +440,7 @@ func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
+
 	PollApiUntilSuccess(func() error {
 		_, err := integration.Get(client, id)
 		return err
@@ -478,6 +471,7 @@ func readIntegration(d *schema.ResourceData, meta interface{}) error {
 func updateIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	id := d.Id()
+
 	o := parseIntegration(d, id, client)
 	if err := integration.Update(client, o); err != nil {
 		return err
