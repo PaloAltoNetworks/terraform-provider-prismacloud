@@ -125,12 +125,12 @@ func resourceIntegration() *schema.Resource {
 			},
 			"jira_password": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: "Jira account password",
 			},
 			"jira_username": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: "Jira account Username",
 			},
 
@@ -186,12 +186,12 @@ func resourceIntegration() *schema.Resource {
 						},
 						"secret_key": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Jira Secret Key",
 						},
 						"oauth_token": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Jira Auth token",
 						},
 						"consumer_key": {
@@ -277,7 +277,7 @@ func parseIntegration(d *schema.ResourceData, id string, c pc.PrismaCloudClient)
 	ic := ResourceDataInterfaceMap(d, "integration_config")
 	var secretKey string
 	var oauthToken string
-	log.Printf("%d secretkey", secretKey)
+
 	if d.Get("integration_type") == "jira"{
 		var authjiraurl integration.AuthUrl
 		authjiraurl.HostUrl = ic["host_url"].(string)
@@ -403,6 +403,7 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 		"consumer_key":    o.IntegrationConfig.ConsumerKey,
 		"secret_key":      o.IntegrationConfig.SecretKey,
 		"oauth_token":     o.IntegrationConfig.OauthToken,
+
 	}
 
 	if len(o.IntegrationConfig.Tables) != 0 {
