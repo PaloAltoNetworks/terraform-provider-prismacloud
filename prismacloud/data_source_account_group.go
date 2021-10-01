@@ -52,6 +52,14 @@ func dataSourceAccountGroup() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"child_group_ids": {
+				Type:        schema.TypeSet,
+				Computed:    true,
+				Description: "Child account group IDs",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			/*
 				"accounts": {
 					Type:        schema.TypeList,
