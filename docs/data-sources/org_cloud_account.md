@@ -63,15 +63,23 @@ The cloud type given above determines which of the attributes are populated:
 * `account_id` - GCP org project ID.
 * `enabled` - (bool) Whether or not the account is enabled.
 * `group_ids` - List of account IDs to which you are assigning this account.
-* `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `name` - Name to be used for the account on the Prisma Cloud platform.
 * `compression_enabled` - (bool) Enable flow log compression.
 * `data_flow_enabled_project` - GCP project for flow log compression.
 * `flow_log_storage_bucket` - GCP Flow logs storage bucket.
-* `credentials_json` - Content of the JSON credentials file (read in using `file()`).
-* `account_type` - Defaults to "organization" if not specified.
-* `protection_mode` - Defaults to "MONITOR".
+* `credentials_json` - Content of the JSON credentials file.
+* `account_type` - Account type - organization, or account.
+* `protection_mode` - Protection Mode - Monitor, or Monitor and Protect.
 * `organization_name` - GCP org organization name.
-* `account_group_creation_mode` - Cloud account group creation mode - manual, auto or recursive(Default = MANUAL).
+* `account_group_creation_mode` - Cloud account group creation mode - MANUAL, AUTO, or RECURSIVE.
+* `hierarchy_selection` - List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
+
+#### Hierarchy Selection
+
+* `resource_id` - Resource ID. For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}.
+* `display_name` - Display name for folder, project, or organization.
+* `node_type` - Node type - FOLDER, PROJECT, or ORG.
+* `selection_type` - Selection type - INCLUDE, EXCLUDE, or ALL.
 
 ### OCI
 
