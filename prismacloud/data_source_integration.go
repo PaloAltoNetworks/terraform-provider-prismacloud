@@ -151,7 +151,22 @@ func dataSourceIntegration() *schema.Resource {
 						"host_url": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "ServiceNow URL",
+							Description: "ServiceNow/Jira URL",
+						},
+						"secret_key": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Jira Secret Key",
+						},
+						"oauth_token": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Jira Auth token",
+						},
+						"consumer_key": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Jira consumer key",
 						},
 						"tables": {
 							Type:        schema.TypeMap,

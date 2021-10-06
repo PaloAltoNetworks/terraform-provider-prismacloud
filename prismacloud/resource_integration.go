@@ -2,11 +2,12 @@ package prismacloud
 
 import (
 	"log"
+	"strings"
 
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceIntegration() *schema.Resource {
@@ -124,6 +125,16 @@ func resourceIntegration() *schema.Resource {
 					},
 				},
 			},
+			"jira_password": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Jira account password",
+			},
+			"jira_username": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Jira account Username",
+			},
 			"integration_config": {
 				Type:        schema.TypeList,
 				Required:    true,
@@ -155,7 +166,22 @@ func resourceIntegration() *schema.Resource {
 						"host_url": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "ServiceNow URL",
+							Description: "ServiceNow URL/Jira Url",
+						},
+						"secret_key": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Jira Secret Key",
+						},
+						"oauth_token": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Jira Auth token",
+						},
+						"consumer_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Jira consumer key",
 						},
 						"tables": {
 							Type:        schema.TypeMap,
@@ -231,8 +257,44 @@ func resourceIntegration() *schema.Resource {
 	}
 }
 
-func parseIntegration(d *schema.ResourceData, id string) integration.Integration {
+func parseIntegration(d *schema.ResourceData, id string, c pc.PrismaCloudClient) integration.Integration {
 	ic := ResourceDataInterfaceMap(d, "integration_config")
+	var secretKey string
+	var oauthToken string
+
+	if d.Get("integration_type") == "jira" {
+		var authjiraurl integration.AuthUrl
+		authjiraurl.HostUrl = ic["host_url"].(string)
+		authjiraurl.ConsumerKey = ic["consumer_key"].(string)
+		authurlresponse, err := integration.JiraAuthurl(c, authjiraurl)
+		if err != nil {
+			log.Printf("[WARN] Error getting Jira Auth URl %s", err)
+		}
+		var seckeyjira integration.SecretKeyJira
+		tokenfromUrl := strings.Split(authurlresponse, "=")[1]
+		token := tokenfromUrl[:len(tokenfromUrl)-1]
+		seckeyjira.OauthToken = token
+		seckeyjira.JiraUserName = d.Get("jira_username").(string)
+		seckeyjira.JiraPassword = d.Get("jira_password").(string)
+		secretKey, err = integration.JiraSecretKey(c, seckeyjira, ic["host_url"].(string))
+		if err != nil {
+			log.Printf("[WARN] Error getting Jira secret Key %s", err)
+		}
+
+		var oauthtoken integration.OauthTokenJira
+		oauthtoken.AuthenticationUrl = authurlresponse[1 : len(authurlresponse)-1]
+		oauthtoken.HostUrl = ic["host_url"].(string)
+		oauthtoken.ConsumerKey = ic["consumer_key"].(string)
+		oauthtoken.SecretKey = secretKey
+		oauthtoken.TmpToken = token
+		tokenresponse, err := integration.JiraOauthToken(c, oauthtoken)
+		if err != nil {
+			log.Printf("[WARN] Error getting Jira Oauth Token %s", err)
+		}
+
+		oauthToken = tokenresponse[1 : len(tokenresponse)-1]
+	}
+
 	var tables []map[string]bool
 	var headers []integration.Header
 
@@ -277,6 +339,9 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 			IntegrationKey: ic["integration_key"].(string),
 			SourceId:       ic["source_id"].(string),
 			OrgId:          ic["org_id"].(string),
+			ConsumerKey:    ic["consumer_key"].(string),
+			SecretKey:      secretKey,
+			OauthToken:     oauthToken,
 		},
 		Enabled: d.Get("enabled").(bool),
 	}
@@ -328,7 +393,11 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 		"integration_key": o.IntegrationConfig.IntegrationKey,
 		"source_id":       o.IntegrationConfig.SourceId,
 		"org_id":          o.IntegrationConfig.OrgId,
+		"consumer_key":    o.IntegrationConfig.ConsumerKey,
+		"secret_key":      o.IntegrationConfig.SecretKey,
+		"oauth_token":     o.IntegrationConfig.OauthToken,
 	}
+
 	if len(o.IntegrationConfig.Tables) != 0 {
 		tables := make(map[string]interface{})
 		for _, t := range o.IntegrationConfig.Tables {
@@ -357,8 +426,8 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 
 func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
-	o := parseIntegration(d, "")
 
+	o := parseIntegration(d, "", client)
 	if err := integration.Create(client, o); err != nil {
 		return err
 	}
@@ -403,8 +472,8 @@ func readIntegration(d *schema.ResourceData, meta interface{}) error {
 func updateIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	id := d.Id()
-	o := parseIntegration(d, id)
 
+	o := parseIntegration(d, id, client)
 	if err := integration.Update(client, o); err != nil {
 		return err
 	}
