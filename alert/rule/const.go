@@ -25,6 +25,9 @@ const (
 	TypePagerDuty            = "pager_duty"
 	TypeDemisto              = "demisto"
 	TypeAzureServiceBusQueue = "azure_service_bus_queue"
+	TypeTenable              = "tenable"
+	TypeOkta                 = "okta_idp"
+	TypeSnowFlake            = "snowflake"
 )
 
 const (
