@@ -7,6 +7,7 @@ import (
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceIntegration() *schema.Resource {
@@ -152,10 +153,60 @@ func resourceIntegration() *schema.Resource {
 							Optional:    true,
 							Description: "(Qualys/ServiceNow) Password",
 						},
+						"user_name": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Snow Flake Username",
+						},
+						"pipe_name": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Snow Flake Pipename",
+						},
+						"private_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Snow Flake private key",
+						},
+						"pass_phrase": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Snow Flake Pass phrase ",
+						},
+						"staging_integration_id": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Amazon S3 Id for snowflake integration",
+						},
+						"domain": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Okta Domain",
+						},
+						"api_token": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Okta API Token",
+						},
+						"api_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Demisto API key",
+						},
 						"host_url": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "ServiceNow URL",
+							Description: "ServiceNow/Demisto URL",
+						},
+						"secret_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Tenable Secret Key",
+						},
+						"access_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Tenable access key",
 						},
 						"tables": {
 							Type:        schema.TypeMap,
@@ -173,7 +224,7 @@ func resourceIntegration() *schema.Resource {
 						"url": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "Webhook URL",
+							Description: "Webhook URL or Splunk HTTP event collector URL",
 						},
 						"headers": {
 							Type:        schema.TypeList,
@@ -207,7 +258,7 @@ func resourceIntegration() *schema.Resource {
 						"auth_token": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "PagerDuty authentication token for the event collector",
+							Description: "PagerDuty/Splunk authentication token for the event collector",
 						},
 						"integration_key": {
 							Type:        schema.TypeString,
@@ -224,6 +275,19 @@ func resourceIntegration() *schema.Resource {
 							Optional:    true,
 							Description: "GCP Organization ID for Google CSCC integration",
 						},
+						"roll_up_interval": {
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Description: "File Roll Up Time in minutes for snowflake Integration",
+							ValidateFunc: validation.IntInSlice(
+								[]int{
+									15,
+									30,
+									60,
+									180,
+								},
+							),
+						},
 					},
 				},
 			},
@@ -233,6 +297,7 @@ func resourceIntegration() *schema.Resource {
 
 func parseIntegration(d *schema.ResourceData, id string) integration.Integration {
 	ic := ResourceDataInterfaceMap(d, "integration_config")
+
 	var tables []map[string]bool
 	var headers []integration.Header
 
@@ -264,19 +329,30 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 		Description:     d.Get("description").(string),
 		IntegrationType: d.Get("integration_type").(string),
 		IntegrationConfig: integration.IntegrationConfig{
-			QueueUrl:       ic["queue_url"].(string),
-			Login:          ic["login"].(string),
-			BaseUrl:        ic["base_url"].(string),
-			Password:       ic["password"].(string),
-			HostUrl:        ic["host_url"].(string),
-			Tables:         tables,
-			Version:        ic["version"].(string),
-			Url:            ic["url"].(string),
-			Headers:        headers,
-			AuthToken:      ic["auth_token"].(string),
-			IntegrationKey: ic["integration_key"].(string),
-			SourceId:       ic["source_id"].(string),
-			OrgId:          ic["org_id"].(string),
+			QueueUrl:             ic["queue_url"].(string),
+			Login:                ic["login"].(string),
+			BaseUrl:              ic["base_url"].(string),
+			Password:             ic["password"].(string),
+			HostUrl:              ic["host_url"].(string),
+			Tables:               tables,
+			Version:              ic["version"].(string),
+			Url:                  ic["url"].(string),
+			Headers:              headers,
+			AuthToken:            ic["auth_token"].(string),
+			IntegrationKey:       ic["integration_key"].(string),
+			SourceId:             ic["source_id"].(string),
+			OrgId:                ic["org_id"].(string),
+			RollUpInterval:       ic["roll_up_interval"].(int),
+			SecretKey:            ic["secret_key"].(string),
+			AccessKey:            ic["access_key"].(string),
+			ApiKey:               ic["api_key"].(string),
+			Domain:               ic["domain"].(string),
+			ApiToken:             ic["api_token"].(string),
+			UserName:             ic["user_name"].(string),
+			PassPhrase:           ic["pass_phrase"].(string),
+			PrivateKey:           ic["private_key"].(string),
+			PipeName:             ic["pipe_name"].(string),
+			StagingIntegrationID: ic["staging_integration_id"].(string),
 		},
 		Enabled: d.Get("enabled").(bool),
 	}
@@ -315,19 +391,30 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 	}
 
 	ic := map[string]interface{}{
-		"queue_url":       o.IntegrationConfig.QueueUrl,
-		"login":           o.IntegrationConfig.Login,
-		"base_url":        o.IntegrationConfig.BaseUrl,
-		"password":        o.IntegrationConfig.Password,
-		"host_url":        o.IntegrationConfig.HostUrl,
-		"tables":          nil,
-		"version":         o.IntegrationConfig.Version,
-		"url":             o.IntegrationConfig.Url,
-		"headers":         nil,
-		"auth_token":      o.IntegrationConfig.AuthToken,
-		"integration_key": o.IntegrationConfig.IntegrationKey,
-		"source_id":       o.IntegrationConfig.SourceId,
-		"org_id":          o.IntegrationConfig.OrgId,
+		"queue_url":              o.IntegrationConfig.QueueUrl,
+		"login":                  o.IntegrationConfig.Login,
+		"base_url":               o.IntegrationConfig.BaseUrl,
+		"password":               o.IntegrationConfig.Password,
+		"host_url":               o.IntegrationConfig.HostUrl,
+		"tables":                 nil,
+		"version":                o.IntegrationConfig.Version,
+		"url":                    o.IntegrationConfig.Url,
+		"headers":                nil,
+		"auth_token":             o.IntegrationConfig.AuthToken,
+		"integration_key":        o.IntegrationConfig.IntegrationKey,
+		"source_id":              o.IntegrationConfig.SourceId,
+		"org_id":                 o.IntegrationConfig.OrgId,
+		"roll_up_interval":       o.IntegrationConfig.RollUpInterval,
+		"secret_key":             o.IntegrationConfig.SecretKey,
+		"access_key":             o.IntegrationConfig.AccessKey,
+		"api_key":                o.IntegrationConfig.ApiKey,
+		"domain":                 o.IntegrationConfig.Domain,
+		"api_token":              o.IntegrationConfig.ApiToken,
+		"user_name":              o.IntegrationConfig.UserName,
+		"pass_phrase":            o.IntegrationConfig.PassPhrase,
+		"pipe_name":              o.IntegrationConfig.PipeName,
+		"private_key":            o.IntegrationConfig.PrivateKey,
+		"staging_integration_id": o.IntegrationConfig.StagingIntegrationID,
 	}
 	if len(o.IntegrationConfig.Tables) != 0 {
 		tables := make(map[string]interface{})

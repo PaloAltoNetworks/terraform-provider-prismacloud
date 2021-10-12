@@ -151,7 +151,57 @@ func dataSourceIntegration() *schema.Resource {
 						"host_url": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "ServiceNow URL",
+							Description: "ServiceNow/Demisto URL",
+						},
+						"user_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Snow Flake Username",
+						},
+						"pipe_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Snow Flake Pipename",
+						},
+						"private_key": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Snow Flake private key",
+						},
+						"pass_phrase": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Snow Flake Pass phrase ",
+						},
+						"staging_integration_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Amazon s3 ID for snowflake integration",
+						},
+						"domain": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Okta Domain",
+						},
+						"api_token": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Okta API Token",
+						},
+						"api_key": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Demisto API key",
+						},
+						"access_key": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Tenable access key",
+						},
+						"secret_key": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Tenable Secret key",
 						},
 						"tables": {
 							Type:        schema.TypeMap,
@@ -219,6 +269,11 @@ func dataSourceIntegration() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 							Description: "GCP Organization ID for Google CSCC integration",
+						},
+						"roll_up_interval": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "File Roll Up Time in minutes for Snowflake integration",
 						},
 					},
 				},
