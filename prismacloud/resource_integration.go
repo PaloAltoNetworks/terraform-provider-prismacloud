@@ -382,7 +382,7 @@ func parseIntegration(d *schema.ResourceData, id string, c pc.PrismaCloudClient)
 	secretKey = ic["secret_key"].(string)
 
 	if d.Get("integration_type") == "jira" {
-		secretKey, oauthToken = jiraIntegrationvalues(d, c)
+		secretKey, oauthToken = jiraIntegrationValues(d, c)
 	}
 	var tables []map[string]bool
 	var headers []integration.Header
@@ -573,7 +573,7 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 	}
 }
 
-func jiraIntegrationvalues(d *schema.ResourceData, c pc.PrismaCloudClient) (string, string) {
+func jiraIntegrationValues(d *schema.ResourceData, c pc.PrismaCloudClient) (string, string) {
 	ic := ResourceDataInterfaceMap(d, "integration_config")
 	var authjiraurl integration.AuthUrl
 	authjiraurl.HostUrl = ic["host_url"].(string)
