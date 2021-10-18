@@ -573,7 +573,7 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 	}
 }
 
-func jiraIntegrationvalues(d *schema.ResourceData, c pc.PrismaCloudClient) (string, string){
+func jiraIntegrationvalues(d *schema.ResourceData, c pc.PrismaCloudClient) (string, string) {
 	ic := ResourceDataInterfaceMap(d, "integration_config")
 	var authjiraurl integration.AuthUrl
 	authjiraurl.HostUrl = ic["host_url"].(string)
