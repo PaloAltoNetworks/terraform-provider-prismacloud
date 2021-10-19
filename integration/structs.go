@@ -47,6 +47,11 @@ type IntegrationConfig struct {
 	// Google CSCC
 	SourceId string `json:"sourceId,omitempty"`
 	OrgId    string `json:"orgId,omitempty"`
+
+	// Azure Service Bus Queue
+	AccountId        string `json:"accountId,omitempty"`
+	ConnectionString string `json:"connectionString,omitempty"`
+	// QueueUrl
 }
 
 type Header struct {
