@@ -50,7 +50,7 @@ One of the following must be specified:
 
 ### Integration Config
 
-* `queue_url` - The Queue URL you used when you configured Prisma Cloud in Amazon SQS
+* `queue_url` - The Queue URL you used when you configured Prisma Cloud in Amazon SQS or Azure Service Bus Queue.
 * `login` - (Qualys/ServiceNow) Login.
 * `base_url` - Qualys Security Operations Center server API URL (without "http(s)")
 * `password` - (Qualys/ServiceNow) Password
@@ -63,6 +63,8 @@ One of the following must be specified:
 * `integration_key` - PagerDuty integration key.
 * `source_id` - GCP Source ID for Google CSCC integration.
 * `org_id` - GCP Organization ID for Google CSCC integration.
+* `account_id` - AWS/Azure account ID.
+* `connection_string` - Connection string for azure service bus queue integration.
 
 ### Headers
 

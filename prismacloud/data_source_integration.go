@@ -131,7 +131,7 @@ func dataSourceIntegration() *schema.Resource {
 						"queue_url": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "The Queue URL you used when you configured Prisma Cloud in Amazon SQS",
+							Description: "The Queue URL you used when you configured Prisma Cloud in Amazon SQS or Azure Service Bus Queue",
 						},
 						"login": {
 							Type:        schema.TypeString,
@@ -219,6 +219,16 @@ func dataSourceIntegration() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 							Description: "GCP Organization ID for Google CSCC integration",
+						},
+						"account_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "AWS/Azure account ID",
+						},
+						"connection_string": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Connection string for azure service bus queue integration",
 						},
 					},
 				},
