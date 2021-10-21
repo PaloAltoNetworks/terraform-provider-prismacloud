@@ -1,7 +1,11 @@
 package integration
 
 import (
+	"encoding/base64"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"net/url"
 	"strings"
 
@@ -55,6 +59,89 @@ func Identify(c pc.PrismaCloudClient, name string) (string, error) {
 	}
 
 	return "", pc.ObjectNotFoundError
+}
+
+// jira auth url give the authenticalurl used to get token
+func JiraAuthurl(c pc.PrismaCloudClient, url AuthUrl) (string, error) {
+	c.Log(pc.LogAction, "(get) %s:", JiraAuthUrl)
+
+	path := make([]string, 0, len(JiraUrlSuffix)+1)
+	path = append(path, JiraUrlSuffix...)
+	authurlresponse, err := c.Communicate("POST", path, nil, &url, nil)
+	return string(authurlresponse), err
+}
+
+// Jira_SecretKey returns link with auth token
+func JiraSecretKey(c pc.PrismaCloudClient, data SecretKeyJira, authurl string) (string, error) {
+
+	cjira := c.(*pc.Client)
+	prismaurl := cjira.Url
+	cjira.Url = strings.Split(authurl, "https://")[1]
+	suffix := make([]string, 0, len(JiraSecretKeySuffix)+1)
+	suffix = append(suffix, JiraSecretKeySuffix...)
+	data_x_www_form := url.Values{}
+	data_x_www_form.Set("oauth_token", data.OauthToken)
+	data_x_www_form.Set("approve", "Allow")
+	data_x_www_form.Set("jira_username", data.JiraUserName)
+	data_x_www_form.Set("jira_password", data.JiraPassword)
+	encodedData := data_x_www_form.Encode()
+	var path strings.Builder
+	path.Grow(30)
+	fmt.Fprintf(&path, "%s://%s", cjira.Protocol, cjira.Url)
+	if cjira.Port != 0 {
+		fmt.Fprintf(&path, ":%d", cjira.Port)
+	}
+	for _, v := range suffix {
+		path.WriteString("/")
+		path.WriteString(v)
+	}
+
+	req, err := http.NewRequest("POST", path.String(), strings.NewReader(encodedData))
+	if err != nil {
+		return "", err
+	}
+	jira_auth_details := data.JiraUserName + ":" + data.JiraPassword
+	encodedjiraauthdetails := base64.StdEncoding.EncodeToString([]byte(jira_auth_details))
+	AuthorizationHeadervalue := "Basic " + encodedjiraauthdetails
+	req.Header.Set("Authorization", AuthorizationHeadervalue)
+	req.Header.Add("X-Atlassian-Token", "no-check")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	resp, err := cjira.DoJira(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	htmlcode := string(body)
+
+	switch resp.StatusCode {
+	case http.StatusOK, http.StatusNoContent:
+		// Alert rule deletion returns StatusNoContent
+	case http.StatusUnauthorized:
+		log.Printf("Status is unauthorized")
+	default:
+		log.Printf("X-Redlock-Status error")
+	}
+
+	secretcodeline := strings.Split(htmlcode, "Your verification code is ")[1]
+	secretcode := strings.Split(secretcodeline, ". You will need")[0]
+	substr := strings.Split(secretcode, "&#39;")[1]
+
+	cjira.Url = prismaurl
+	return substr, err
+}
+
+// Jira_Oauth Token returns link with auth token
+func JiraOauthToken(c pc.PrismaCloudClient, oauthtoken OauthTokenJira) (string, error) {
+	c.Log(pc.LogAction, "(get) %s:", JiraOauthtoken)
+	path := make([]string, 0, len(JiraTokenSuffix)+1)
+	path = append(path, JiraTokenSuffix...)
+	tokenresponse, err := c.Communicate("POST", path, nil, &oauthtoken, nil)
+
+	return string(tokenresponse), err
 }
 
 // Get returns integration details for the specified ID.
