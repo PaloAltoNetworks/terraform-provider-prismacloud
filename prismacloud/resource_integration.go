@@ -7,6 +7,7 @@ import (
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 func resourceIntegration() *schema.Resource {
@@ -152,10 +153,60 @@ func resourceIntegration() *schema.Resource {
 							Optional:    true,
 							Description: "(Qualys/ServiceNow) Password",
 						},
+						"user_name": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Snow Flake Username",
+						},
+						"pipe_name": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Snow Flake Pipename",
+						},
+						"private_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Snow Flake private key",
+						},
+						"pass_phrase": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Snow Flake Pass phrase ",
+						},
+						"staging_integration_id": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Amazon S3 Id for snowflake integration",
+						},
+						"domain": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Okta Domain",
+						},
+						"api_token": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Okta API Token",
+						},
+						"api_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Demisto API key",
+						},
 						"host_url": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "ServiceNow URL",
+							Description: "ServiceNow/Demisto URL",
+						},
+						"secret_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Tenable Secret Key",
+						},
+						"access_key": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Tenable access key",
 						},
 						"tables": {
 							Type:        schema.TypeMap,
@@ -173,7 +224,7 @@ func resourceIntegration() *schema.Resource {
 						"url": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "Webhook URL",
+							Description: "Webhook URL or Splunk HTTP event collector URL",
 						},
 						"headers": {
 							Type:        schema.TypeList,
@@ -207,7 +258,7 @@ func resourceIntegration() *schema.Resource {
 						"auth_token": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "PagerDuty authentication token for the event collector",
+							Description: "PagerDuty/Splunk authentication token for the event collector",
 						},
 						"integration_key": {
 							Type:        schema.TypeString,
@@ -227,12 +278,75 @@ func resourceIntegration() *schema.Resource {
 						"account_id": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "AWS/Azure account ID",
+							Description: "AWS/Azure account ID for AWS Security Hub/Azure Service Bus Queue integration",
 						},
 						"connection_string": {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Description: "Connection string for azure service bus queue integration",
+						},
+						"regions": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "AWS regions for AWS Security Hub integration",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "AWS region name",
+									},
+									"api_identifier": {
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "AWS region code",
+									},
+									"cloud_type": {
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "Cloud Type",
+										Default:     "aws",
+									},
+								},
+							},
+						},
+						"s3_uri": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "AWS S3 URI for Amazon S3 integration",
+						},
+						"region": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "AWS region for Amazon S3 integration",
+						},
+						"role_arn": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "AWS role ARN for Amazon S3 integration",
+						},
+						"external_id": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "AWS external ID for Amazon S3 integration",
+						},
+						"roll_up_interval": {
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Description: "File Roll Up Time in minutes for AWS S3 integration and snowflake Integration",
+							ValidateFunc: validation.IntInSlice(
+								[]int{
+									15,
+									30,
+									60,
+									180,
+								},
+							),
+						},
+						"source_type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Source type for splunk integration",
 						},
 					},
 				},
@@ -243,8 +357,10 @@ func resourceIntegration() *schema.Resource {
 
 func parseIntegration(d *schema.ResourceData, id string) integration.Integration {
 	ic := ResourceDataInterfaceMap(d, "integration_config")
+
 	var tables []map[string]bool
 	var headers []integration.Header
+	var regions []integration.Region
 
 	if ic["tables"] != nil && len(ic["tables"].(map[string]interface{})) > 0 {
 		tlist := ic["tables"].(map[string]interface{})
@@ -268,27 +384,57 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 		}
 	}
 
+	if ic["regions"] != nil && len(ic["regions"].(*schema.Set).List()) > 0 {
+		rlist := ic["regions"].(*schema.Set).List()
+		regions = make([]integration.Region, 0, len(rlist))
+		for i := range rlist {
+			reg := rlist[i].(map[string]interface{})
+			regions = append(regions, integration.Region{
+				Name:          reg["name"].(string),
+				ApiIdentifier: reg["api_identifier"].(string),
+				CloudType:     reg["cloud_type"].(string),
+			})
+		}
+	}
+
 	return integration.Integration{
 		Id:              id,
 		Name:            d.Get("name").(string),
 		Description:     d.Get("description").(string),
 		IntegrationType: d.Get("integration_type").(string),
 		IntegrationConfig: integration.IntegrationConfig{
-			QueueUrl:         ic["queue_url"].(string),
-			Login:            ic["login"].(string),
-			BaseUrl:          ic["base_url"].(string),
-			Password:         ic["password"].(string),
-			HostUrl:          ic["host_url"].(string),
-			Tables:           tables,
-			Version:          ic["version"].(string),
-			Url:              ic["url"].(string),
-			Headers:          headers,
-			AuthToken:        ic["auth_token"].(string),
-			IntegrationKey:   ic["integration_key"].(string),
-			SourceId:         ic["source_id"].(string),
-			OrgId:            ic["org_id"].(string),
-			AccountId:        ic["account_id"].(string),
-			ConnectionString: ic["connection_string"].(string),
+			QueueUrl:             ic["queue_url"].(string),
+			Login:                ic["login"].(string),
+			BaseUrl:              ic["base_url"].(string),
+			Password:             ic["password"].(string),
+			HostUrl:              ic["host_url"].(string),
+			Tables:               tables,
+			Version:              ic["version"].(string),
+			Url:                  ic["url"].(string),
+			Headers:              headers,
+			AuthToken:            ic["auth_token"].(string),
+			IntegrationKey:       ic["integration_key"].(string),
+			SourceId:             ic["source_id"].(string),
+			OrgId:                ic["org_id"].(string),
+			AccountId:            ic["account_id"].(string),
+			ConnectionString:     ic["connection_string"].(string),
+			RollUpInterval:       ic["roll_up_interval"].(int),
+			SecretKey:            ic["secret_key"].(string),
+			AccessKey:            ic["access_key"].(string),
+			ApiKey:               ic["api_key"].(string),
+			Domain:               ic["domain"].(string),
+			ApiToken:             ic["api_token"].(string),
+			UserName:             ic["user_name"].(string),
+			PassPhrase:           ic["pass_phrase"].(string),
+			PrivateKey:           ic["private_key"].(string),
+			PipeName:             ic["pipe_name"].(string),
+			StagingIntegrationID: ic["staging_integration_id"].(string),
+			Regions:              regions,
+			S3Uri:                ic["s3_uri"].(string),
+			Region:               ic["region"].(string),
+			RoleArn:              ic["role_arn"].(string),
+			ExternalId:           ic["external_id"].(string),
+			SourceType:           ic["source_type"].(string),
 		},
 		Enabled: d.Get("enabled").(bool),
 	}
@@ -327,21 +473,38 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 	}
 
 	ic := map[string]interface{}{
-		"queue_url":         o.IntegrationConfig.QueueUrl,
-		"login":             o.IntegrationConfig.Login,
-		"base_url":          o.IntegrationConfig.BaseUrl,
-		"password":          o.IntegrationConfig.Password,
-		"host_url":          o.IntegrationConfig.HostUrl,
-		"tables":            nil,
-		"version":           o.IntegrationConfig.Version,
-		"url":               o.IntegrationConfig.Url,
-		"headers":           nil,
-		"auth_token":        o.IntegrationConfig.AuthToken,
-		"integration_key":   o.IntegrationConfig.IntegrationKey,
-		"source_id":         o.IntegrationConfig.SourceId,
-		"org_id":            o.IntegrationConfig.OrgId,
-		"account_id":        o.IntegrationConfig.AccountId,
-		"connection_string": o.IntegrationConfig.ConnectionString,
+		"queue_url":              o.IntegrationConfig.QueueUrl,
+		"login":                  o.IntegrationConfig.Login,
+		"base_url":               o.IntegrationConfig.BaseUrl,
+		"password":               o.IntegrationConfig.Password,
+		"host_url":               o.IntegrationConfig.HostUrl,
+		"tables":                 nil,
+		"version":                o.IntegrationConfig.Version,
+		"url":                    o.IntegrationConfig.Url,
+		"headers":                nil,
+		"auth_token":             o.IntegrationConfig.AuthToken,
+		"integration_key":        o.IntegrationConfig.IntegrationKey,
+		"source_id":              o.IntegrationConfig.SourceId,
+		"org_id":                 o.IntegrationConfig.OrgId,
+		"account_id":             o.IntegrationConfig.AccountId,
+		"connection_string":      o.IntegrationConfig.ConnectionString,
+		"roll_up_interval":       o.IntegrationConfig.RollUpInterval,
+		"secret_key":             o.IntegrationConfig.SecretKey,
+		"access_key":             o.IntegrationConfig.AccessKey,
+		"api_key":                o.IntegrationConfig.ApiKey,
+		"domain":                 o.IntegrationConfig.Domain,
+		"api_token":              o.IntegrationConfig.ApiToken,
+		"user_name":              o.IntegrationConfig.UserName,
+		"pass_phrase":            o.IntegrationConfig.PassPhrase,
+		"pipe_name":              o.IntegrationConfig.PipeName,
+		"private_key":            o.IntegrationConfig.PrivateKey,
+		"staging_integration_id": o.IntegrationConfig.StagingIntegrationID,
+		"regions":                nil,
+		"s3_uri":                 o.IntegrationConfig.S3Uri,
+		"region":                 o.IntegrationConfig.Region,
+		"role_arn":               o.IntegrationConfig.RoleArn,
+		"external_id":            o.IntegrationConfig.ExternalId,
+		"source_type":            o.IntegrationConfig.SourceType,
 	}
 	if len(o.IntegrationConfig.Tables) != 0 {
 		tables := make(map[string]interface{})
@@ -363,6 +526,17 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 			})
 		}
 		ic["headers"] = headers
+	}
+	if len(o.IntegrationConfig.Regions) != 0 {
+		regions := make([]interface{}, 0, len(o.IntegrationConfig.Regions))
+		for _, reg := range o.IntegrationConfig.Regions {
+			regions = append(regions, map[string]interface{}{
+				"name":           reg.Name,
+				"api_identifier": reg.ApiIdentifier,
+				"cloud_type":     reg.CloudType,
+			})
+		}
+		ic["regions"] = regions
 	}
 	if err = d.Set("integration_config", []interface{}{ic}); err != nil {
 		log.Printf("[WARN] Error setting 'integration_config' for %s: %s", d.Id(), err)

@@ -75,6 +75,30 @@ func dataSourceAccountGroups() *schema.Resource {
 								},
 							},
 						},
+						"parent_info": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "Parent account group info",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"group_id": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Parent account group ID",
+									},
+									"name": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Parent account group name",
+									},
+									"auto_created": {
+										Type:        schema.TypeBool,
+										Computed:    true,
+										Description: "Boolean to indicate if account group is automatically created",
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -112,11 +136,18 @@ func dataSourceAccountGroupsRead(d *schema.ResourceData, meta interface{}) error
 			})
 		}
 
+		pInfo := map[string]interface{}{
+			"group_id":     i.ParentInfo.Id,
+			"name":         i.ParentInfo.Name,
+			"auto_created": i.ParentInfo.AutoCreated,
+		}
+
 		list = append(list, map[string]interface{}{
 			"group_id":    i.Id,
 			"name":        i.Name,
 			"accounts":    acts,
 			"alert_rules": rules,
+			"parent_info": []interface{}{pInfo},
 		})
 	}
 

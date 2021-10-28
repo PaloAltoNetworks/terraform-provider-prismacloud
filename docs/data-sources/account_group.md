@@ -20,10 +20,11 @@ One of the following must be specified:
 
 * `name` - Name of the account group.
 * `group_id` - Account group ID.
-* `account_ids` - List of cloud account IDs.
 
 ## Attribute Reference
 
 * `description` - Description.
 * `last_modified_by` - Last modified by.
 * `last_modified_ts` - (int) Last modified timestamp.
+* `account_ids` - List of cloud account IDs.
+* `child_group_ids` - List of child account group IDs.
