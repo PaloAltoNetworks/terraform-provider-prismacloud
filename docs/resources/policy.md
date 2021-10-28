@@ -27,11 +27,11 @@ resource "prismacloud_policy" "example" {
 ## Argument Reference
 
 * `name` - (Required) Policy name
-* `policy_type` - (Required) Policy type.  Valid values are `config`, `audit_event`, `iam`, `network`, or `anomaly`
+* `policy_type` - (Required) Policy type. Valid values are `config`, `audit_event`, `iam`, `network`, `data`, or `anomaly`
 * `description` - Description
-* `severity` - Severity.  Valid values are `low` (default), `medium`, or `high`.
+* `severity` - Severity. Valid values are `low` (default), `medium`, or `high`.
 * `recommendation` - Remediation recommendation
-* `cloud_type` - Cloud type (Optional for policies having RQL query with multiway joins, otherwise required) - valid values are `aws`,`azure`,`gcp`,`alibaba_cloud` and `all` 
+* `cloud_type` - Cloud type (Optional for policies having RQL query with multiway joins, otherwise required) - valid values are `aws`,`azure`,`gcp`,`alibaba_cloud` and `all`
 * `labels` - List of labels
 * `enabled` - (bool) Enabled
 * `overridden` - (bool) Overridden
@@ -39,7 +39,7 @@ resource "prismacloud_policy" "example" {
 * `restrict_alert_dismissal` - (bool) Restrict alert dismissal
 * `rule` - (Required) Model for the rule, as defined [below](#rule)
 * `remediation` - Model for remediation, as defined [below](#remediation)
-* `compliance_metadata` - List of compliance data.  Each item has compliance standard, requirement, and/or section information, as defined [below](#compliance-metadata)
+* `compliance_metadata` - List of compliance data. Each item has compliance standard, requirement, and/or section information, as defined [below](#compliance-metadata)
 
 ### Rule
 
@@ -51,14 +51,14 @@ One and only one of these must be present:
 * `resource_type` - Resource type
 * `api_name` - API name
 * `resource_id_path` - Resource ID path
-* `criteria` - (Required) Saved search ID that defines the rule criteria
-* `parameters` - (Required, map of strings) Parameters. Valid keys are `withIac` and `savedSearch` and value is `"true"` or `"false"`
-(`SavedSearch` is true when we are using savedsearch and it is false when we directly give search query and `withIac` is true for build policies otherwise false)
-* `rule_type` - (Required) Type of rule or RQL query.  Valid values are `Config`, `AuditEvent`, `IAM`, `Network`, or `Anomaly`
+* `criteria` - (Required for Config, Audit Event, IAM and Network policies) Saved search ID that defines the rule criteria
+* `data_criteria` - (Required for Data policy) Criteria for DLP Rule, as defined [below](#data-criteria)
+* `parameters` - (Required for Config, Audit Event, IAM and Network policies, map of strings) Parameters. Valid keys are `withIac` and `savedSearch` and value is `"true"`or `"false"` (`SavedSearch` is true when we are using savedsearch and it is false when we directly give search query and `withIac` is true for build policies otherwise false)
+* `rule_type` - (Required) Type of rule or RQL query. Valid values are `Config`, `AuditEvent`, `IAM`, `Network`, `DLP`, or `Anomaly`
 
 ### Remediation
 
-This section may be present or may be ommitted:
+This section may be present or may be omitted:
 
 * `template_type` - Template type
 * `description` - Description
@@ -70,13 +70,20 @@ This section may be present or may be ommitted:
 * `requirement_id` - Requirement ID
 * `requirement_description` - Requirement description
 * `section_id` - Section ID
-* `compliance_id` - Compliance ID
+* `compliance_id` - (Required) Compliance Section UUID
 * `section_label` - Section label
 * `custom_assigned` - (bool) Custom assigned
+
+#### Data Criteria
+
+* `classification_result` - (Required) Data Profile name required for DLP rule criteria
+* `exposure` - File exposure. Valid values are `private`, `public`, or `conditional`
+* `extension` - List of file extensions
 
 ## Attribute Reference
 
 * `policy_id` - Policy ID
+* `policy_subtypes` - Policy subtypes
 * `created_on` - (int) Created on
 * `created_by` - Created by
 * `last_modified_on` - (int) Last modified on
@@ -85,12 +92,12 @@ This section may be present or may be ommitted:
 * `open_alerts_count` - (int) Open alerts count
 * `owner` - Owner
 * `policy_mode` - Policy mode
+* `policy_category` - Policy category
+* `policy_class` - Policy class
 * `system_default` - (bool) If policy is a system default policy or not
 * `remediable` - (bool) Is remediable or not
 
 In each `Compliance Metadata` section, the following attributes are available:
-
-### Compliance Metadata
 
 * `standard_name` - Compliance standard name
 * `standard_description` - Compliance standard description
@@ -98,10 +105,9 @@ In each `Compliance Metadata` section, the following attributes are available:
 * `section_description` - Section description
 * `policy_id` - Policy ID
 
-
 ## Import
 
-Resources can be imported using the poilcy ID:
+Resources can be imported using the policy ID:
 
 ```
 $ terraform import prismacloud_policy.example 11111111-2222-3333-4444-555555555555

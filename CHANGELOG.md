@@ -1,3 +1,7 @@
+## 1.1.4 (Sep 21, 2021)
+
+* Added missing network RQL docs
+
 ## 1.1.3 (Sep 21, 2021)
 
 * Added support for AWS orgs, anomaly policies, adding cloud accounts, numerous fixes to alert rules syntax, and bug fixes.  Documentation updated.

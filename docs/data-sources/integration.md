@@ -60,9 +60,9 @@ One of the following must be specified:
 * `access_key` - Access Key for Tenable.
 * `tables` - (Map of bools) Key/value pairs that identify the ServiceNow module tables with which to integrate (e.g. - incident, sn_si_incident, or em_event).
 * `version` - ServiceNow release version.
-* `url` - Webhook URL.
+* `url` - Webhook URL or Splunk HTTP event collector URL.
 * `headers` - Webhook headers, as defined [below](#headers).
-* `auth_token` - PagerDuty authentication token for the event collector.
+* `auth_token` - PagerDuty/Splunk authentication token for the event collector.
 * `integration_key` - PagerDuty integration key.
 * `source_id` - GCP Source ID for Google CSCC integration.
 * `org_id` - GCP Organization ID for Google CSCC integration.
@@ -74,6 +74,13 @@ One of the following must be specified:
 * `private_key` - Snowflake Private Key.
 * `roll_up_interval` - File roll up time in minutes for AWS S3 integration and for snowflake integration.  
 * `staging_integration_id` - Amazon s3 integration ID for Snowflake integration.
+* `account_id` - AWS account ID for AWS Security Hub integration.
+* `regions` - List of AWS regions for AWS Security Hub integration, as defined [below](#regions).
+* `s3_uri` - AWS S3 URI for Amazon S3 integration.
+* `region` - AWS region for Amazon S3 integration.
+* `role_arn` - AWS role ARN for Amazon S3 integration.
+* `external_id` - AWS external ID for Amazon S3 integration.
+* `source_type` - Source type for splunk integration.
 
 ### Headers
 
@@ -81,3 +88,9 @@ One of the following must be specified:
 * `value` - Header value.
 * `secure` - (bool) Secure.
 * `read_only` - (bool) Read-only.
+
+### Regions
+
+* `name` - AWS region name.
+* `api_identifier` - AWS region code.
+* `cloud_type` - Cloud Type.

@@ -25,9 +25,6 @@ func resourceRqlSearch() *schema.Resource {
 				Default:     "config",
 				ValidateFunc: validation.StringInSlice([]string{
 					"config",
-					// Remove "network" as an option until the network return structure
-					// is added to the prisma-cloud-go library.
-					//"network",
 					"network",
 					"event",
 					"iam",

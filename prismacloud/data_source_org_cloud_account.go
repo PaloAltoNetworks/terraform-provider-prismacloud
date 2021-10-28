@@ -227,7 +227,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 						"name": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "Name to be used for the account on the Prisma Cloud platform (must be unique)",
+							Description: "Name to be used for the account on the Prisma Cloud platform",
 						},
 						"compression_enabled": {
 							Type:        schema.TypeBool,
@@ -260,7 +260,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 						"protection_mode": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "Monitor or Monitor and Protect",
+							Description: "Protection Mode - Monitor or Monitor and Protect",
 						},
 						"organization_name": {
 							Type:        schema.TypeString,
@@ -273,8 +273,9 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 							Description: "Cloud account group creation mode - manual, auto or recursive",
 						},
 						"hierarchy_selection": {
-							Type:     schema.TypeList,
-							Computed: true,
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "List of hierarchy selection. Each item has resource id, display name, node type and selection type",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"resource_id": {
@@ -290,12 +291,12 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 									"node_type": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "Valid values - folder, project, org",
+										Description: "Node type - folder, project, org",
 									},
 									"selection_type": {
 										Type:        schema.TypeString,
 										Computed:    true,
-										Description: "Valid values: INCLUDE, EXCLUDE, INCLUDE ALL. If hierarchySelection.nodeType is PROJECT or FOLDER, then a valid value is either INCLUDE or EXCLUDE",
+										Description: "Selection type - INCLUDE, EXCLUDE, ALL",
 									},
 								},
 							},

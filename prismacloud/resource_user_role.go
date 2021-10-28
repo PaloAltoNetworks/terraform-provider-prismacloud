@@ -107,6 +107,7 @@ func resourceUserRole() *schema.Resource {
 				Type:        schema.TypeList,
 				Optional:    true,
 				Description: "Additional Parameters",
+				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"only_allow_ci_access": {
@@ -137,21 +138,27 @@ func resourceUserRole() *schema.Resource {
 }
 
 func parseUserRole(d *schema.ResourceData) *role.Role {
-	aspec := d.Get("additional_attributes").([]interface{})[0].(map[string]interface{})
-	return &role.Role{
+	aspec := d.Get("additional_attributes").([]interface{})
+
+	ans := &role.Role {
 		Name:                    d.Get("name").(string),
 		Description:             d.Get("description").(string),
 		RoleType:                d.Get("role_type").(string),
 		AccountGroupIds:         SetToStringSlice(d.Get("account_group_ids").(*schema.Set)),
 		AssociatedUsers:         SetToStringSlice(d.Get("associated_users").(*schema.Set)),
 		RestrictDismissalAccess: d.Get("restrict_dismissal_access").(bool),
-		AdditionalAttributes: role.AdditionalAttributes{
-			OnlyAllowCIAccess:      aspec["only_allow_ci_access"].(bool),
-			OnlyAllowComputeAccess: aspec["only_allow_compute_access"].(bool),
-			OnlyAllowReadAccess:    aspec["only_allow_read_access"].(bool),
-			HasDefenderPermissions: aspec["has_defender_permissions"].(bool),
-		},
 	}
+
+	if len(aspec) > 0 {
+		if aspecs := aspec[0].(map[string]interface{}); len(aspecs) > 0 {
+			ans.AdditionalAttributes.OnlyAllowReadAccess = aspecs["only_allow_read_access"].(bool)
+			ans.AdditionalAttributes.OnlyAllowComputeAccess = aspecs["only_allow_compute_access"].(bool)
+			ans.AdditionalAttributes.OnlyAllowCIAccess = aspecs["only_allow_ci_access"].(bool)
+			ans.AdditionalAttributes.HasDefenderPermissions = aspecs["has_defender_permissions"].(bool)
+		}
+	}
+
+	return ans
 }
 
 func saveUserRole(d *schema.ResourceData, obj role.Role) {
