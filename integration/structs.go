@@ -48,10 +48,26 @@ type IntegrationConfig struct {
 	SourceId string `json:"sourceId,omitempty"`
 	OrgId    string `json:"orgId,omitempty"`
 
+	// AWS security hub
+	AccountId string   `json:"accountId,omitempty"`
+	Regions   []Region `json:"regions,omitempty"`
+
 	// Azure Service Bus Queue
-	AccountId        string `json:"accountId,omitempty"`
 	ConnectionString string `json:"connectionString,omitempty"`
+	// AccountId
 	// QueueUrl
+
+	// Amazon S3
+	S3Uri          string `json:"s3Uri,omitempty"`
+	Region         string `json:"region,omitempty"`
+	RoleArn        string `json:"roleArn,omitempty"`
+	ExternalId     string `json:"externalId,omitempty"`
+	RollUpInterval int    `json:"rollUpInterval,omitempty"`
+
+	// Splunk
+	SourceType string `json:"sourceType,omitempty"`
+	// Url
+	// AuthToken
 }
 
 type Header struct {
@@ -77,4 +93,11 @@ type Details struct {
 type AlertRule struct {
 	PolicyScanConfigId string `json:"policyScanConfigId"`
 	Name               string `json:"name"`
+}
+
+type Region struct {
+	Name          string `json:"name"`
+	ApiIdentifier string `json:"apiIdentifier"`
+	CloudType     string `json:"cloudType"`
+	SdkId         string `json:"sdkId"`
 }
