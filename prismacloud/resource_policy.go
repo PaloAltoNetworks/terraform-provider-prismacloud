@@ -52,9 +52,18 @@ func resourcePolicy() *schema.Resource {
 						policy.PolicyTypeNetwork,
 						policy.PolicyTypeIAM,
 						policy.PolicyTypeAnomaly,
+						policy.PolicyTypeData,
 					},
 					false,
 				),
+			},
+			"policy_subtypes": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "Policy subtypes",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 			"system_default": {
 				Type:        schema.TypeBool,
@@ -170,6 +179,16 @@ func resourcePolicy() *schema.Resource {
 				Computed:    true,
 				Description: "Policy mode",
 			},
+			"policy_category": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Policy category",
+			},
+			"policy_class": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Policy class",
+			},
 			"remediable": {
 				Type:        schema.TypeBool,
 				Computed:    true,
@@ -215,12 +234,48 @@ func resourcePolicy() *schema.Resource {
 						},
 						"criteria": {
 							Type:        schema.TypeString,
-							Required:    true,
+							Optional:    true,
 							Description: "Saved search ID that defines the rule criteria",
+						},
+						"data_criteria": {
+							Type:        schema.TypeList,
+							Optional:    true,
+							Description: "Criteria for DLP Rule",
+							MaxItems:    1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"classification_result": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Data Profile name required for DLP rule criteria",
+									},
+									"exposure": {
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "File exposure",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"private",
+												"public",
+												"conditional",
+											},
+											false,
+										),
+									},
+									"extension": {
+										Type:        schema.TypeSet,
+										Optional:    true,
+										Description: "File extensions",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
 						},
 						"parameters": {
 							Type:        schema.TypeMap,
-							Required:    true,
+							Optional:    true,
 							Description: "Parameters",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -237,6 +292,7 @@ func resourcePolicy() *schema.Resource {
 									policy.RuleTypeNetwork,
 									policy.RuleTypeIAM,
 									policy.RuleTypeAnomaly,
+									policy.RuleTypeData,
 								},
 								false,
 							),
@@ -369,6 +425,15 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 		},
 	}
 
+	dataCriteria := rspec["data_criteria"].([]interface{})
+	if len(dataCriteria) > 0 {
+		if data := dataCriteria[0].(map[string]interface{}); len(data) > 0 {
+			ans.Rule.DataCriteria.ClassificationResult = data["classification_result"].(string)
+			ans.Rule.DataCriteria.Exposure = data["exposure"].(string)
+			ans.Rule.DataCriteria.Extension = SetToStringSlice(data["extension"].(*schema.Set))
+		}
+	}
+
 	rem := d.Get("remediation").([]interface{})
 	if len(rem) > 0 {
 		if rems := rem[0].(map[string]interface{}); len(rems) > 0 {
@@ -413,6 +478,7 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 	d.Set("policy_id", obj.PolicyId)
 	d.Set("name", obj.Name)
 	d.Set("policy_type", obj.PolicyType)
+	d.Set("policy_subtypes", obj.PolicySubTypes)
 	d.Set("system_default", obj.SystemDefault)
 	d.Set("description", obj.Description)
 	d.Set("severity", obj.Severity)
@@ -430,6 +496,8 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 	d.Set("open_alerts_count", obj.OpenAlertsCount)
 	d.Set("owner", obj.Owner)
 	d.Set("policy_mode", obj.PolicyMode)
+	d.Set("policy_category", obj.PolicyCategory)
+	d.Set("policy_class", obj.PolicyClass)
 	d.Set("remediable", obj.Remediable)
 
 	if err := d.Set("labels", StringSliceToSet(obj.Labels)); err != nil {
@@ -456,6 +524,17 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 			log.Printf("[WARN] Failed to marshal criteria for %q: %s", d.Id(), err)
 		}
 		rv["criteria"] = string(b)
+	}
+
+	if obj.Rule.DataCriteria.ClassificationResult == "" {
+		rv["data_criteria"] = nil
+	} else {
+		data := map[string]interface{}{
+			"classification_result": obj.Rule.DataCriteria.ClassificationResult,
+			"exposure":              obj.Rule.DataCriteria.Exposure,
+			"extension":             obj.Rule.DataCriteria.Extension,
+		}
+		rv["data_criteria"] = []interface{}{data}
 	}
 
 	pm := make(map[string]interface{})

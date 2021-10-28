@@ -24,6 +24,7 @@ You must specify at least one of the following:
 ## Attribute Reference
 
 * `policy_type` - Policy type
+* `policy_subtypes` - Policy subtypes
 * `system_default` - (bool) If policy is a system default policy or not
 * `description` - Description
 * `severity` - Severity
@@ -42,6 +43,8 @@ You must specify at least one of the following:
 * `open_alerts_count` - (int) Open alerts count
 * `owner` - Owner
 * `policy_mode` - Policy mode
+* `policy_category` - Policy category
+* `policy_class` - Policy class
 * `remediable` - (bool) Is remediable or not
 * `rule` - Model for the rule, as defined [below](#rule)
 * `remediation` - Model for remediation, as defined [below](#remediation)
@@ -56,6 +59,7 @@ You must specify at least one of the following:
 * `api_name` - API name
 * `resource_id_path` - Resource ID path
 * `criteria` - Saved search ID that defines the rule criteria
+* `data_criteria` - Criteria for DLP Rule, as defined [below](#data-criteria)
 * `parameters` - (map of strings) Parameters
 * `rule_type` - Type of rule or RQL query
 
@@ -79,3 +83,9 @@ You must specify at least one of the following:
 * `compliance_id` - Compliance Section UUID
 * `section_label` - Section label
 * `custom_assigned` - (bool) Custom assigned
+
+#### Data Criteria
+
+* `classification_result` - Data Profile name required for DLP rule criteria
+* `exposure` - File exposure
+* `extension` - List of file extensions

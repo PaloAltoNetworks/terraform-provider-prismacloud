@@ -34,6 +34,14 @@ func dataSourcePolicy() *schema.Resource {
 				Computed:    true,
 				Description: "Policy type",
 			},
+			"policy_subtypes": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "Policy subtypes",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"system_default": {
 				Type:        schema.TypeBool,
 				Computed:    true,
@@ -127,6 +135,16 @@ func dataSourcePolicy() *schema.Resource {
 				Computed:    true,
 				Description: "Policy mode",
 			},
+			"policy_category": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Policy category",
+			},
+			"policy_class": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "Policy class",
+			},
 			"remediable": {
 				Type:        schema.TypeBool,
 				Computed:    true,
@@ -172,6 +190,33 @@ func dataSourcePolicy() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 							Description: "Saved search ID that defines the rule criteria",
+						},
+						"data_criteria": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "Criteria for DLP Rule",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"classification_result": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Data Profile name required for DLP rule criteria.",
+									},
+									"exposure": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "File exposure",
+									},
+									"extension": {
+										Type:        schema.TypeSet,
+										Computed:    true,
+										Description: "File extensions",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
 						},
 						"parameters": {
 							Type:        schema.TypeMap,
