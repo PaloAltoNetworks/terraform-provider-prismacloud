@@ -23,6 +23,7 @@ resource "prismacloud_account_group" "example" {
 * `name` - (Required) name of the group.
 * `description` - (Optional) Description.
 * `account_ids` - (Optional) List of cloud account IDs.
+* `child_group_ids` - (Optional) List of child account group IDs.
 
 ## Attribute Reference
 
