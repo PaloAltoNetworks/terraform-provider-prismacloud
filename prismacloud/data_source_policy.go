@@ -267,7 +267,7 @@ func dataSourcePolicy() *schema.Resource {
 						"compliance_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "Compliance ID",
+							Description: "Compliance Section UUID",
 						},
 						"section_label": {
 							Type:        schema.TypeString,

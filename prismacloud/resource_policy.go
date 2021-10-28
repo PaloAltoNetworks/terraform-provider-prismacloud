@@ -322,8 +322,8 @@ func resourcePolicy() *schema.Resource {
 						},
 						"compliance_id": {
 							Type:        schema.TypeString,
-							Optional:    true,
-							Description: "Compliance ID",
+							Required:    true,
+							Description: "Compliance Section UUID",
 						},
 						"section_label": {
 							Type:        schema.TypeString,
