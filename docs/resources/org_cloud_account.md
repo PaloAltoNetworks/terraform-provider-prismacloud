@@ -68,7 +68,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 * `aws` - AWS org account type spec, defined [below](#aws).
 * `azure` - Azure org account type spec, defined [below](#azure).
 * `gcp` - GCP org account type spec, defined [below](#gcp).
-* `oci` - Oci account type spec, defined [below](#alibaba-cloud).
+* `oci` - Oci account type spec, defined [below](#oci).
 
 ### AWS
 
@@ -103,17 +103,25 @@ The type of org cloud account to add.  You need to specify one and only one of t
 
 * `account_id` - (Required) GCP org project ID.
 * `enabled` - (Optional, bool) Whether or not the account is enabled (defualt: `true`).
-* `group_ids` - (Required) List of account IDs to which you are assigning this account.
+* `group_ids` - List of account IDs to which you are assigning this account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `compression_enabled` - (Optional, bool) Enable flow log compression.
 * `data_flow_enabled_project` - (Optional) GCP project for flow log compression.
 * `flow_log_storage_bucket` - (Optional) GCP Flow logs storage bucket.
 * `credentials_json` - (Required) Content of the JSON credentials file (read in using `file()`).
-* `account_type` - (Optional) Defaults to "organization" if not specified.
-* `protection_mode` - (Optional) Defaults to "MONITOR".
+* `account_type` - (Optional) Account type. Defaults to `organization` if not specified.
+* `protection_mode` - (Optional) Protection Mode. Valid values : `MONITOR` or `MONITOR_AND_PROTECT`. Defaults to `MONITOR` if not specified.
 * `organization_name` - (Required) GCP org organization name.
-* `account_group_creation_mode` - (Optional) Cloud account group creation mode - manual, auto or recursive(Default = MANUAL).
-                                
+* `account_group_creation_mode` - (Optional) Cloud account group creation mode. Valid values : `MANUAL`: Create account groups manually, `AUTO`: Create high-level account groups based on folders identified, or `RECURSIVE`: Drill down in folder tree to create account groups (default : `MANUAL`). `AUTO` can't be used if `selection_type` in `hierarchy_selection` is `EXCLUDE`. 
+* `hierarchy_selection` - (Optional) List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection). 
+
+#### Hierarchy Selection
+
+* `resource_id` - (Required) Resource ID.  For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}
+* `display_name` - (Required) Display name for folder, project, or organization.
+* `node_type` - (Required) Node type. Valid values : `FOLDER`, `PROJECT`, or `ORG`.
+* `selection_type` - (Required) Selection type. Valid values: `INCLUDE`, `EXCLUDE`, or `ALL`. If `node_type` is `PROJECT` or `FOLDER`, then a valid value is either `INCLUDE` or `EXCLUDE`.
+
 ### Oci
 
 * `account_id` - (Required) OCI account ID.
@@ -132,7 +140,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 
 ## Import
 
-Resources can be imported using the cloud type (`aws`, `azure`, `gcp`, or `alibaba_cloud`) and the ID:
+Resources can be imported using the cloud type (`aws`, `azure`, `gcp`, or `oci`) and the ID:
 
 ```
 $ terraform import prismacloud_org_cloud_account.aws_example aws:accountIdHere

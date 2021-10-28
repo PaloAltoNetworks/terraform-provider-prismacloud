@@ -241,7 +241,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 						},
 						"group_ids": {
 							Type:        schema.TypeSet,
-							Required:    true,
+							Optional:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -293,7 +293,20 @@ func resourceOrgCloudAccount() *schema.Resource {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Default:     "MONITOR",
-							Description: "Monitor or Monitor and Protect",
+							Description: "Protection Mode - Monitor or Monitor and Protect",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"MONITOR",
+									"MONITOR_AND_PROTECT",
+								},
+								true,
+							),
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								if strings.ToLower(old) == strings.ToLower(new) {
+									return true
+								}
+								return false
+							},
 						},
 						"organization_name": {
 							Type:        schema.TypeString,
@@ -304,34 +317,57 @@ func resourceOrgCloudAccount() *schema.Resource {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Default:     "MANUAL",
-							Description: "Cloud account group creation mode - manual, auto or recursive",
+							Description: "Cloud account group creation mode. Valid values - MANUAL, AUTO or RECURSIVE",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"MANUAL",
+									"AUTO",
+									"RECURSIVE",
+								},
+								false,
+							),
 						},
 						"hierarchy_selection": {
-							Type:     schema.TypeList,
-							Optional: true,
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "List of hierarchy selection. Each item has resource id, display name, node type and selection type",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"resource_id": {
 										Type:        schema.TypeString,
-										Optional:    true,
+										Required:    true,
 										Description: "Resource ID. For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}",
 									},
 									"display_name": {
 										Type:        schema.TypeString,
-										Optional:    true,
+										Required:    true,
 										Description: "Display name for folder, project, or organization",
 									},
 									"node_type": {
 										Type:        schema.TypeString,
-										Optional:    true,
-										Default:     "FOLDER",
-										Description: "Valid values - folder, project, org",
+										Required:    true,
+										Description: "Node type. Valid values - FOLDER, PROJECT, ORG",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"FOLDER",
+												"PROJECT",
+												"ORG",
+											},
+											false,
+										),
 									},
 									"selection_type": {
 										Type:        schema.TypeString,
-										Optional:    true,
-										Default:     "EXCLUDE",
-										Description: "Valid values: INCLUDE, EXCLUDE, INCLUDE ALL. If hierarchySelection.nodeType is PROJECT or FOLDER, then a valid value is either INCLUDE or EXCLUDE",
+										Required:    true,
+										Description: "Selection type. Valid values: INCLUDE, EXCLUDE, ALL. If hierarchySelection.nodeType is PROJECT or FOLDER, then a valid value is either INCLUDE or EXCLUDE",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"INCLUDE",
+												"EXCLUDE",
+												"ALL",
+											},
+											false,
+										),
 									},
 								},
 							},
@@ -506,7 +542,7 @@ func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) 
 			OrganizationName:         x["organization_name"].(string),
 			AccountGroupCreationMode: x["account_group_creation_mode"].(string),
 		}
-		hsl := x["hierarchy_selection"].([]interface{})
+		hsl := x["hierarchy_selection"].(*schema.Set).List()
 		ans.HierarchySelection = make([]org.HierarchySelection, 0, len(hsl))
 		for _, hsi := range hsl {
 			hs := hsi.(map[string]interface{})
@@ -584,7 +620,7 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"account_group_creation_mode": v.AccountGroupCreationMode,
 		}
 		if len(v.HierarchySelection) == 0 {
-			d.Set("hierarchy_selection", nil)
+			val["hierarchy_selection"] = nil
 			break
 		} else {
 			hsList := make([]interface{}, 0, len(v.HierarchySelection))
@@ -596,10 +632,7 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 					"selection_type": hs.SelectionType,
 				})
 			}
-
-			if err := d.Set("hierarchy_selection", hsList); err != nil {
-				log.Printf("[WARN] Error setting 'hierarchy_selection' for %q: %s", d.Id(), err)
-			}
+			val["hierarchy_selection"] = hsList
 		}
 	}
 
