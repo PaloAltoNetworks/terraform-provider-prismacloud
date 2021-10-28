@@ -27,6 +27,8 @@ type Policy struct {
 	OpenAlertsCount        int                  `json:"openAlertsCount,omitempty"`
 	Owner                  string               `json:"owner,omitempty"`
 	PolicyMode             string               `json:"policyMode,omitempty"`
+	PolicyCategory         string               `json:"policyCategory,omitempty"`
+	PolicyClass            string               `json:"policyClass,omitempty"`
 	Remediable             bool                 `json:"remediable,omitempty"`
 }
 
@@ -43,7 +45,8 @@ type Rule struct {
 	ResourceType   string            `json:"resourceType,omitempty"`
 	ApiName        string            `json:"apiName,omitempty"`
 	ResourceIdPath string            `json:"resourceIdPath,omitempty"`
-	Criteria       interface{}       `json:"criteria"`
+	Criteria       interface{}       `json:"criteria,omitempty"`
+	DataCriteria   DataCriteria      `json:"dataCriteria,omitempty"`
 	Parameters     map[string]string `json:"parameters"`
 	Type           string            `json:"type"`
 }
@@ -67,4 +70,10 @@ type Remediation struct {
 	Description         string      `json:"description,omitempty"`
 	CliScriptTemplate   string      `json:"cliScriptTemplate,omitempty"`
 	CliScriptJsonSchema interface{} `json:"cliScriptJsonSchema,omitempty"`
+}
+
+type DataCriteria struct {
+	ClassificationResult string   `json:"classificationResult,omitempty"`
+	Exposure             string   `json:"exposure,omitempty"`
+	Extension            []string `json:"extension,omitempty"`
 }
