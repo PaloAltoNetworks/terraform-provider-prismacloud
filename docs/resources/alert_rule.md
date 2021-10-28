@@ -55,7 +55,7 @@ There should be one and only one target block:
 * `detailed_report` - (bool) Provide CSV detailed report
 * `with_compression` - (bool) Compress detailed report
 * `include_remediation` - (bool) Include remediation in detailed report
-* `config_type` - Config type.  Valid values are `email`, `slack`, `splunk`, `amazon_sqs`, `jira`, `microsoft_teams`, `webhook`, `aws_security_hub`, `google_cscc`, `service_now`, `pager_duty`, `aws_s3`, or `demisto`
+* `config_type` - Config type.  Valid values are `email`, `slack`, `splunk`, `amazon_sqs`, `microsoft_teams`, `webhook`, `aws_security_hub`, `google_cscc`, `service_now`, `pager_duty`, `aws_s3`, `snowflake`  or `demisto`
 * `template_id` - Template ID
 * `r_rule_schedule` - R rule schedule
 
