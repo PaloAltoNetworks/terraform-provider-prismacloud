@@ -32,7 +32,7 @@ resource "prismacloud_integration" "example" {
 
 Refer to the [Prisma Cloud integration documentation](https://api.docs.prismacloud.io/reference#integration-configuration) if you need more information on a specific integration.
 
-* `queue_url` - The Queue URL you used when you configured Prisma Cloud in Amazon SQS
+* `queue_url` - The Queue URL you used when you configured Prisma Cloud in Amazon SQS or Azure Service Bus Queue.
 * `login` - (Qualys/ServiceNow) Login.
 * `base_url` - Qualys Security Operations Center server API URL (without "http(s)")
 * `password` - (Qualys/ServiceNow) Password
@@ -44,6 +44,8 @@ Refer to the [Prisma Cloud integration documentation](https://api.docs.prismaclo
 * `integration_key` - PagerDuty integration key.
 * `source_id` - GCP Source ID for Google CSCC integration.
 * `org_id` - GCP Organization ID for Google CSCC integration.
+* `account_id` - AWS/Azure account ID for AWS Security Hub/Azure Service Bus Queue integration.
+* `connection_string` - Connection string for Azure Service Bus Queue integration.
 * `api_key` - Demisto Api Key.
 * `host_url` - ServiceNow URL/Demisto URL.
 * `access_key` - Access Key for Tenable.
@@ -55,13 +57,12 @@ Refer to the [Prisma Cloud integration documentation](https://api.docs.prismaclo
 * `pass_phrase` - Snowflake PassPhrase.
 * `private_key` - Snowflake Private Key.
 * `staging_integration_id` - Amazon s3 integration ID for Snowflake integration.  
-* `account_id` - AWS account ID for AWS Security Hub integration.
 * `regions` - List of AWS regions for AWS Security Hub integration, as defined [below](#regions).
 * `s3_uri` - AWS S3 URI for Amazon S3 integration.
 * `region` - AWS region for Amazon S3 integration.
 * `role_arn` - AWS role ARN for Amazon S3 integration.
 * `external_id` - AWS external ID for Amazon S3 integration.
-* `roll_up_interval` - (int) File roll up time in minutes for AWS S3 integration and for snowflake integration.. Valid values are `15`, `30`, `60`, or `180`.
+* `roll_up_interval` - (int) File roll up time in minutes for AWS S3 integration and for snowflake integration. Valid values are `15`, `30`, `60`, or `180`.
 * `source_type` - Source type for splunk integration.
 
 ### Headers

@@ -50,7 +50,7 @@ One of the following must be specified:
 
 ### Integration Config
 
-* `queue_url` - The Queue URL you used when you configured Prisma Cloud in Amazon SQS
+* `queue_url` - The Queue URL you used when you configured Prisma Cloud in Amazon SQS or Azure Service Bus Queue.
 * `login` - (Qualys/ServiceNow) Login.
 * `base_url` - Qualys Security Operations Center server API URL (without "http(s)")
 * `password` - (Qualys/ServiceNow) Password.
@@ -66,6 +66,8 @@ One of the following must be specified:
 * `integration_key` - PagerDuty integration key.
 * `source_id` - GCP Source ID for Google CSCC integration.
 * `org_id` - GCP Organization ID for Google CSCC integration.
+* `account_id` - AWS/Azure account ID for AWS Security Hub/Azure Service Bus Queue integration.
+* `connection_string` - Connection string for Azure Service Bus Queue integration.
 * `domain` - Okta Domain.
 * `api_token` - Okta API token.
 * `user_name` - Snowflake username.
@@ -74,7 +76,6 @@ One of the following must be specified:
 * `private_key` - Snowflake Private Key.
 * `roll_up_interval` - File roll up time in minutes for AWS S3 integration and for snowflake integration.  
 * `staging_integration_id` - Amazon s3 integration ID for Snowflake integration.
-* `account_id` - AWS account ID for AWS Security Hub integration.
 * `regions` - List of AWS regions for AWS Security Hub integration, as defined [below](#regions).
 * `s3_uri` - AWS S3 URI for Amazon S3 integration.
 * `region` - AWS region for Amazon S3 integration.

@@ -136,7 +136,7 @@ func resourceIntegration() *schema.Resource {
 						"queue_url": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "The Queue URL you used when you configured Prisma Cloud in Amazon SQS",
+							Description: "The Queue URL you used when you configured Prisma Cloud in Amazon SQS or Azure Service Bus Queue",
 						},
 						"login": {
 							Type:        schema.TypeString,
@@ -278,7 +278,12 @@ func resourceIntegration() *schema.Resource {
 						"account_id": {
 							Type:        schema.TypeString,
 							Optional:    true,
-							Description: "AWS account ID for AWS Security Hub integration",
+							Description: "AWS/Azure account ID for AWS Security Hub/Azure Service Bus Queue integration",
+						},
+						"connection_string": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Connection string for azure service bus queue integration",
 						},
 						"regions": {
 							Type:        schema.TypeSet,
@@ -411,6 +416,8 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 			IntegrationKey:       ic["integration_key"].(string),
 			SourceId:             ic["source_id"].(string),
 			OrgId:                ic["org_id"].(string),
+			AccountId:            ic["account_id"].(string),
+			ConnectionString:     ic["connection_string"].(string),
 			RollUpInterval:       ic["roll_up_interval"].(int),
 			SecretKey:            ic["secret_key"].(string),
 			AccessKey:            ic["access_key"].(string),
@@ -422,13 +429,11 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 			PrivateKey:           ic["private_key"].(string),
 			PipeName:             ic["pipe_name"].(string),
 			StagingIntegrationID: ic["staging_integration_id"].(string),
-			AccountId:            ic["account_id"].(string),
 			Regions:              regions,
 			S3Uri:                ic["s3_uri"].(string),
 			Region:               ic["region"].(string),
 			RoleArn:              ic["role_arn"].(string),
 			ExternalId:           ic["external_id"].(string),
-			RollUpInterval:       ic["roll_up_interval"].(int),
 			SourceType:           ic["source_type"].(string),
 		},
 		Enabled: d.Get("enabled").(bool),
@@ -468,7 +473,6 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 	}
 
 	ic := map[string]interface{}{
-
 		"queue_url":              o.IntegrationConfig.QueueUrl,
 		"login":                  o.IntegrationConfig.Login,
 		"base_url":               o.IntegrationConfig.BaseUrl,
@@ -482,6 +486,8 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 		"integration_key":        o.IntegrationConfig.IntegrationKey,
 		"source_id":              o.IntegrationConfig.SourceId,
 		"org_id":                 o.IntegrationConfig.OrgId,
+		"account_id":             o.IntegrationConfig.AccountId,
+		"connection_string":      o.IntegrationConfig.ConnectionString,
 		"roll_up_interval":       o.IntegrationConfig.RollUpInterval,
 		"secret_key":             o.IntegrationConfig.SecretKey,
 		"access_key":             o.IntegrationConfig.AccessKey,
@@ -493,13 +499,11 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 		"pipe_name":              o.IntegrationConfig.PipeName,
 		"private_key":            o.IntegrationConfig.PrivateKey,
 		"staging_integration_id": o.IntegrationConfig.StagingIntegrationID,
-		"account_id":             o.IntegrationConfig.AccountId,
 		"regions":                nil,
 		"s3_uri":                 o.IntegrationConfig.S3Uri,
 		"region":                 o.IntegrationConfig.Region,
 		"role_arn":               o.IntegrationConfig.RoleArn,
 		"external_id":            o.IntegrationConfig.ExternalId,
-		"roll_up_interval":       o.IntegrationConfig.RollUpInterval,
 		"source_type":            o.IntegrationConfig.SourceType,
 	}
 	if len(o.IntegrationConfig.Tables) != 0 {
