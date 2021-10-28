@@ -25,6 +25,7 @@ const (
 	TypePagerDuty            = "pager_duty"
 	TypeDemisto              = "demisto"
 	TypeAzureServiceBusQueue = "azure_service_bus_queue"
+	TypeAwsS3                = "aws_s3"
 )
 
 const (
