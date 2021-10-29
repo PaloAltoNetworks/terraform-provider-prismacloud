@@ -72,6 +72,11 @@ type IntegrationConfig struct {
 	AccountId string   `json:"accountId,omitempty"`
 	Regions   []Region `json:"regions,omitempty"`
 
+	// Azure Service Bus Queue
+	ConnectionString string `json:"connectionString,omitempty"`
+	// AccountId
+	// QueueUrl
+
 	// Amazon S3
 	S3Uri          string `json:"s3Uri,omitempty"`
 	Region         string `json:"region,omitempty"`
