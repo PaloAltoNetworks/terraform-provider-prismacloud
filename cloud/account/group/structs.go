@@ -14,6 +14,8 @@ type Group struct {
 	AccountIds     []string    `json:"accountIds"`
 	Accounts       []Account   `json:"accounts,omitempty"`
 	AlertRules     []AlertRule `json:"alertRules,omitempty"`
+	ChildGroupIds  []string    `json:"childGroupIds"`
+	ParentInfo     ParentInfo  `json:"parentInfo,omitempty"`
 }
 
 type Account struct {
@@ -25,4 +27,10 @@ type Account struct {
 type AlertRule struct {
 	Id   string `json:"alertId"`
 	Name string `json:"alertName"`
+}
+
+type ParentInfo struct {
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	AutoCreated bool   `json:"autoCreated"`
 }

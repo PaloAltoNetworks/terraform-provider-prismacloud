@@ -16,7 +16,6 @@ const (
 	TypeSlack                = "slack"
 	TypeSplunk               = "splunk"
 	TypeAmazonSqs            = "amazon_sqs"
-	TypeJira                 = "jira"
 	TypeMicrosoftTeams       = "microsoft_teams"
 	TypeWebhook              = "webhook"
 	TypeAwsSecurityHub       = "aws_security_hub"
@@ -26,6 +25,7 @@ const (
 	TypeDemisto              = "demisto"
 	TypeAzureServiceBusQueue = "azure_service_bus_queue"
 	TypeSnowFlake            = "snowflake"
+	TypeAwsS3                = "aws_s3"
 )
 
 const (

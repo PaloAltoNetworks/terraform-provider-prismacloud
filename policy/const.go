@@ -12,6 +12,7 @@ const (
 	RuleTypeNetwork    = "Network"
 	RuleTypeIAM        = "IAM"
 	RuleTypeAnomaly    = "Anomaly"
+	RuleTypeData       = "DLP"
 )
 
 // Valid values for Policy.PolicyType.
@@ -21,6 +22,7 @@ const (
 	PolicyTypeNetwork    = "network"
 	PolicyTypeIAM        = "iam"
 	PolicyTypeAnomaly    = "anomaly"
+	PolicyTypeData       = "data"
 )
 
 // Valid values for Policy.Rule.Severity.
