@@ -1,3 +1,7 @@
+## 1.1.5 (Oct 29, 2021)
+
+* Multiple integrations added as well as data security
+
 ## 1.1.4 (Sep 21, 2021)
 
 * Added missing network RQL docs
