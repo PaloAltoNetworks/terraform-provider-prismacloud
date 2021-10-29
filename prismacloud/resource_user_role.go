@@ -107,7 +107,7 @@ func resourceUserRole() *schema.Resource {
 				Type:        schema.TypeList,
 				Optional:    true,
 				Description: "Additional Parameters",
-				MaxItems: 1,
+				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"only_allow_ci_access": {
@@ -140,7 +140,7 @@ func resourceUserRole() *schema.Resource {
 func parseUserRole(d *schema.ResourceData) *role.Role {
 	aspec := d.Get("additional_attributes").([]interface{})
 
-	ans := &role.Role {
+	ans := &role.Role{
 		Name:                    d.Get("name").(string),
 		Description:             d.Get("description").(string),
 		RoleType:                d.Get("role_type").(string),
