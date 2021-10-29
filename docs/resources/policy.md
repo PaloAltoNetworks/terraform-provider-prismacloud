@@ -67,12 +67,7 @@ This section may be present or may be omitted:
 
 ### Compliance Metadata
 
-* `requirement_id` - Requirement ID
-* `requirement_description` - Requirement description
-* `section_id` - Section ID
 * `compliance_id` - (Required) Compliance Section UUID
-* `section_label` - Section label
-* `custom_assigned` - (bool) Custom assigned
 
 #### Data Criteria
 
@@ -102,8 +97,13 @@ In each `Compliance Metadata` section, the following attributes are available:
 * `standard_name` - Compliance standard name
 * `standard_description` - Compliance standard description
 * `requirement_name` - Requirement name
+* `requirement_id` - Requirement ID
+* `requirement_description` - Requirement description
 * `section_description` - Section description
+* `section_id` - Section ID
+* `section_label` - Section label
 * `policy_id` - Policy ID
+* `custom_assigned` - (bool) Custom assigned
 
 ## Import
 

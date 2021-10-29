@@ -348,7 +348,7 @@ func resourcePolicy() *schema.Resource {
 						},
 						"requirement_id": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Requirement ID",
 						},
 						"requirement_name": {
@@ -358,12 +358,12 @@ func resourcePolicy() *schema.Resource {
 						},
 						"requirement_description": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Requirement description",
 						},
 						"section_id": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Section ID",
 						},
 						"section_description": {
@@ -383,12 +383,12 @@ func resourcePolicy() *schema.Resource {
 						},
 						"section_label": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Section label",
 						},
 						"custom_assigned": {
 							Type:        schema.TypeBool,
-							Optional:    true,
+							Computed:    true,
 							Description: "Custom assigned",
 						},
 					},
@@ -461,13 +461,7 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 	for _, csmi := range cms {
 		cmd := csmi.(map[string]interface{})
 		ans.ComplianceMetadata = append(ans.ComplianceMetadata, policy.ComplianceMetadata{
-			RequirementId:          cmd["requirement_id"].(string),
-			RequirementDescription: cmd["requirement_description"].(string),
-			SectionId:              cmd["section_id"].(string),
-			PolicyId:               id,
-			ComplianceId:           cmd["compliance_id"].(string),
-			SectionLabel:           cmd["section_label"].(string),
-			CustomAssigned:         cmd["custom_assigned"].(bool),
+			ComplianceId: cmd["compliance_id"].(string),
 		})
 	}
 
