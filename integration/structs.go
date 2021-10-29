@@ -48,6 +48,26 @@ type IntegrationConfig struct {
 	SourceId string `json:"sourceId,omitempty"`
 	OrgId    string `json:"orgId,omitempty"`
 
+	//tenable
+	AccessKey string `json:"accessKey,omitempty"`
+	SecretKey string `json:"secretKey,omitempty"`
+
+	//Cortex/demisto
+	ApiKey string `json:"apiKey,omitempty"`
+	//HostUrl
+
+	//okta
+	Domain   string `json:"domain,omitempty"`
+	ApiToken string `json:"apiToken,omitempty"`
+
+	//snowflake
+	UserName             string `json:"username,omitempty"`
+	PipeName             string `json:"pipename,omitempty"`
+	PrivateKey           string `json:"privateKey,omitempty"`
+	PassPhrase           string `json:"passphrase,omitempty"`
+	StagingIntegrationID string `json:"stagingIntegrationId,omitempty"`
+	// RollUpInterval
+  
 	// AWS security hub
 	AccountId string   `json:"accountId,omitempty"`
 	Regions   []Region `json:"regions,omitempty"`
