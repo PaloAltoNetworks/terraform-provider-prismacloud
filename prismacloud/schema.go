@@ -133,6 +133,15 @@ func timeRangeSchema(style string) *schema.Schema {
 		to_now_resource.Schema["unit"].ValidateFunc = nil
 	case "resource_saved_search":
 		ans.ForceNew = true
+
+		absolute_resource.Schema["start"].ForceNew = true
+		absolute_resource.Schema["end"].ForceNew = true
+
+		relative_resource.Schema["amount"].ForceNew = true
+		relative_resource.Schema["unit"].ForceNew = true
+
+		to_now_resource.Schema["unit"].ForceNew = true
+
 		fallthrough
 	default:
 		ans.Optional = true
