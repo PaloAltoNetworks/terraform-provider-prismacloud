@@ -1,3 +1,7 @@
+## 1.1.6 (Dec 9, 2021)
+
+* Bug fixes
+
 ## 1.1.5 (Oct 29, 2021)
 
 * Multiple integrations added as well as data security
