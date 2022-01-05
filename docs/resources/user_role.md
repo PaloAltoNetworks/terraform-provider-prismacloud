@@ -22,7 +22,6 @@ resource "prismacloud_user_role" "example" {
 * `description` - (Optional) Description.
 * `role_type` - (Required) User role type.  Valid valies are `System Admin`, `Account Group Admin`, `Account Group Read Only`, `Cloud Provisioning Admin`, or `Account and Cloud Provisioning Admin`.
 * `account_group_ids` - (Optional) List of accessible account group IDs.
-* `associated_users` - (Optional) List of associated application users which cannot exist in the system without the user role.
 * `restrict_dismissal_access` - (Optional, bool) Restrict dismissal access.
 * `additional_attributes` - (Optional) An Additional attributesspec, as defined [below](#Additional Attributes).
 
@@ -38,6 +37,7 @@ resource "prismacloud_user_role" "example" {
 * `role_id` - Role UUID.
 * `last_modified_by` - Last modified by
 * `last_modified_ts` - (int) Last modified timestamp.
+* `associated_users` - List of associated application users which cannot exist in the system without the user role.
 * `account_groups` - List of account groups, as defined [below](#account-groups).
 
 ### Account Groups
