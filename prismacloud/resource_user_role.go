@@ -73,7 +73,7 @@ func resourceUserRole() *schema.Resource {
 			},
 			"associated_users": {
 				Type:        schema.TypeSet,
-				Optional:    true,
+				Computed:    true,
 				Description: "Associated application users which cannot exist in the system without the user role",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -145,7 +145,6 @@ func parseUserRole(d *schema.ResourceData) *role.Role {
 		Description:             d.Get("description").(string),
 		RoleType:                d.Get("role_type").(string),
 		AccountGroupIds:         SetToStringSlice(d.Get("account_group_ids").(*schema.Set)),
-		AssociatedUsers:         SetToStringSlice(d.Get("associated_users").(*schema.Set)),
 		RestrictDismissalAccess: d.Get("restrict_dismissal_access").(bool),
 	}
 
