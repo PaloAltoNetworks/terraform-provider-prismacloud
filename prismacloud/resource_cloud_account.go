@@ -325,7 +325,7 @@ func gcpCredentialsMatch(k, old, new string, d *schema.ResourceData) bool {
 	return (prev.Type == cur.Type &&
 		prev.ProjectId == cur.ProjectId &&
 		prev.PrivateKeyId == cur.PrivateKeyId &&
-		prev.PrivateKey == cur.PrivateKey &&
+		//prev.PrivateKey == cur.PrivateKey &&       //Commenting this comparison of privateKey to avoid diff on every terraform plan
 		prev.ClientEmail == cur.ClientEmail &&
 		prev.ClientId == cur.ClientId &&
 		prev.AuthUri == cur.AuthUri &&
