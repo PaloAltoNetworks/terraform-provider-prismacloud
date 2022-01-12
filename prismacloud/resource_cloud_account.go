@@ -149,6 +149,9 @@ func resourceCloudAccount() *schema.Resource {
 							Required:    true,
 							Description: "Application ID key",
 							Sensitive:   true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								return true
+							},
 						},
 						"monitor_flow_logs": {
 							Type:        schema.TypeBool,
