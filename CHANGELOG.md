@@ -1,3 +1,11 @@
+## 1.1.8 (Jan 12, 2021)
+
+* Bug fixes
+
+## 1.1.7 (Jan 12, 2021)
+
+* Bug fixes
+
 ## 1.1.6 (Dec 9, 2021)
 
 * Bug fixes
