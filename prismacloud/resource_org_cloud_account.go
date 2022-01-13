@@ -590,6 +590,7 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"user_ocid":                v.UserOcid,
 		}
 	case org.AzureOrg:
+		x := ResourceDataInterfaceMap(d, org.TypeAzureOrg)
 		val = map[string]interface{}{
 			"account_id":           v.Account.AccountId,
 			"enabled":              v.Account.Enabled,
@@ -601,7 +602,7 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"tenant_id":            v.TenantId,
 			"service_principal_id": v.ServicePrincipalId,
 			"monitor_flow_logs":    v.MonitorFlowLogs,
-			"key":                  v.Key,
+			"key":                  x["key"].(string),
 		}
 	case org.GcpOrg:
 		b, _ := json.Marshal(v.Credentials)

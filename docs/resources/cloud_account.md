@@ -79,7 +79,6 @@ The type of cloud account to add.  You need to specify one and only one of these
 
 ### Azure
 
-!> The Prisma Cloud API returns a series of asterisks for the `key` field instead of the configured value.  Because of this, the provider cannot detect configuration drift on the `key` param.
 
 * `account_id` - (Required) Azure account ID.
 * `enabled` - (Optional, bool) Whether or not the account is enabled (defualt: `true`).
