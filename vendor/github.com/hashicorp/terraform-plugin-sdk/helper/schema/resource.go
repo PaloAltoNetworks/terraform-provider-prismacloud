@@ -177,6 +177,16 @@ type Resource struct {
 	// other user facing usage. It can be plain-text or markdown depending on the
 	// global DescriptionKind setting.
 	Description string
+
+	// UseJSONNumber should be set when state upgraders will expect
+	// json.Numbers instead of float64s for numbers. This is added as a
+	// toggle for backwards compatibility for type assertions, but should
+	// be used in all new resources to avoid bugs with sufficiently large
+	// user input.
+	//
+	// See github.com/hashicorp/terraform-plugin-sdk/issues/655 for more
+	// details.
+	UseJSONNumber bool
 }
 
 // ShimInstanceStateFromValue converts a cty.Value to a
@@ -770,6 +780,8 @@ func (r *Resource) TestResourceData() *ResourceData {
 // SchemasForFlatmapPath tries its best to find a sequence of schemas that
 // the given dot-delimited attribute path traverses through in the schema
 // of the receiving Resource.
+//
+// Deprecated: This function will be removed in version 2 without replacement.
 func (r *Resource) SchemasForFlatmapPath(path string) []*Schema {
 	return SchemasForFlatmapPath(path, r.Schema)
 }
