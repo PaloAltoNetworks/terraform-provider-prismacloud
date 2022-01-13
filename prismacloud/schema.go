@@ -162,19 +162,22 @@ func timeRangeSchema(style string) *schema.Schema {
 
 	switch style {
 	case "resource_report", "data_source_report":
-		model.Schema["absolute"].ConflictsWith = []string{
-			"target.time_range.relative",
-			"target.time_range.to_now",
-		}
-		model.Schema["relative"].ConflictsWith = []string{
-			"target.time_range.absolute",
-			"target.time_range.to_now",
-		}
-		model.Schema["to_now"].ConflictsWith = []string{
-			"target.time_range.absolute",
-			"target.time_range.relative",
-		}
-
+		// Commenting this out until the SDK allows for nested and
+		// relative ConflictsWith.
+		/*
+			model.Schema["absolute"].ConflictsWith = []string{
+				"target.time_range.relative",
+				"target.time_range.to_now",
+			}
+			model.Schema["relative"].ConflictsWith = []string{
+				"target.time_range.absolute",
+				"target.time_range.to_now",
+			}
+			model.Schema["to_now"].ConflictsWith = []string{
+				"target.time_range.absolute",
+				"target.time_range.relative",
+			}
+		*/
 	default:
 		model.Schema["absolute"].ConflictsWith = []string{
 			"time_range.relative",
