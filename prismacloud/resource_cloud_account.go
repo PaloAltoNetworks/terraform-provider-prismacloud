@@ -149,9 +149,6 @@ func resourceCloudAccount() *schema.Resource {
 							Required:    true,
 							Description: "Application ID key",
 							Sensitive:   true,
-							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								return true
-							},
 						},
 						"monitor_flow_logs": {
 							Type:        schema.TypeBool,
@@ -412,13 +409,14 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"account_type":    v.AccountType,
 		}
 	case account.Azure:
+		x := ResourceDataInterfaceMap(d, account.TypeAzure)
 		val = map[string]interface{}{
 			"account_id":           v.Account.AccountId,
 			"enabled":              v.Account.Enabled,
 			"group_ids":            v.Account.GroupIds,
 			"name":                 v.Account.Name,
 			"client_id":            v.ClientId,
-			"key":                  v.Key,
+			"key":                  x["key"].(string),
 			"monitor_flow_logs":    v.MonitorFlowLogs,
 			"tenant_id":            v.TenantId,
 			"service_principal_id": v.ServicePrincipalId,
