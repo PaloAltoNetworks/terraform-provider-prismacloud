@@ -48,6 +48,7 @@ func resourceUserRole() *schema.Resource {
 						role.TypeAccountGroupReadOnly,
 						role.TypeCloudProvisioningAdmin,
 						role.TypeAccountAndCloudProvisioningAdmin,
+						role.TypeBuildAndDeploySecurity,
 					},
 					false,
 				),
@@ -71,6 +72,22 @@ func resourceUserRole() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"resource_list_ids": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "Resource list IDs",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"code_repository_ids": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "Code repository IDs",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"associated_users": {
 				Type:        schema.TypeSet,
 				Computed:    true,
@@ -82,6 +99,7 @@ func resourceUserRole() *schema.Resource {
 			"restrict_dismissal_access": {
 				Type:        schema.TypeBool,
 				Optional:    true,
+				Computed:    true,
 				Description: "Restrict dismissal access",
 			},
 			"account_groups": {
@@ -106,6 +124,7 @@ func resourceUserRole() *schema.Resource {
 			"additional_attributes": {
 				Type:        schema.TypeList,
 				Optional:    true,
+				Computed:    true,
 				Description: "Additional Parameters",
 				MaxItems:    1,
 				Elem: &schema.Resource{
@@ -113,21 +132,25 @@ func resourceUserRole() *schema.Resource {
 						"only_allow_ci_access": {
 							Type:        schema.TypeBool,
 							Optional:    true,
+							Computed:    true,
 							Description: "Allows only CI Access",
 						},
 						"only_allow_compute_access": {
 							Type:        schema.TypeBool,
 							Optional:    true,
+							Computed:    true,
 							Description: "Give access to only compute tab and access key tab",
 						},
 						"only_allow_read_access": {
 							Type:        schema.TypeBool,
 							Optional:    true,
+							Computed:    true,
 							Description: "Allow only read access",
 						},
 						"has_defender_permissions": {
 							Type:        schema.TypeBool,
 							Optional:    true,
+							Computed:    true,
 							Description: "Has defender Permissions",
 						},
 					},
@@ -145,6 +168,8 @@ func parseUserRole(d *schema.ResourceData) *role.Role {
 		Description:             d.Get("description").(string),
 		RoleType:                d.Get("role_type").(string),
 		AccountGroupIds:         SetToStringSlice(d.Get("account_group_ids").(*schema.Set)),
+		ResourceListIds:         SetToStringSlice(d.Get("resource_list_ids").(*schema.Set)),
+		CodeRepositoryIds:       SetToStringSlice(d.Get("code_repository_ids").(*schema.Set)),
 		RestrictDismissalAccess: d.Get("restrict_dismissal_access").(bool),
 	}
 
@@ -181,6 +206,12 @@ func saveUserRole(d *schema.ResourceData, obj role.Role) {
 	}
 	if err = d.Set("account_group_ids", StringSliceToSet(obj.AccountGroupIds)); err != nil {
 		log.Printf("[WARN] Error setting 'account_group_ids' field for %q: %s", d.Id(), err)
+	}
+	if err = d.Set("resource_list_ids", StringSliceToSet(obj.ResourceListIds)); err != nil {
+		log.Printf("[WARN] Error setting 'resource_list_ids' field for %q: %s", d.Id(), err)
+	}
+	if err = d.Set("code_repository_ids", StringSliceToSet(obj.CodeRepositoryIds)); err != nil {
+		log.Printf("[WARN] Error setting 'code_repository_ids' field for %q: %s", d.Id(), err)
 	}
 	if err = d.Set("associated_users", StringSliceToSet(obj.AssociatedUsers)); err != nil {
 		log.Printf("[WARN] Error setting 'associated_users' field for %q: %s", d.Id(), err)
