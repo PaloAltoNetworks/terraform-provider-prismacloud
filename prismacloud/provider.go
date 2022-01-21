@@ -121,6 +121,8 @@ func Provider() terraform.ResourceProvider {
 			"prismacloud_rql_historic_searches":                    dataSourceRqlHistoricSearches(),
 			"prismacloud_org_cloud_account":                        dataSourceOrgCloudAccount(),
 			"prismacloud_org_cloud_accounts":                       dataSourceOrgCloudAccounts(),
+			"prismacloud_user_role":                                dataSourceUserRole(),
+			"prismacloud_user_roles":                               dataSourceUserRoles(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
