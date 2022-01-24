@@ -267,6 +267,7 @@ func resourceAlertRule() *schema.Resource {
 									rule.TypeSplunk,
 									rule.TypeAmazonSqs,
 									rule.TypeMicrosoftTeams,
+									rule.TypeJira,
 									rule.TypeWebhook,
 									rule.TypeAwsSecurityHub,
 									rule.TypeGoogleCscc,
