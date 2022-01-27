@@ -1,3 +1,14 @@
+## 1.2.0 (Jan 27, 2022)
+
+NEW DATA SOURCES:
+
+* `prismacloud_user_profile` / `prismacloud_user_profiles`
+* `prismacloud_user_role` / `prismacloud_user_roles`
+
+NEW RESOURCES:
+
+* `prismacloud_user_profile`
+
 ## 1.1.10 (Jan 13, 2022)
 
 * Bug fixes
