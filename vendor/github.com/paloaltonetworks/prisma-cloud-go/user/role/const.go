@@ -12,6 +12,7 @@ const (
 	TypeAccountGroupReadOnly             = "Account Group Read Only"
 	TypeCloudProvisioningAdmin           = "Cloud Provisioning Admin"
 	TypeAccountAndCloudProvisioningAdmin = "Account and Cloud Provisioning Admin"
+	TypeBuildAndDeploySecurity           = "Build and Deploy Security"
 )
 
 var Suffix = []string{"user", "role"}

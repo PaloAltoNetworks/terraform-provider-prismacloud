@@ -123,6 +123,8 @@ func Provider() terraform.ResourceProvider {
 			"prismacloud_org_cloud_accounts":                       dataSourceOrgCloudAccounts(),
 			"prismacloud_user_role":                                dataSourceUserRole(),
 			"prismacloud_user_roles":                               dataSourceUserRoles(),
+			"prismacloud_user_profile":                             dataSourceUserProfile(),
+			"prismacloud_user_profiles":                            dataSourceUserProfiles(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -141,6 +143,7 @@ func Provider() terraform.ResourceProvider {
 			"prismacloud_rql_search":                              resourceRqlSearch(),
 			"prismacloud_saved_search":                            resourceSavedSearch(),
 			"prismacloud_user_role":                               resourceUserRole(),
+			"prismacloud_user_profile":                            resourceUserProfile(),
 			"prismacloud_org_cloud_account":                       resourceOrgCloudAccount(),
 		},
 
