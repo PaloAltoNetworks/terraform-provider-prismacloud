@@ -1,3 +1,7 @@
+## 1.2.1 (Jan 28, 2022)
+
+* Bug fixes
+
 ## 1.2.0 (Jan 27, 2022)
 
 NEW DATA SOURCES:
