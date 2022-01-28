@@ -410,13 +410,19 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 		}
 	case account.Azure:
 		x := ResourceDataInterfaceMap(d, account.TypeAzure)
+		var key string
+		if x["key"] == nil {
+			key = v.Key
+		} else {
+			key = x["key"].(string)
+		}
 		val = map[string]interface{}{
 			"account_id":           v.Account.AccountId,
 			"enabled":              v.Account.Enabled,
 			"group_ids":            v.Account.GroupIds,
 			"name":                 v.Account.Name,
 			"client_id":            v.ClientId,
-			"key":                  x["key"].(string),
+			"key":                  key,
 			"monitor_flow_logs":    v.MonitorFlowLogs,
 			"tenant_id":            v.TenantId,
 			"service_principal_id": v.ServicePrincipalId,

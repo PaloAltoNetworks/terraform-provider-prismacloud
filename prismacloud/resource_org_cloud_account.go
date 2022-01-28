@@ -12,7 +12,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
+
 var createOrUpdate bool = false
+
 func resourceOrgCloudAccount() *schema.Resource {
 	return &schema.Resource{
 		Create: createOrgCloudAccount,
@@ -329,6 +331,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 						},
 						"hierarchy_selection": {
 							Type:        schema.TypeSet,
+							Computed:    true,
 							Optional:    true,
 							Description: "List of hierarchy selection. Each item has resource id, display name, node type and selection type",
 							Elem: &schema.Resource{
@@ -591,6 +594,12 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 		}
 	case org.AzureOrg:
 		x := ResourceDataInterfaceMap(d, org.TypeAzureOrg)
+		var key string
+		if x["key"] == nil {
+			key = v.Key
+		} else {
+			key = x["key"].(string)
+		}
 		val = map[string]interface{}{
 			"account_id":           v.Account.AccountId,
 			"enabled":              v.Account.Enabled,
@@ -602,7 +611,7 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"tenant_id":            v.TenantId,
 			"service_principal_id": v.ServicePrincipalId,
 			"monitor_flow_logs":    v.MonitorFlowLogs,
-			"key":                  x["key"].(string),
+			"key":                  key,
 		}
 	case org.GcpOrg:
 		b, _ := json.Marshal(v.Credentials)
