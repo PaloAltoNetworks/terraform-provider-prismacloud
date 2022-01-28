@@ -269,6 +269,7 @@ github.com/paloaltonetworks/prisma-cloud-go/rql/history
 github.com/paloaltonetworks/prisma-cloud-go/rql/search
 github.com/paloaltonetworks/prisma-cloud-go/settings/enterprise
 github.com/paloaltonetworks/prisma-cloud-go/timerange
+github.com/paloaltonetworks/prisma-cloud-go/user/profile
 github.com/paloaltonetworks/prisma-cloud-go/user/role
 # github.com/posener/complete v1.2.1
 github.com/posener/complete
