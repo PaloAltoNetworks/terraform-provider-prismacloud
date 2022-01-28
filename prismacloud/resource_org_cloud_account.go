@@ -12,7 +12,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
-
+var createOrUpdate bool = false
 func resourceOrgCloudAccount() *schema.Resource {
 	return &schema.Resource{
 		Create: createOrgCloudAccount,
@@ -620,23 +620,39 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"organization_name":           v.OrganizationName,
 			"account_group_creation_mode": v.AccountGroupCreationMode,
 		}
-		if len(v.HierarchySelection) == 0 {
-			val["hierarchy_selection"] = nil
-			break
+		if !createOrUpdate {
+			if len(v.HierarchySelection) == 0 {
+				val["hierarchy_selection"] = nil
+			} else {
+				hsList := make([]interface{}, 0, len(v.HierarchySelection))
+				for _, hs := range v.HierarchySelection {
+					hsList = append(hsList, map[string]interface{}{
+						"resource_id":    hs.ResourceId,
+						"display_name":   hs.DisplayName,
+						"node_type":      hs.NodeType,
+						"selection_type": hs.SelectionType,
+					})
+				}
+				val["hierarchy_selection"] = hsList
+			}
 		} else {
 			x := ResourceDataInterfaceMap(d, org.TypeGcpOrg)
-			hsl := x["hierarchy_selection"].(*schema.Set).List()
-			hsList := make([]interface{}, 0, len(hsl))
-			for _, hsi := range hsl {
-				hs := hsi.(map[string]interface{})
-				hsList = append(hsList, map[string]interface{}{
-					"resource_id":    hs["resource_id"].(string),
-					"display_name":   hs["display_name"].(string),
-					"selection_type": hs["selection_type"].(string),
-					"node_type":      hs["node_type"].(string),
-				})
+			if x["hierarchy_selection"] == nil {
+				val["hierarchy_selection"] = nil
+			} else {
+				hsl := x["hierarchy_selection"].(*schema.Set).List()
+				hsList := make([]interface{}, 0, len(hsl))
+				for _, hsi := range hsl {
+					hs := hsi.(map[string]interface{})
+					hsList = append(hsList, map[string]interface{}{
+						"resource_id":    hs["resource_id"].(string),
+						"display_name":   hs["display_name"].(string),
+						"selection_type": hs["selection_type"].(string),
+						"node_type":      hs["node_type"].(string),
+					})
+				}
+				val["hierarchy_selection"] = hsList
 			}
-			val["hierarchy_selection"] = hsList
 		}
 	}
 
@@ -654,6 +670,7 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 
 func createOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
+	createOrUpdate = true
 	cloudType, name, obj := parseOrgCloudAccount(d)
 	if err := org.Create(client, obj); err != nil {
 		if strings.Contains(err.Error(), "duplicate_cloud_account") {
@@ -704,7 +721,7 @@ func readOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 
 func updateOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
-
+	createOrUpdate = true
 	_, _, obj := parseOrgCloudAccount(d)
 
 	if err := org.Update(client, obj); err != nil {
