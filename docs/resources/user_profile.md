@@ -33,11 +33,11 @@ HCL and looping.  Assume you have a CSV file (user_profiles.csv) of user profile
 Here's how you would do this:
 */
 locals {
-    user_roles = csvdecode(file("user_profiles.csv"))
+    user_profiles = csvdecode(file("user_profiles.csv"))
 }
 
 // Now specify the user profile resource with a loop like this:
-resource "prismacloud_user_profile" "prismaGo_user" {
+resource "prismacloud_user_profile" "example" {
     for_each = { for inst in local.user_profiles : inst.email => inst }
 
     first_name = each.value.first_name
