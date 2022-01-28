@@ -624,13 +624,16 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			val["hierarchy_selection"] = nil
 			break
 		} else {
-			hsList := make([]interface{}, 0, len(v.HierarchySelection))
-			for _, hs := range v.HierarchySelection {
+			x := ResourceDataInterfaceMap(d, org.TypeGcpOrg)
+			hsl := x["hierarchy_selection"].(*schema.Set).List()
+			hsList := make([]interface{}, 0, len(hsl))
+			for _, hsi := range hsl {
+				hs := hsi.(map[string]interface{})
 				hsList = append(hsList, map[string]interface{}{
-					"resource_id":    hs.ResourceId,
-					"display_name":   hs.DisplayName,
-					"node_type":      hs.NodeType,
-					"selection_type": hs.SelectionType,
+					"resource_id":    hs["resource_id"].(string),
+					"display_name":   hs["display_name"].(string),
+					"selection_type": hs["selection_type"].(string),
+					"node_type":      hs["node_type"].(string),
 				})
 			}
 			val["hierarchy_selection"] = hsList
