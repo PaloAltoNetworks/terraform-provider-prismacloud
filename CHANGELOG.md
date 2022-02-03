@@ -1,3 +1,7 @@
+## 1.2.2 (Feb 3, 2022)
+
+* Documentation updated
+
 ## 1.2.1 (Jan 28, 2022)
 
 * Bug fixes
