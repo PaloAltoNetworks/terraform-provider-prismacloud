@@ -83,7 +83,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 * `member_external_id` - (Required) AWS org Member account role's external ID.
 * `member_role_status` - (Optional, bool) - True =  The member role created using stack set exists in all the member accounts. 
                         All the Org accounts will be added. false = Only the master account will be added(Default = False).
-* `protection_mode` - (Optional) Defaults to "MONITOR".
+* `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
 
 ### Azure
 
@@ -97,7 +97,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 * `tenant_id` - (Required) Active Directory ID associated with Azure.
 * `service_principal_id` - (Required) Unique ID of the service principal object associated with the Prisma Cloud application that you create.
 * `account_type` - (Optional) Defaults to "tenant" if not specified.
-* `protection_mode` - (Optional) Defaults to "MONITOR".
+* `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR`
 
 ### GCP
 
