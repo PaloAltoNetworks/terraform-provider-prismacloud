@@ -75,7 +75,7 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `role_arn` - (Required) Unique identifier for an AWS resource (ARN).
 * `account_type` - (Optional) Defaults to "account" if not specified
-* `protection_mode` - (Optional) Defaults to "MONITOR"
+* `protection_mode` - (Optional) Defaults to "MONITOR".Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
 
 ### Azure
 
@@ -90,7 +90,7 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `tenant_id` - (Required) Active Directory ID associated with Azure.
 * `service_principal_id` - (Required) Unique ID of the service principal object associated with the Prisma Cloud application that you create.
 * `account_type` - (Optional) Defaults to "account" if not specified
-* `protection_mode` - (Optional) Defaults to "MONITOR"
+* `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
 
 ### GCP
 
@@ -105,7 +105,7 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `flow_log_storage_bucket` - (Optional) GCP Flow logs storage bucket.
 * `credentials_json` - (Required) Content of the JSON credentials file (read in using `file()`).
 * `account_type` - (Optional) Defaults to "account" if not specified
-* `protection_mode` - (Optional) Defaults to "MONITOR"
+* `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
 
 ### Alibaba Cloud
 

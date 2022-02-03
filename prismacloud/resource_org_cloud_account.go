@@ -185,13 +185,6 @@ func resourceOrgCloudAccount() *schema.Resource {
 							Optional:    true,
 							Default:     "MONITOR",
 							Description: "Monitor or Monitor and Protect",
-							ValidateFunc: validation.StringInSlice(
-								[]string{
-									"Monitor",
-									"Monitor and Protect",
-								},
-								true,
-							),
 						},
 						"tenant_id": {
 							Type:        schema.TypeString,
