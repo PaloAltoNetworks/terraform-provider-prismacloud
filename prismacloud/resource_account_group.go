@@ -38,6 +38,7 @@ func resourceAccountGroup() *schema.Resource {
 			},
 			"account_ids": {
 				Type:        schema.TypeSet,
+				Computed:    true,
 				Optional:    true,
 				Description: "Cloud account IDs",
 				Elem: &schema.Schema{
