@@ -2,6 +2,7 @@ package prismacloud
 
 import (
 	"log"
+	"strings"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
@@ -41,11 +42,22 @@ func resourceIntegration() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Integration type",
+				ValidateFunc: validation.StringInSlice(
+					append(integration.InboundIntegrations, integration.OutboundIntegrations...),
+					true,
+				),
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if strings.ToLower(old) == strings.ToLower(new) {
+						return true
+					}
+					return false
+				},
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Description: "Enabled",
+				Default:     true,
 			},
 			"created_by": {
 				Type:        schema.TypeString,
@@ -138,6 +150,11 @@ func resourceIntegration() *schema.Resource {
 							Optional:    true,
 							Description: "The Queue URL you used when you configured Prisma Cloud in Amazon SQS or Azure Service Bus Queue",
 						},
+						"more_info": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "true = specific IAM credentials are specified for SQS queue access",
+						},
 						"login": {
 							Type:        schema.TypeString,
 							Optional:    true,
@@ -218,7 +235,7 @@ func resourceIntegration() *schema.Resource {
 						},
 						"version": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "ServiceNow release version",
 						},
 						"url": {
@@ -264,6 +281,11 @@ func resourceIntegration() *schema.Resource {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Description: "PagerDuty integration key",
+						},
+						"webhook_url": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Webhook url for slack integration ",
 						},
 						"source_id": {
 							Type:        schema.TypeString,
@@ -404,6 +426,7 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 		IntegrationType: d.Get("integration_type").(string),
 		IntegrationConfig: integration.IntegrationConfig{
 			QueueUrl:             ic["queue_url"].(string),
+			MoreInfo:             ic["more_info"].(bool),
 			Login:                ic["login"].(string),
 			BaseUrl:              ic["base_url"].(string),
 			Password:             ic["password"].(string),
@@ -414,6 +437,7 @@ func parseIntegration(d *schema.ResourceData, id string) integration.Integration
 			Headers:              headers,
 			AuthToken:            ic["auth_token"].(string),
 			IntegrationKey:       ic["integration_key"].(string),
+			WebHookUrl:           ic["webhook_url"].(string),
 			SourceId:             ic["source_id"].(string),
 			OrgId:                ic["org_id"].(string),
 			AccountId:            ic["account_id"].(string),
@@ -472,32 +496,106 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 		log.Printf("[WARN] Error setting 'reason' for %s: %s", d.Id(), err)
 	}
 
+	iConfig := ResourceDataInterfaceMap(d, "integration_config")
+
+	var password string
+	if iConfig["password"] != nil {
+		password = iConfig["password"].(string)
+	} else {
+		password = o.IntegrationConfig.Password
+	}
+
+	var apiToken string
+	if iConfig["api_token"] != nil {
+		apiToken = iConfig["api_token"].(string)
+	} else {
+		apiToken = o.IntegrationConfig.ApiToken
+	}
+
+	var accessKey string
+	if iConfig["access_key"] != nil {
+		accessKey = iConfig["access_key"].(string)
+	} else {
+		accessKey = o.IntegrationConfig.AccessKey
+	}
+
+	var secretKey string
+	if iConfig["secret_key"] != nil {
+		secretKey = iConfig["secret_key"].(string)
+	} else {
+		secretKey = o.IntegrationConfig.SecretKey
+	}
+
+	var integrationKey string
+	if iConfig["integration_key"] != nil {
+		integrationKey = iConfig["integration_key"].(string)
+	} else {
+		integrationKey = o.IntegrationConfig.IntegrationKey
+	}
+
+	var connectionString string
+	if iConfig["connection_string"] != nil {
+		connectionString = iConfig["connection_string"].(string)
+	} else {
+		connectionString = o.IntegrationConfig.ConnectionString
+	}
+
+	var authToken string
+	if iConfig["auth_token"] != nil {
+		authToken = iConfig["auth_token"].(string)
+	} else {
+		authToken = o.IntegrationConfig.AuthToken
+	}
+
+	var apiKey string
+	if iConfig["api_key"] != nil {
+		apiKey = iConfig["api_key"].(string)
+	} else {
+		apiKey = o.IntegrationConfig.ApiKey
+	}
+
+	var passPhrase string
+	if iConfig["pass_phrase"] != nil {
+		passPhrase = iConfig["pass_phrase"].(string)
+	} else {
+		passPhrase = o.IntegrationConfig.PassPhrase
+	}
+
+	var privateKey string
+	if iConfig["private_key"] != nil {
+		privateKey = iConfig["private_key"].(string)
+	} else {
+		privateKey = o.IntegrationConfig.PrivateKey
+	}
+
 	ic := map[string]interface{}{
 		"queue_url":              o.IntegrationConfig.QueueUrl,
+		"more_info":              o.IntegrationConfig.MoreInfo,
 		"login":                  o.IntegrationConfig.Login,
 		"base_url":               o.IntegrationConfig.BaseUrl,
-		"password":               o.IntegrationConfig.Password,
+		"password":               password,
 		"host_url":               o.IntegrationConfig.HostUrl,
 		"tables":                 nil,
 		"version":                o.IntegrationConfig.Version,
 		"url":                    o.IntegrationConfig.Url,
 		"headers":                nil,
-		"auth_token":             o.IntegrationConfig.AuthToken,
-		"integration_key":        o.IntegrationConfig.IntegrationKey,
+		"auth_token":             authToken,
+		"integration_key":        integrationKey,
+		"webhook_url":            o.IntegrationConfig.WebHookUrl,
 		"source_id":              o.IntegrationConfig.SourceId,
 		"org_id":                 o.IntegrationConfig.OrgId,
 		"account_id":             o.IntegrationConfig.AccountId,
-		"connection_string":      o.IntegrationConfig.ConnectionString,
+		"connection_string":      connectionString,
 		"roll_up_interval":       o.IntegrationConfig.RollUpInterval,
-		"secret_key":             o.IntegrationConfig.SecretKey,
-		"access_key":             o.IntegrationConfig.AccessKey,
-		"api_key":                o.IntegrationConfig.ApiKey,
+		"secret_key":             secretKey,
+		"access_key":             accessKey,
+		"api_key":                apiKey,
 		"domain":                 o.IntegrationConfig.Domain,
-		"api_token":              o.IntegrationConfig.ApiToken,
+		"api_token":              apiToken,
 		"user_name":              o.IntegrationConfig.UserName,
-		"pass_phrase":            o.IntegrationConfig.PassPhrase,
+		"pass_phrase":            passPhrase,
 		"pipe_name":              o.IntegrationConfig.PipeName,
-		"private_key":            o.IntegrationConfig.PrivateKey,
+		"private_key":            privateKey,
 		"staging_integration_id": o.IntegrationConfig.StagingIntegrationID,
 		"regions":                nil,
 		"s3_uri":                 o.IntegrationConfig.S3Uri,
@@ -517,16 +615,30 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 	}
 	if len(o.IntegrationConfig.Headers) != 0 {
 		headers := make([]interface{}, 0, len(o.IntegrationConfig.Headers))
-		for _, h := range o.IntegrationConfig.Headers {
-			headers = append(headers, map[string]interface{}{
-				"key":       h.Key,
-				"value":     h.Value,
-				"secure":    h.Secure,
-				"read_only": h.ReadOnly,
-			})
+		if iConfig["headers"] != nil {
+			hlist := iConfig["headers"].([]interface{})
+			for i, h := range o.IntegrationConfig.Headers {
+				hdr := hlist[i].(map[string]interface{})
+				headers = append(headers, map[string]interface{}{
+					"key":       h.Key,
+					"value":     hdr["value"],
+					"secure":    h.Secure,
+					"read_only": h.ReadOnly,
+				})
+			}
+		} else {
+			for _, h := range o.IntegrationConfig.Headers {
+				headers = append(headers, map[string]interface{}{
+					"key":       h.Key,
+					"value":     h.Value,
+					"secure":    h.Secure,
+					"read_only": h.ReadOnly,
+				})
+			}
 		}
 		ic["headers"] = headers
 	}
+
 	if len(o.IntegrationConfig.Regions) != 0 {
 		regions := make([]interface{}, 0, len(o.IntegrationConfig.Regions))
 		for _, reg := range o.IntegrationConfig.Regions {
@@ -538,6 +650,7 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 		}
 		ic["regions"] = regions
 	}
+
 	if err = d.Set("integration_config", []interface{}{ic}); err != nil {
 		log.Printf("[WARN] Error setting 'integration_config' for %s: %s", d.Id(), err)
 	}
@@ -547,22 +660,28 @@ func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	o := parseIntegration(d, "")
 
-	if err := integration.Create(client, o); err != nil {
+	prismaIdRequired := true
+	integrationType := d.Get("integration_type").(string)
+	if stringInSlice(integrationType, integration.InboundIntegrations) {
+		prismaIdRequired = false
+	}
+
+	if err := integration.Create(client, o, prismaIdRequired); err != nil {
 		return err
 	}
 
 	PollApiUntilSuccess(func() error {
-		_, err := integration.Identify(client, o.Name)
+		_, err := integration.Identify(client, o.Name, prismaIdRequired)
 		return err
 	})
 
-	id, err := integration.Identify(client, o.Name)
+	id, err := integration.Identify(client, o.Name, prismaIdRequired)
 	if err != nil {
 		return err
 	}
 
 	PollApiUntilSuccess(func() error {
-		_, err := integration.Get(client, id)
+		_, err := integration.Get(client, id, prismaIdRequired)
 		return err
 	})
 
@@ -574,7 +693,13 @@ func readIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
-	o, err := integration.Get(client, id)
+	prismaIdRequired := true
+	integrationType := d.Get("integration_type").(string)
+	if stringInSlice(integrationType, integration.InboundIntegrations) {
+		prismaIdRequired = false
+	}
+
+	o, err := integration.Get(client, id, prismaIdRequired)
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
 			d.SetId("")
@@ -593,7 +718,13 @@ func updateIntegration(d *schema.ResourceData, meta interface{}) error {
 	id := d.Id()
 	o := parseIntegration(d, id)
 
-	if err := integration.Update(client, o); err != nil {
+	prismaIdRequired := true
+	integrationType := d.Get("integration_type").(string)
+	if stringInSlice(integrationType, integration.InboundIntegrations) {
+		prismaIdRequired = false
+	}
+
+	if err := integration.Update(client, o, prismaIdRequired); err != nil {
 		return err
 	}
 
@@ -604,7 +735,13 @@ func deleteIntegration(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
-	err := integration.Delete(client, id)
+	prismaIdRequired := true
+	integrationType := d.Get("integration_type").(string)
+	if stringInSlice(integrationType, integration.InboundIntegrations) {
+		prismaIdRequired = false
+	}
+
+	err := integration.Delete(client, id, prismaIdRequired)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
 			return err

@@ -30,12 +30,13 @@ func testAccDsIntegrationConfig(name string) string {
 	return fmt.Sprintf(`
 data "prismacloud_integration" "test" {
     integration_id = prismacloud_integration.x.integration_id
+	integration_type = "pager_duty"
 }
 
 resource "prismacloud_integration" "x" {
     name = %q
     description = "integration ds acctest"
-    enabled = false
+    enabled = true
     integration_type = "pager_duty"
     integration_config {
         integration_key = "mySecretKey"
