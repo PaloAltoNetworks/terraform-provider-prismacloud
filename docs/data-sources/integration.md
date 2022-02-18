@@ -11,10 +11,13 @@ Retrieves integration information.
 ```hcl
 data "prismacloud_integration" "example" {
     name = "myIntegration"
+    integration_type = "amazon_sqs"
 }
 ```
 
 ## Argument Reference
+
+* `integration_type` - (Required) Integration type.
 
 One of the following must be specified:
 
@@ -24,7 +27,6 @@ One of the following must be specified:
 ## Attribute Reference
 
 * `description` - Description.
-* `integration_type` - Integration type.
 * `enabled` - (bool) Enabled.
 * `created_by` - Created by.
 * `created_ts` - (int) Created on.
@@ -50,47 +52,109 @@ One of the following must be specified:
 
 ### Integration Config
 
-* `queue_url` - The Queue URL you used when you configured Prisma Cloud in Amazon SQS or Azure Service Bus Queue.
-* `login` - (Qualys/ServiceNow) Login.
-* `base_url` - Qualys Security Operations Center server API URL (without "http(s)")
-* `password` - (Qualys/ServiceNow) Password.
-* `api_key` - Demisto Api Key.
-* `host_url` - ServiceNow URL/Demisto URL.
-* `secret_key` - Secret Key for Tenable.
-* `access_key` - Access Key for Tenable.
-* `tables` - (Map of bools) Key/value pairs that identify the ServiceNow module tables with which to integrate (e.g. - incident, sn_si_incident, or em_event).
-* `version` - ServiceNow release version.
-* `url` - Webhook URL or Splunk HTTP event collector URL.
-* `headers` - Webhook headers, as defined [below](#headers).
-* `auth_token` - PagerDuty/Splunk authentication token for the event collector.
-* `integration_key` - PagerDuty integration key.
-* `source_id` - GCP Source ID for Google CSCC integration.
-* `org_id` - GCP Organization ID for Google CSCC integration.
-* `account_id` - AWS/Azure account ID for AWS Security Hub/Azure Service Bus Queue integration.
-* `connection_string` - Connection string for Azure Service Bus Queue integration.
-* `domain` - Okta Domain.
-* `api_token` - Okta API token.
-* `user_name` - Snowflake username.
-* `pipe_name` - Snowflake pipename.
-* `pass_phrase` - Snowflake PassPhrase.
-* `private_key` - Snowflake Private Key.
-* `roll_up_interval` - File roll up time in minutes for AWS S3 integration and for snowflake integration.  
-* `staging_integration_id` - Amazon s3 integration ID for Snowflake integration.
-* `regions` - List of AWS regions for AWS Security Hub integration, as defined [below](#regions).
-* `s3_uri` - AWS S3 URI for Amazon S3 integration.
-* `region` - AWS region for Amazon S3 integration.
-* `role_arn` - AWS role ARN for Amazon S3 integration.
-* `external_id` - AWS external ID for Amazon S3 integration.
-* `source_type` - Source type for splunk integration.
+**1. Azure Service Bus Queue**
 
-### Headers
+* `queue_url` - The URL configured in the Azure Service Bus queue where Prisma cloud sends alerts.
+* `account_id` - Azure account ID with service principal to which the Azure Service Bus queue belongs.
+* `connection_string` - Azure Shared Access Signature connection string.
+
+**2. Amazon SQS**
+
+* `queue_url` - The Queue URL you used when you configured Prisma Cloud in Amazon SQS.
+* `more_info` - (bool) Whether specific IAM credentials are specified for SQS queue access.
+* `access_key` - AWS access key belonging to AWS IAM credentials meant for SQS queue access.
+* `secret_key` - AWS secret key for the given access key.
+* `role_arn` - Role ARN associated with the IAM role on Prisma Cloud
+* `external_id` - External ID associated with the IAM role on Prisma Cloud.
+
+**3. Qualys**
+
+* `login` - Qualys Login Username.
+* `base_url` - Qualys Security Operations Center server API URL.
+* `password` - Qualys Password.
+
+**4. ServiceNow**
+
+* `host_url` - ServiceNow URL.
+* `login` - ServiceNow Login Username.
+* `password` - ServiceNow password for login.
+* `tables` - (Map of bools) Key/value pairs that identify the ServiceNow module tables with which to integrate.
+
+**5. Webhook**
+
+* `url` - Webhook URL.
+* `headers` - Webhook headers, as defined [below](#headers).
+
+**6. PagerDuty**
+
+* `integration_key` - PagerDuty integration key.
+
+**7. Slack**
+
+* `webhook_url` - Slack webhook URL starting with `https://hooks.slack.com/`.
+
+**8. Splunk**
+
+* `auth_token` - Splunk authentication token for the event collector.
+* `url` - Splunk HTTP event collector URL.
+* `source_type` - Splunk source type.
+
+**9. Microsoft Teams**
+
+* `url` - Webhook URL.
+
+**10. Cortex XSOAR**
+
+* `host_url` - The Cortex XSOAR instance FQDN/IP — either the name or the IP address of the instance.
+* `api_key` - The consumer key you configured when you created the Prisma Cloud application access in your Cortex XSOAR environment.
+* `version` - Cortex release version. 
+
+**11. Tenable**
+
+* `secret_key` - Secret key from Tenable.io.
+* `access_key` - Access key from Tenable.io.
+
+**12. Google Cloud SCC**
+
+* `source_id` - GCP source ID for the service account you used to onboard your GCP organization to Prisma Cloud.
+* `org_id` - GCP organization ID.
+
+**13. Okta**
+
+* `domain` - Okta domain name.
+* `api_token` - The authentication API token for Okta.
+
+**14. Amazon S3**
+
+* `s3_uri` - Amazon S3 bucket URI.
+* `region` - AWS region where the S3 bucket resides.
+* `role_arn` - Role ARN associated with the IAM role on Prisma Cloud.
+* `external_id` - External ID associated with the IAM role on Prisma Cloud.
+* `roll_up_interval` - (int) Time in minutes at which batching of Prisma Cloud alerts would roll up.
+
+**15. AWS Security Hub**
+
+* `account_id` - AWS account ID to which you assigned AWS Security Hub read-only access.
+* `regions` - List of AWS regions, as defined [below](#regions).
+
+**16. Snowflake**
+
+* `host_url` - Snowflake Account URL.
+* `user_name` - Snowflake Username.
+* `staging_integration_id` - Existing Amazon S3 integration ID.
+* `pipe_name` - Snowpipe Name.
+* `private_key` - Private Key.
+* `pass_phrase` - PassPhrase for private key.
+* `roll_up_interval` - (int) Time in minutes at which batching of Prisma Cloud alerts would roll up.
+
+#### Headers
 
 * `key` - Header name.
 * `value` - Header value.
 * `secure` - (bool) Secure.
 * `read_only` - (bool) Read-only.
 
-### Regions
+#### Regions
 
 * `name` - AWS region name.
 * `api_identifier` - AWS region code.
