@@ -27,17 +27,17 @@ func dataSourceIntegration() *schema.Resource {
 				Description:  "Name of the integration",
 				AtLeastOneOf: []string{"integration_id", "name"},
 			},
+			"integration_type": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Integration type",
+			},
 
 			// Output.
 			"description": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: "Description",
-			},
-			"integration_type": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Integration type",
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
@@ -132,6 +132,11 @@ func dataSourceIntegration() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 							Description: "The Queue URL you used when you configured Prisma Cloud in Amazon SQS or Azure Service Bus Queue",
+						},
+						"more_info": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "true = specific IAM credentials are specified for SQS queue access",
 						},
 						"login": {
 							Type:        schema.TypeString,
@@ -260,6 +265,11 @@ func dataSourceIntegration() *schema.Resource {
 							Computed:    true,
 							Description: "PagerDuty/Splunk integration key",
 						},
+						"webhook_url": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Webhook url for slack integration ",
+						},
 						"source_id": {
 							Type:        schema.TypeString,
 							Computed:    true,
@@ -347,9 +357,15 @@ func dataSourceIntegrationRead(d *schema.ResourceData, meta interface{}) error {
 	var err error
 	id := d.Get("integration_id").(string)
 
+	prismaIdRequired := true
+	integrationType := d.Get("integration_type").(string)
+	if stringInSlice(integrationType, integration.InboundIntegrations) {
+		prismaIdRequired = false
+	}
+
 	if id == "" {
 		name := d.Get("name").(string)
-		id, err = integration.Identify(client, name)
+		id, err = integration.Identify(client, name, prismaIdRequired)
 		if err != nil {
 			if err == pc.ObjectNotFoundError {
 				d.SetId("")
@@ -359,7 +375,7 @@ func dataSourceIntegrationRead(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
-	o, err := integration.Get(client, id)
+	o, err := integration.Get(client, id, prismaIdRequired)
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
 			d.SetId("")

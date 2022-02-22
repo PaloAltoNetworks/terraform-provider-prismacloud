@@ -39,33 +39,6 @@ func TestAccIntegrationAmazonSqs(t *testing.T) {
 	})
 }
 
-func TestAccIntegrationQualys(t *testing.T) {
-	var o integration.Integration
-	name := fmt.Sprintf("tf%s", acctest.RandString(6))
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccIntegrationDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccIntegrationConfig(name, "qualys", 2),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationExists("prismacloud_integration.test", &o),
-					testAccCheckIntegrationAttributes(&o, name, "qualys", 2),
-				),
-			},
-			{
-				Config: testAccIntegrationConfig(name, "qualys", 3),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationExists("prismacloud_integration.test", &o),
-					testAccCheckIntegrationAttributes(&o, name, "qualys", 3),
-				),
-			},
-		},
-	})
-}
-
 func TestAccIntegrationServiceNow(t *testing.T) {
 	var o integration.Integration
 	name := fmt.Sprintf("tf%s", acctest.RandString(6))
@@ -160,7 +133,7 @@ func testAccCheckIntegrationExists(n string, o *integration.Integration) resourc
 
 		client := testAccProvider.Meta().(*pc.Client)
 		id := rs.Primary.ID
-		lo, err := integration.Get(client, id)
+		lo, err := integration.Get(client, id, true)
 		if err != nil {
 			return fmt.Errorf("Error in get: %s", err)
 		}
@@ -200,7 +173,7 @@ func testAccIntegrationDestroy(s *terraform.State) error {
 
 		if rs.Primary.ID != "" {
 			id := rs.Primary.ID
-			if _, err := integration.Get(client, id); err == nil {
+			if _, err := integration.Get(client, id, true); err == nil {
 				return fmt.Errorf("Object %q still exists", rs.Primary.ID)
 			}
 		}
@@ -218,12 +191,6 @@ func testAccIntegrationConfig(name, it string, num int) string {
 		ic = fmt.Sprintf(`integration_config {
         queue_url = "https://sqs.us-east-1.amazonaws.com/12345678901%d/myintegration"
     }`, num)
-	case "qualys":
-		ic = fmt.Sprintf(`integration_config {
-        login = "qualys%dlogin"
-        password = "qualys%dpassword"
-        base_url = "qualysapi.qg%d.apps.qualys.com"
-    }`, num, num, num)
 	case "service_now":
 		ic = fmt.Sprintf(`integration_config {
         host_url = "dev%d.service-now.com"
@@ -233,7 +200,6 @@ func testAccIntegrationConfig(name, it string, num int) string {
             "incident": %t,
             "sn_si_incident": %t,
         }
-        version = "LONDON"
     }`, num, num, num, num == 1, num == 2)
 	case "webhook":
 		ic = fmt.Sprintf(`integration_config {
@@ -251,15 +217,14 @@ func testAccIntegrationConfig(name, it string, num int) string {
 	case "pager_duty":
 		ic = fmt.Sprintf(`integration_config {
         integration_key = "pagerduty%dkey"
-        auth_token = "pagerduty-auth-token-%d"
-    }`, num, num)
+    }`, num)
 	}
 
 	return fmt.Sprintf(`
 resource "prismacloud_integration" "test" {
     name = %q
     description = "integration acctest for %s"
-    enabled = false
+    enabled = true
     integration_type = %q
     %s
 }`, name, it, it, ic)

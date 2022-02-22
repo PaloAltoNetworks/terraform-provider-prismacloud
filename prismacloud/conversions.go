@@ -125,3 +125,12 @@ func Base64Decode(v string) []string {
 
 	return strings.Split(string(joined), "\n")
 }
+
+func stringInSlice(str string, list []string) bool {
+	for _, s := range list {
+		if s == str {
+			return true
+		}
+	}
+	return false
+}

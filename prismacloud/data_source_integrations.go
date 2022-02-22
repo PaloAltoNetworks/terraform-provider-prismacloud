@@ -67,16 +67,22 @@ func dataSourceIntegrations() *schema.Resource {
 func dataSourceIntegrationsRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 
-	items, err := integration.List(client, "")
+	outboundIntegrations, err := integration.List(client, "", true)
 	if err != nil {
 		return err
 	}
 
-	d.SetId("integrations")
-	d.Set("total", len(items))
+	inboundIntegrations, err := integration.List(client, "", false)
+	if err != nil {
+		return err
+	}
 
-	listing := make([]interface{}, 0, len(items))
-	for _, o := range items {
+	allIntegrations := append(outboundIntegrations, inboundIntegrations...)
+	d.SetId("integrations")
+	d.Set("total", len(allIntegrations))
+
+	listing := make([]interface{}, 0, len(allIntegrations))
+	for _, o := range allIntegrations {
 		listing = append(listing, map[string]interface{}{
 			"integration_id":   o.Id,
 			"name":             o.Name,
