@@ -20,6 +20,11 @@ type Integration struct {
 type IntegrationConfig struct {
 	// Amazon SQS.
 	QueueUrl string `json:"queueUrl,omitempty"`
+	// RoleArn
+	// ExternalId
+	// AccessKey
+	// SecretKey
+	MoreInfo bool `json:"moreInfo,omitempty"`
 
 	// Qualys.
 	Login    string `json:"login,omitempty"`
@@ -48,26 +53,27 @@ type IntegrationConfig struct {
 	SourceId string `json:"sourceId,omitempty"`
 	OrgId    string `json:"orgId,omitempty"`
 
-	//tenable
+	// Tenable
 	AccessKey string `json:"accessKey,omitempty"`
 	SecretKey string `json:"secretKey,omitempty"`
 
-	//Cortex/demisto
+	// Cortex/demisto
 	ApiKey string `json:"apiKey,omitempty"`
-	//HostUrl
+	// HostUrl
+	// Version
 
-	//okta
+	// Okta
 	Domain   string `json:"domain,omitempty"`
 	ApiToken string `json:"apiToken,omitempty"`
 
-	//snowflake
+	// Snowflake
 	UserName             string `json:"username,omitempty"`
 	PipeName             string `json:"pipename,omitempty"`
 	PrivateKey           string `json:"privateKey,omitempty"`
 	PassPhrase           string `json:"passphrase,omitempty"`
 	StagingIntegrationID string `json:"stagingIntegrationId,omitempty"`
 	// RollUpInterval
-  
+
 	// AWS security hub
 	AccountId string   `json:"accountId,omitempty"`
 	Regions   []Region `json:"regions,omitempty"`
@@ -120,4 +126,8 @@ type Region struct {
 	ApiIdentifier string `json:"apiIdentifier"`
 	CloudType     string `json:"cloudType"`
 	SdkId         string `json:"sdkId"`
+}
+
+type LicenseInfo struct {
+	PrismaId string `json:"prismaId"`
 }
