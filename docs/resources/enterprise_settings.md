@@ -10,11 +10,12 @@ Manages enterprise settings config.
 
 ```hcl
 resource "prismacloud_enterprise_settings" "example" {
+    access_key_max_validity = 30
     session_timeout = 60
     default_policies_enabled = {
-        "high": True,
-        "medium": True,
-        "low": False,
+        "high": true,
+        "medium": true,
+        "low": false,
     }
 }
 ```
@@ -22,9 +23,9 @@ resource "prismacloud_enterprise_settings" "example" {
 ## Argument Reference
 
 * `session_timeout` - (int) Browser session timeout.
-* `anomaly_training_model_threshold` - Anomaly training model threshold (`low`, `medium`, or `high`).
-* `anomaly_alert_disposition` - Anomaly alert disposition (`low`, `medium`, or `high`).
+* `access_key_max_validity` - (int) Access Keys maximum validity in days.
 * `user_attribution_in_notification` - (bool) User attribution in notification.
 * `require_alert_dismissal_note` - (bool) Require alert dismissal note.
 * `default_policies_enabled` - (Map of bools) Default policies enabled.
 * `apply_default_policies_enabled` - (bool) Apply default policies enabled.
+* `alarm_enabled` - (bool) Alarms enabled (Default : `true`). Alarms are Prisma Cloud Platform health notifications which are generated to notify users of system level issues/errors. Disabling alarms will delete all existing alarms which were previously generated.
