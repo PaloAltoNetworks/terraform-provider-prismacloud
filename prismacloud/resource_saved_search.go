@@ -12,6 +12,9 @@ func resourceSavedSearch() *schema.Resource {
 		Create: createSavedSearch,
 		Read:   readSavedSearch,
 		Delete: deleteSavedSearch,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			// Input.
