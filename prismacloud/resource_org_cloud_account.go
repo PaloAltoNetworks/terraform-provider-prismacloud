@@ -2,7 +2,6 @@ package prismacloud
 
 import (
 	"encoding/json"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"log"
 	"strings"
 	"time"
@@ -11,6 +10,7 @@ import (
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account/org"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 )
 
 var createOrUpdate bool = false
@@ -775,7 +775,6 @@ func createOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 	}
-	log.Println("Printing object :  ", obj)
 	PollApiUntilSuccess(func() error {
 		_, err := org.Identify(client, cloudType, name)
 		return err

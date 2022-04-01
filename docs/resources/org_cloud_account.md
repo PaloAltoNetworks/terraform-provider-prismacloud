@@ -72,7 +72,7 @@ resource "prismacloud_org_cloud_account" "aws_example" {
         ]
         role_arn = "some:arn:here"
         member_role_name = "memberRoleHere"
-        hierarchy_selection{
+        hierarchy_selection {
             display_name= "displayNameHere
             node_type= "nodeTypeHere"
             resource_id= "resurceIdHere"
@@ -143,8 +143,8 @@ The type of org cloud account to add.  You need to specify one and only one of t
 ##### For AWS
 * `resource_id` - (Required) Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.
 * `display_name` - (Required) Display name for AWS OU, AWS account, or AWS organization.
-* `node_type` - (Required) Valid values: OU, ACCOUNT, ORG.
-* `selection_type` - (Required) Valid values: INCLUDE to include the specified resource to onboard, EXCLUDE to exclude the specified resource and onboard the rest, ALL to onboard all resources in the organization.
+* `node_type` - (Required) Valid values: `OU`, `ACCOUNT`, `ORG`.
+* `selection_type` - (Required) Valid values: `INCLUDE` to include the specified resource to onboard, `EXCLUDE` to exclude the specified resource and onboard the rest, `ALL` to onboard all resources in the organization.
 
 ##### For GCP
 * `resource_id` - (Required) Resource ID.  For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}
@@ -155,7 +155,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 ### Oci
 
 * `account_id` - (Required) OCI account ID.
-* `enabled` - (Optional, bool) Whether or not the account is enabled (defualt: `true`).
+* `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
 * `group_name` - (Required) OCI identity group name that you define. Can be an existing group.
 * `group_ids` - (Required)  account ID to which you are assigning this account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique). 

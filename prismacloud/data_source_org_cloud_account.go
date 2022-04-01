@@ -43,6 +43,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 				AtLeastOneOf: []string{"account_id", "name"},
 			},
 
+			// Output.
 			org.TypeAwsOrg: {
 				Type:        schema.TypeList,
 				Computed:    true,
