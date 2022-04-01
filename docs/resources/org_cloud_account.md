@@ -85,6 +85,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
                         All the Org accounts will be added. false = Only the master account will be added(Default = False).
 * `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
 
+
 ### Azure
 
 * `account_id` - (Required) Azure org account ID.
@@ -117,6 +118,13 @@ The type of org cloud account to add.  You need to specify one and only one of t
 
 #### Hierarchy Selection
 
+##### for AWS
+* `resource_id` - (Required) Resource ID.  For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}
+* `display_name` - (Required) Display name for folder, project, or organization.
+* `node_type` - (Required) Node type. Valid values : `FOLDER`, `PROJECT`, or `ORG`.
+* `selection_type` - (Required) Selection type. Valid values: `INCLUDE`, `EXCLUDE`, or `ALL`. If `node_type` is `PROJECT` or `FOLDER`, then a valid value is either `INCLUDE` or `EXCLUDE`.
+
+##### for GCP
 * `resource_id` - (Required) Resource ID.  For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}
 * `display_name` - (Required) Display name for folder, project, or organization.
 * `node_type` - (Required) Node type. Valid values : `FOLDER`, `PROJECT`, or `ORG`.
