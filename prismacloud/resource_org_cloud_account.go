@@ -122,6 +122,52 @@ func resourceOrgCloudAccount() *schema.Resource {
 							Default:     "MONITOR",
 							Description: "Monitor or Monitor and Protect",
 						},
+						"hierarchy_selection": {
+							Type:        schema.TypeSet,
+							Computed:    true,
+							Optional:    true,
+							Description: "List of hierarchy selection. Each item has resource id, display name, node type and selection type",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"resource_id": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.",
+									},
+									"display_name": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Display name for AWS OU, AWS account, or AWS organization",
+									},
+									"node_type": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Valid values: OU, ACCOUNT, ORG",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"OU",
+												"ACCOUNT",
+												"ORG",
+											},
+											false,
+										),
+									},
+									"selection_type": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Selection type. Valid values: INCLUDE to include the specified resource to onboard, EXCLUDE to exclude the specified resource and onboard the rest, ALL to onboard all resources in the organization.",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"INCLUDE",
+												"EXCLUDE",
+												"ALL",
+											},
+											false,
+										),
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -475,7 +521,7 @@ func gcpOrgCredentialsMatch(k, old, new string, d *schema.ResourceData) bool {
 
 func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 	if x := ResourceDataInterfaceMap(d, org.TypeAwsOrg); len(x) != 0 {
-		return org.TypeAwsOrg, x["name"].(string), org.AwsOrg{
+		ans := org.AwsOrg{
 			AccountId:        x["account_id"].(string),
 			Enabled:          x["enabled"].(bool),
 			ExternalId:       x["external_id"].(string),
@@ -488,6 +534,18 @@ func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) 
 			MemberExternalId: x["member_external_id"].(string),
 			MemberRoleStatus: x["member_role_status"].(bool),
 		}
+		hsl := x["hierarchy_selection"].(*schema.Set).List()
+		ans.HierarchySelection = make([]org.HierarchySelection, 0, len(hsl))
+		for _, hsi := range hsl {
+			hs := hsi.(map[string]interface{})
+			ans.HierarchySelection = append(ans.HierarchySelection, org.HierarchySelection{
+				ResourceId:    hs["resource_id"].(string),
+				DisplayName:   hs["display_name"].(string),
+				SelectionType: hs["selection_type"].(string),
+				NodeType:      hs["node_type"].(string),
+			})
+		}
+		return org.TypeAwsOrg, x["name"].(string), ans
 	} else if x := ResourceDataInterfaceMap(d, org.TypeOci); len(x) != 0 {
 		return org.TypeOci, x["name"].(string), org.Oci{
 			AccountId:             x["account_id"].(string),
@@ -571,6 +629,40 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"member_role_name":   v.MemberRoleName,
 			"member_external_id": v.MemberExternalId,
 			"member_role_status": v.MemberRoleStatus,
+		}
+		if !createOrUpdate {
+			if len(v.HierarchySelection) == 0 {
+				val["hierarchy_selection"] = nil
+			} else {
+				hsList := make([]interface{}, 0, len(v.HierarchySelection))
+				for _, hs := range v.HierarchySelection {
+					hsList = append(hsList, map[string]interface{}{
+						"resource_id":    hs.ResourceId,
+						"display_name":   hs.DisplayName,
+						"node_type":      hs.NodeType,
+						"selection_type": hs.SelectionType,
+					})
+				}
+				val["hierarchy_selection"] = hsList
+			}
+		} else {
+			x := ResourceDataInterfaceMap(d, org.TypeAwsOrg)
+			if x["hierarchy_selection"] == nil {
+				val["hierarchy_selection"] = nil
+			} else {
+				hsl := x["hierarchy_selection"].(*schema.Set).List()
+				hsList := make([]interface{}, 0, len(hsl))
+				for _, hsi := range hsl {
+					hs := hsi.(map[string]interface{})
+					hsList = append(hsList, map[string]interface{}{
+						"resource_id":    hs["resource_id"].(string),
+						"display_name":   hs["display_name"].(string),
+						"selection_type": hs["selection_type"].(string),
+						"node_type":      hs["node_type"].(string),
+					})
+				}
+				val["hierarchy_selection"] = hsList
+			}
 		}
 	case org.Oci:
 		val = map[string]interface{}{
@@ -683,7 +775,7 @@ func createOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 	}
-
+	log.Println("Printing object :  ", obj)
 	PollApiUntilSuccess(func() error {
 		_, err := org.Identify(client, cloudType, name)
 		return err

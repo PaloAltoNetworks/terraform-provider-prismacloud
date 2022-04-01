@@ -43,7 +43,6 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 				AtLeastOneOf: []string{"account_id", "name"},
 			},
 
-			// Output.
 			org.TypeAwsOrg: {
 				Type:        schema.TypeList,
 				Computed:    true,
@@ -114,6 +113,35 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 							Description: "Monitor or Monitor and Protect",
+						},
+						"hierarchy_selection": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "List of hierarchy selection. Each item has resource id, display name, node type and selection type",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"resource_id": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.",
+									},
+									"display_name": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Display name for AWS OU, AWS account, or AWS organization",
+									},
+									"node_type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Valid values: OU, ACCOUNT, ORG",
+									},
+									"selection_type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Selection type. Valid values: INCLUDE to include the specified resource to onboard, EXCLUDE to exclude the specified resource and onboard the rest, ALL to onboard all resources in the organization.",
+									},
+								},
+							},
 						},
 					},
 				},
