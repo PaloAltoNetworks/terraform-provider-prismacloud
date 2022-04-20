@@ -601,6 +601,7 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 		log.Printf("[WARN] Error setting 'compliance_metadata' for %q: %s", d.Id(), err)
 	}
 }
+
 func createPolicy(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	obj := parsePolicy(d, "")
