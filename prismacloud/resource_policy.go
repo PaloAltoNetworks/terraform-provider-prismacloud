@@ -276,7 +276,6 @@ func resourcePolicy() *schema.Resource {
 						"parameters": {
 							Type:        schema.TypeMap,
 							Optional:    true,
-							Computed:    true,
 							Description: "Parameters",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -549,9 +548,11 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 		}
 	}
 	rv["parameters"] = pm
+
 	if err := d.Set("rule", []interface{}{rv}); err != nil {
 		log.Printf("[WARN] Error setting 'rule' for %q: %s", d.Id(), err)
 	}
+
 	// Remediation.
 	if obj.Remediation.TemplateType == "" && obj.Remediation.Description == "" && obj.Remediation.CliScriptTemplate == "" && obj.Remediation.CliScriptJsonSchema == nil {
 		d.Set("remediation", nil)
@@ -600,7 +601,6 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 		log.Printf("[WARN] Error setting 'compliance_metadata' for %q: %s", d.Id(), err)
 	}
 }
-
 func createPolicy(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pc.Client)
 	obj := parsePolicy(d, "")
@@ -608,10 +608,12 @@ func createPolicy(d *schema.ResourceData, meta interface{}) error {
 	if err := policy.Create(client, obj); err != nil {
 		return err
 	}
+
 	PollApiUntilSuccess(func() error {
 		_, err := policy.Identify(client, obj.Name)
 		return err
 	})
+
 	id, err := policy.Identify(client, obj.Name)
 	if err != nil {
 		return err
