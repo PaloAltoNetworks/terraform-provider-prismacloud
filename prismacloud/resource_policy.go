@@ -276,6 +276,7 @@ func resourcePolicy() *schema.Resource {
 						"parameters": {
 							Type:        schema.TypeMap,
 							Optional:    true,
+							Computed:    true,
 							Description: "Parameters",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -511,7 +512,12 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 
 	switch v := obj.Rule.Criteria.(type) {
 	case string:
-		rv["criteria"] = v
+		x := ResourceDataInterfaceMap(d, "rule")
+		if x["criteria"] == nil {
+			rv["criteria"] = v
+		} else {
+			rv["criteria"] = x["criteria"]
+		}
 	case interface{}:
 		b, err := json.Marshal(v)
 		if err != nil {
@@ -535,12 +541,17 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 	for k, v := range obj.Rule.Parameters {
 		pm[k] = v
 	}
+	x := ResourceDataInterfaceMap(d, "rule")
+	y := x["parameters"]
+	if rec, ok := y.(map[string]interface{}); ok {
+		for key, val := range rec {
+			pm[key] = val
+		}
+	}
 	rv["parameters"] = pm
-
 	if err := d.Set("rule", []interface{}{rv}); err != nil {
 		log.Printf("[WARN] Error setting 'rule' for %q: %s", d.Id(), err)
 	}
-
 	// Remediation.
 	if obj.Remediation.TemplateType == "" && obj.Remediation.Description == "" && obj.Remediation.CliScriptTemplate == "" && obj.Remediation.CliScriptJsonSchema == nil {
 		d.Set("remediation", nil)
@@ -597,12 +608,10 @@ func createPolicy(d *schema.ResourceData, meta interface{}) error {
 	if err := policy.Create(client, obj); err != nil {
 		return err
 	}
-
 	PollApiUntilSuccess(func() error {
 		_, err := policy.Identify(client, obj.Name)
 		return err
 	})
-
 	id, err := policy.Identify(client, obj.Name)
 	if err != nil {
 		return err
