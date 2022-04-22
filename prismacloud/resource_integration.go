@@ -479,21 +479,25 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 	d.Set("status", o.Status)
 	d.Set("valid", o.Valid)
 
-	reason := map[string]interface{}{
-		"last_updated": o.Reason.LastUpdated,
-		"error_type":   o.Reason.ErrorType,
-		"message":      o.Reason.Message,
-		"details":      nil,
-	}
-	if o.Reason.Details != nil {
-		reason["details"] = []interface{}{map[string]interface{}{
-			"status_code": o.Reason.Details.StatusCode,
-			"subject":     o.Reason.Details.Subject,
-			"message":     o.Reason.Details.Message,
-		}}
-	}
-	if err = d.Set("reason", []interface{}{reason}); err != nil {
-		log.Printf("[WARN] Error setting 'reason' for %s: %s", d.Id(), err)
+	if o.Reason != nil {
+		reason := map[string]interface{}{
+			"last_updated": o.Reason.LastUpdated,
+			"error_type":   o.Reason.ErrorType,
+			"message":      o.Reason.Message,
+			"details":      nil,
+		}
+		if o.Reason.Details != nil {
+			reason["details"] = []interface{}{map[string]interface{}{
+				"status_code": o.Reason.Details.StatusCode,
+				"subject":     o.Reason.Details.Subject,
+				"message":     o.Reason.Details.Message,
+			}}
+		}
+		if err = d.Set("reason", []interface{}{reason}); err != nil {
+			log.Printf("[WARN] Error setting 'reason' for %s: %s", d.Id(), err)
+		}
+	} else {
+		d.Set("reason", nil)
 	}
 
 	iConfig := ResourceDataInterfaceMap(d, "integration_config")
