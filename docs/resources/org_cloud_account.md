@@ -73,7 +73,7 @@ resource "prismacloud_org_cloud_account" "aws_example" {
         role_arn = "some:arn:here"
         member_role_name = "memberRoleHere"
         hierarchy_selection {
-            display_name= "displayNameHere
+            display_name = "displayNameHere"
             node_type= "nodeTypeHere"
             resource_id= "resurceIdHere"
             selection_type= "selectionTypeHere"
