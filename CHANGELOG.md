@@ -1,3 +1,8 @@
+## 1.2.4 (Apr 26, 2022)
+
+* Bug fixes
+* AWS ORG hierarchy support
+
 ## 1.2.3 (Feb 22, 2022)
 
 * Bug fixes
