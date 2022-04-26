@@ -34,17 +34,18 @@ type Group struct {
 }
 
 type AwsOrg struct {
-	AccountId        string   `json:"accountId"`
-	Enabled          bool     `json:"enabled"`
-	ExternalId       string   `json:"externalId"`
-	GroupIds         []string `json:"groupIds"`
-	Name             string   `json:"name"`
-	RoleArn          string   `json:"roleArn"`
-	ProtectionMode   string   `json:"protectionMode"`
-	AccountType      string   `json:"accountType"`
-	MemberRoleName   string   `json:"memberRoleName"`
-	MemberExternalId string   `json:"memberExternalId"`
-	MemberRoleStatus bool     `json:"memberRoleStatus"`
+	AccountId          string               `json:"accountId"`
+	Enabled            bool                 `json:"enabled"`
+	ExternalId         string               `json:"externalId"`
+	GroupIds           []string             `json:"groupIds"`
+	Name               string               `json:"name"`
+	RoleArn            string               `json:"roleArn"`
+	ProtectionMode     string               `json:"protectionMode"`
+	AccountType        string               `json:"accountType"`
+	MemberRoleName     string               `json:"memberRoleName"`
+	MemberExternalId   string               `json:"memberExternalId"`
+	MemberRoleStatus   bool                 `json:"memberRoleStatus"`
+	HierarchySelection []HierarchySelection `json:"hierarchySelection"`
 }
 
 type GcpCloudAccount struct {
