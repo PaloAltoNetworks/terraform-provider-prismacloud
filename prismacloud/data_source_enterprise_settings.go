@@ -10,20 +10,15 @@ func dataSourceEnterpriseSettings() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			// Output.
+			"access_key_max_validity": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: "Access Keys maximum validity in days",
+			},
 			"session_timeout": {
 				Type:        schema.TypeInt,
 				Computed:    true,
 				Description: "Browser session timeout",
-			},
-			"anomaly_training_model_threshold": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Anomaly training model threshold",
-			},
-			"anomaly_alert_disposition": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Anomaly alert disposition",
 			},
 			"user_attribution_in_notification": {
 				Type:        schema.TypeBool,
@@ -47,6 +42,11 @@ func dataSourceEnterpriseSettings() *schema.Resource {
 				Type:        schema.TypeBool,
 				Computed:    true,
 				Description: "Apply default policies enabled",
+			},
+			"alarm_enabled": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Alarms enabled",
 			},
 		},
 	}

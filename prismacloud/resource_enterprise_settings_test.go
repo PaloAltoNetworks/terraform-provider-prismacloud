@@ -84,12 +84,8 @@ func testAccCheckEnterpriseSettingsAttributes(o *enterprise.Config, tout int) re
 			return fmt.Errorf("Session timeout is %d, expected %d", o.SessionTimeout, tout)
 		}
 
-		if o.AnomalyTrainingModelThreshold != originalEnterpriseSettings.AnomalyTrainingModelThreshold {
-			return fmt.Errorf("Anomaly training model threshold is %q, expected %q", o.AnomalyTrainingModelThreshold, originalEnterpriseSettings.AnomalyTrainingModelThreshold)
-		}
-
-		if o.AnomalyAlertDisposition != originalEnterpriseSettings.AnomalyAlertDisposition {
-			return fmt.Errorf("Anomaly alert disposition is %q, expected %q", o.AnomalyAlertDisposition, originalEnterpriseSettings.AnomalyAlertDisposition)
+		if o.AccessKeyMaxValidity != originalEnterpriseSettings.AccessKeyMaxValidity {
+			return fmt.Errorf("Access keys max validity is %q, expected %q", o.AccessKeyMaxValidity, originalEnterpriseSettings.AccessKeyMaxValidity)
 		}
 
 		if o.UserAttributionInNotification != originalEnterpriseSettings.UserAttributionInNotification {
@@ -102,6 +98,10 @@ func testAccCheckEnterpriseSettingsAttributes(o *enterprise.Config, tout int) re
 
 		if o.ApplyDefaultPoliciesEnabled != originalEnterpriseSettings.ApplyDefaultPoliciesEnabled {
 			return fmt.Errorf("Apply default policies enabled is %t, expected %t", o.ApplyDefaultPoliciesEnabled, originalEnterpriseSettings.ApplyDefaultPoliciesEnabled)
+		}
+
+		if o.AlarmEnabled != originalEnterpriseSettings.AlarmEnabled {
+			return fmt.Errorf("Alarm enabled is %t, expected %t", o.AlarmEnabled, originalEnterpriseSettings.AlarmEnabled)
 		}
 
 		if len(o.DefaultPoliciesEnabled) != len(originalEnterpriseSettings.DefaultPoliciesEnabled) {
@@ -128,18 +128,18 @@ func testAccEnterpriseSettingsConfig(tout int) string {
 	buf.WriteString(fmt.Sprintf(`
 resource "prismacloud_enterprise_settings" "test" {
     session_timeout = %d
-    anomaly_training_model_threshold = %q
-    anomaly_alert_disposition = %q
+    access_key_max_validity = %d
     user_attribution_in_notification = %t
     require_alert_dismissal_note = %t
     apply_default_policies_enabled = %t
+    alarm_enabled = %t
     default_policies_enabled = {`,
 		tout,
-		originalEnterpriseSettings.AnomalyTrainingModelThreshold,
-		originalEnterpriseSettings.AnomalyAlertDisposition,
+		originalEnterpriseSettings.AccessKeyMaxValidity,
 		originalEnterpriseSettings.UserAttributionInNotification,
 		originalEnterpriseSettings.RequireAlertDismissalNote,
 		originalEnterpriseSettings.ApplyDefaultPoliciesEnabled,
+		originalEnterpriseSettings.AlarmEnabled,
 	))
 
 	for key, val := range originalEnterpriseSettings.DefaultPoliciesEnabled {
