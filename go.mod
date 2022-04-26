@@ -7,4 +7,4 @@ require (
 
 //replace github.com/paloaltonetworks/prisma-cloud-go => ../prisma-cloud-go
 
-go 1.13
+go 1.17
