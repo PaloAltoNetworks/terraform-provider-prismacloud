@@ -71,3 +71,11 @@ Only one of these can be defined:
 The following attributes are supported:
 
 * `saved` - (bool) This is set to `true` when the saved search is created.
+
+## Import
+
+Resources can be imported using the saved-search ID:
+
+```
+$ terraform import prismacloud_saved_search.example 11111111-2222-3333-4444-555555555555
+```
