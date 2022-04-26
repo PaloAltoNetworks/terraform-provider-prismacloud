@@ -58,6 +58,28 @@ resource "prismacloud_cloud_account" "csv" {
         member_role_name = each.memberRoleName
     }
 }
+
+// Cloud account with hierarchy_selection 
+resource "prismacloud_org_cloud_account" "aws_example" {
+    disable_on_destroy = true
+    aws {
+        name = "myAwsOrgAccountName"
+        account_id = "accountIdHere"
+        external_id = "eidHere"
+        member_external_id = "membereidHere"
+        group_ids = [
+            prismacloud_account_group.g1.group_id,
+        ]
+        role_arn = "some:arn:here"
+        member_role_name = "memberRoleHere"
+        hierarchy_selection {
+            display_name = "displayNameHere"
+            node_type= "nodeTypeHere"
+            resource_id= "resurceIdHere"
+            selection_type= "selectionTypeHere"
+        }
+    }
+}
 ```
 
 ## Argument Reference
@@ -84,6 +106,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 * `member_role_status` - (Optional, bool) - True =  The member role created using stack set exists in all the member accounts. 
                         All the Org accounts will be added. false = Only the master account will be added(Default = False).
 * `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
+* `hierarchy_selection` -  (Optional) List of AWS Organization Units (OU), AWS accounts, and AWS Organizations to onboard under this organization. [below](#For-AWS)
 
 ### Azure
 
@@ -113,10 +136,17 @@ The type of org cloud account to add.  You need to specify one and only one of t
 * `protection_mode` - (Optional) Protection Mode. Valid values : `MONITOR` or `MONITOR_AND_PROTECT`. Defaults to `MONITOR` if not specified.
 * `organization_name` - (Required) GCP org organization name.
 * `account_group_creation_mode` - (Optional) Cloud account group creation mode. Valid values : `MANUAL`: Create account groups manually, `AUTO`: Create high-level account groups based on folders identified, or `RECURSIVE`: Drill down in folder tree to create account groups (default : `MANUAL`). `AUTO` can't be used if `selection_type` in `hierarchy_selection` is `EXCLUDE`. 
-* `hierarchy_selection` - (Optional) List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection). 
+* `hierarchy_selection` - (Optional) List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#For-GCP). 
 
 #### Hierarchy Selection
 
+##### For AWS
+* `resource_id` - (Required) Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.
+* `display_name` - (Required) Display name for AWS OU, AWS account, or AWS organization.
+* `node_type` - (Required) Valid values: `OU`, `ACCOUNT`, `ORG`.
+* `selection_type` - (Required) Valid values: `INCLUDE` to include the specified resource to onboard, `EXCLUDE` to exclude the specified resource and onboard the rest, `ALL` to onboard all resources in the organization.
+
+##### For GCP
 * `resource_id` - (Required) Resource ID.  For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}
 * `display_name` - (Required) Display name for folder, project, or organization.
 * `node_type` - (Required) Node type. Valid values : `FOLDER`, `PROJECT`, or `ORG`.
@@ -125,7 +155,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 ### Oci
 
 * `account_id` - (Required) OCI account ID.
-* `enabled` - (Optional, bool) Whether or not the account is enabled (defualt: `true`).
+* `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
 * `group_name` - (Required) OCI identity group name that you define. Can be an existing group.
 * `group_ids` - (Required)  account ID to which you are assigning this account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique). 
