@@ -1,3 +1,7 @@
+## 1.2.6 (April 26, 2022)
+
+* Fix for os/arch support
+
 ## 1.2.4 (Apr 26, 2022)
 
 * Bug fixes
