@@ -511,7 +511,12 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 
 	switch v := obj.Rule.Criteria.(type) {
 	case string:
-		rv["criteria"] = v
+		x := ResourceDataInterfaceMap(d, "rule")
+		if x["criteria"] == nil {
+			rv["criteria"] = v
+		} else {
+			rv["criteria"] = x["criteria"]
+		}
 	case interface{}:
 		b, err := json.Marshal(v)
 		if err != nil {
@@ -534,6 +539,13 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 	pm := make(map[string]interface{})
 	for k, v := range obj.Rule.Parameters {
 		pm[k] = v
+	}
+	x := ResourceDataInterfaceMap(d, "rule")
+	y := x["parameters"]
+	if rec, ok := y.(map[string]interface{}); ok {
+		for key, val := range rec {
+			pm[key] = val
+		}
 	}
 	rv["parameters"] = pm
 
