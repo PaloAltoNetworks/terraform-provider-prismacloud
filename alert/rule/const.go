@@ -26,6 +26,7 @@ const (
 	TypeAzureServiceBusQueue = "azure_service_bus_queue"
 	TypeSnowFlake            = "snowflake"
 	TypeAwsS3                = "aws_s3"
+	TypeJira		 = "jira"
 )
 
 const (
