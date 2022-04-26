@@ -10,7 +10,7 @@ type Policy struct {
 	Description            string               `json:"description,omitempty"`
 	Severity               string               `json:"severity"`
 	Rule                   Rule                 `json:"rule"`
-	Recommendation         string               `json:"recommendation,omitempty"`
+	Recommendation         string               `json:"recommendation"`
 	CloudType              string               `json:"cloudType,omitempty"`
 	ComplianceMetadata     []ComplianceMetadata `json:"complianceMetadata"`
 	Remediation            Remediation          `json:"remediation,omitempty"`
