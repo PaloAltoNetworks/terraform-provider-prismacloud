@@ -219,6 +219,35 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 							Description: "Application ID key",
 							Sensitive:   true,
 						},
+						"hierarchy_selection": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "List of subscriptions and/or management groups to onboard",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"resource_id": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Resource ID. Management group ID or subscription ID.\nNote you must escape any double quotes in the resource ID with a backslash.",
+									},
+									"display_name": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Display name for management group or subscription",
+									},
+									"node_type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Node type. Valid values: SUBSCRIPTION, TENANT, MANAGEMENT_GROUP",
+									},
+									"selection_type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Selection type. Valid values: INCLUDE to include the specified resource to onboard, EXCLUDE to exclude the specified resource and onboard the rest, ALL to onboard all resources in the tenant.",
+									},
+								},
+							},
+						},
 					},
 				},
 			},

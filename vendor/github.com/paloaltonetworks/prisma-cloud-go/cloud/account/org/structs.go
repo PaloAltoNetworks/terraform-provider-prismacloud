@@ -45,6 +45,7 @@ type AwsOrg struct {
 	MemberRoleName   string   `json:"memberRoleName"`
 	MemberExternalId string   `json:"memberExternalId"`
 	MemberRoleStatus bool     `json:"memberRoleStatus"`
+	HierarchySelection  []HierarchySelection `json:"hierarchySelection"`
 }
 
 type GcpCloudAccount struct {
@@ -73,6 +74,7 @@ type AzureOrg struct {
 	MonitorFlowLogs    bool              `json:"monitorFlowLogs"`
 	TenantId           string            `json:"tenantId"`
 	ServicePrincipalId string            `json:"servicePrincipalId"`
+	HierarchySelection  []HierarchySelection `json:"hierarchySelection"`
 }
 
 type GcpOrgCredentials struct {
