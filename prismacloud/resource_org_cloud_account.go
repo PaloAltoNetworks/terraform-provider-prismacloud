@@ -257,6 +257,11 @@ func resourceOrgCloudAccount() *schema.Resource {
 							Description: "Application ID key",
 							Sensitive:   true,
 						},
+						"root_sync_enabled": {
+							Type:        schema.TypeBool,
+							Required:    true,
+							Description: "true = Azure tenant has children. Must be set to true",
+						},
 						"hierarchy_selection": {
 							Type:        schema.TypeSet,
 							Optional:    true,
@@ -623,6 +628,7 @@ func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) 
 			ServicePrincipalId: x["service_principal_id"].(string),
 			MonitorFlowLogs:    x["monitor_flow_logs"].(bool),
 			Key:                x["key"].(string),
+			RootSyncEnabled:    x["root_sync_enabled"].(bool),
 		}
 		hsl := x["hierarchy_selection"].(*schema.Set).List()
 		ans.HierarchySelection = make([]org.HierarchySelection, 0, len(hsl))
@@ -755,6 +761,7 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"service_principal_id": v.ServicePrincipalId,
 			"monitor_flow_logs":    v.MonitorFlowLogs,
 			"key":                  key,
+			"root_sync_enabled":    v.RootSyncEnabled,
 		}
 		if len(v.HierarchySelection) == 0 {
 			val["hierarchy_selection"] = nil

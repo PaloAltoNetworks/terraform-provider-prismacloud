@@ -219,6 +219,11 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 							Description: "Application ID key",
 							Sensitive:   true,
 						},
+						"root_sync_enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "true = Azure tenant has children. Must be set to true",
+						},
 						"hierarchy_selection": {
 							Type:        schema.TypeList,
 							Computed:    true,

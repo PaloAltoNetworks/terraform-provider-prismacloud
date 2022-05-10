@@ -68,13 +68,14 @@ type AzureCloudAccount struct {
 }
 
 type AzureOrg struct {
-	Account            AzureCloudAccount `json:"cloudAccount"`
-	ClientId           string            `json:"clientId"`
-	Key                string            `json:"key"`
-	MonitorFlowLogs    bool              `json:"monitorFlowLogs"`
-	TenantId           string            `json:"tenantId"`
-	ServicePrincipalId string            `json:"servicePrincipalId"`
-	HierarchySelection  []HierarchySelection `json:"hierarchySelection"`
+	Account            AzureCloudAccount    `json:"cloudAccount"`
+	ClientId           string               `json:"clientId"`
+	Key                string               `json:"key"`
+	MonitorFlowLogs    bool                 `json:"monitorFlowLogs"`
+	TenantId           string               `json:"tenantId"`
+	ServicePrincipalId string               `json:"servicePrincipalId"`
+	HierarchySelection []HierarchySelection `json:"hierarchySelection"`
+	RootSyncEnabled    bool 				`json:"rootSyncEnabled"`
 }
 
 type GcpOrgCredentials struct {
