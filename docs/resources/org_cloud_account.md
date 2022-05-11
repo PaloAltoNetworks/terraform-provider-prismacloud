@@ -142,7 +142,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 
 #### Hierarchy Selection
 
-##### for AWS
+##### For AWS
 * `resource_id` - (Required) Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.
 * `display_name` - (Required) Display name for AWS OU, AWS account, or AWS organization.
 * `node_type` - (Required) Valid values: `OU`, `ACCOUNT`, `ORG`.
@@ -154,7 +154,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 * `node_type` - (Required) Valid values: `SUBSCRIPTION`, `TENANT`, `MANAGEMENT_GROUP`.
 * `selection_type` - (Required) Valid values: `INCLUDE` to include the specified resource to onboard, `EXCLUDE` to exclude the specified resource and onboard the rest, `ALL` to onboard all resources in the tenant.
 
-##### for GCP
+##### For GCP
 
 * `resource_id` - (Required) Resource ID.  For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}
 * `display_name` - (Required) Display name for folder, project, or organization.
