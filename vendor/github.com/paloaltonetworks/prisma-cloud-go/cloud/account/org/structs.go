@@ -34,17 +34,18 @@ type Group struct {
 }
 
 type AwsOrg struct {
-	AccountId        string   `json:"accountId"`
-	Enabled          bool     `json:"enabled"`
-	ExternalId       string   `json:"externalId"`
-	GroupIds         []string `json:"groupIds"`
-	Name             string   `json:"name"`
-	RoleArn          string   `json:"roleArn"`
-	ProtectionMode   string   `json:"protectionMode"`
-	AccountType      string   `json:"accountType"`
-	MemberRoleName   string   `json:"memberRoleName"`
-	MemberExternalId string   `json:"memberExternalId"`
-	MemberRoleStatus bool     `json:"memberRoleStatus"`
+	AccountId          string               `json:"accountId"`
+	Enabled            bool                 `json:"enabled"`
+	ExternalId         string               `json:"externalId"`
+	GroupIds           []string             `json:"groupIds"`
+	Name               string               `json:"name"`
+	RoleArn            string               `json:"roleArn"`
+	ProtectionMode     string               `json:"protectionMode"`
+	AccountType        string               `json:"accountType"`
+	MemberRoleName     string               `json:"memberRoleName"`
+	MemberExternalId   string               `json:"memberExternalId"`
+	MemberRoleStatus   bool                 `json:"memberRoleStatus"`
+	HierarchySelection []HierarchySelection `json:"hierarchySelection"`
 }
 
 type GcpCloudAccount struct {
@@ -67,12 +68,14 @@ type AzureCloudAccount struct {
 }
 
 type AzureOrg struct {
-	Account            AzureCloudAccount `json:"cloudAccount"`
-	ClientId           string            `json:"clientId"`
-	Key                string            `json:"key"`
-	MonitorFlowLogs    bool              `json:"monitorFlowLogs"`
-	TenantId           string            `json:"tenantId"`
-	ServicePrincipalId string            `json:"servicePrincipalId"`
+	Account            AzureCloudAccount    `json:"cloudAccount"`
+	ClientId           string               `json:"clientId"`
+	Key                string               `json:"key"`
+	MonitorFlowLogs    bool                 `json:"monitorFlowLogs"`
+	TenantId           string               `json:"tenantId"`
+	ServicePrincipalId string               `json:"servicePrincipalId"`
+	RootSyncEnabled    bool                 `json:"rootSyncEnabled"`
+	HierarchySelection []HierarchySelection `json:"hierarchySelection"`
 }
 
 type GcpOrgCredentials struct {
