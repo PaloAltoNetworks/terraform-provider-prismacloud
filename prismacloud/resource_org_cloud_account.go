@@ -259,8 +259,8 @@ func resourceOrgCloudAccount() *schema.Resource {
 						},
 						"root_sync_enabled": {
 							Type:        schema.TypeBool,
-							Required:    true,
-							Description: "true = Azure tenant has children. Must be set to true",
+							Optional:    true,
+							Description: "Azure tenant has children. Must be set to true when azure tenant is onboarded with children",
 						},
 						"hierarchy_selection": {
 							Type:        schema.TypeSet,

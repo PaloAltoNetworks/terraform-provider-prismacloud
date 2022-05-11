@@ -120,7 +120,9 @@ The type of org cloud account to add.  You need to specify one and only one of t
 * `tenant_id` - (Required) Active Directory ID associated with Azure.
 * `service_principal_id` - (Required) Unique ID of the service principal object associated with the Prisma Cloud application that you create.
 * `account_type` - (Optional) Defaults to "tenant" if not specified.
-* `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR`
+* `protection_mode` - (Optional) Defaults to `MONITOR`. Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
+* `root_sync_enabled` - (Optional) Azure tenant has children. Must be set to `true` when azure tenant is onboarded with children.
+* `hierarchy_selection` - (Optional) List of subscriptions and/or management groups to onboard, as defined [below](#For-Azure).
 
 ### GCP
 
@@ -145,6 +147,12 @@ The type of org cloud account to add.  You need to specify one and only one of t
 * `display_name` - (Required) Display name for folder, project, or organization.
 * `node_type` - (Required) Node type. Valid values : `FOLDER`, `PROJECT`, or `ORG`.
 * `selection_type` - (Required) Selection type. Valid values: `INCLUDE`, `EXCLUDE`, or `ALL`. If `node_type` is `PROJECT` or `FOLDER`, then a valid value is either `INCLUDE` or `EXCLUDE`.
+
+##### For Azure
+* `resource_id` - (Required) Resource ID. Management group ID or subscription ID. Note you must escape any double quotes in the resource ID with a backslash.
+* `display_name` - (Required) Display name for management group or subscription.
+* `node_type` - (Required) Valid values: `SUBSCRIPTION`, `TENANT`, `MANAGEMENT_GROUP`.
+* `selection_type` - (Required) Valid values: `INCLUDE` to include the specified resource to onboard, `EXCLUDE` to exclude the specified resource and onboard the rest, `ALL` to onboard all resources in the tenant.
 
 ##### for GCP
 
