@@ -121,7 +121,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 * `service_principal_id` - (Required) Unique ID of the service principal object associated with the Prisma Cloud application that you create.
 * `account_type` - (Optional) Defaults to "tenant" if not specified.
 * `protection_mode` - (Optional) Defaults to `MONITOR`. Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
-* `root_sync_enabled` - (Optional) Azure tenant has children. Must be set to `true` when azure tenant is onboarded with children.
+* `root_sync_enabled` - (Optional, bool) Defaults to `false`. Azure tenant has children. Must be set to `true` when azure tenant is onboarded with children.
 * `hierarchy_selection` - (Optional) List of subscriptions and/or management groups to onboard, as defined [below](#For-Azure).
 
 ### GCP
