@@ -140,13 +140,14 @@ The type of org cloud account to add.  You need to specify one and only one of t
 
 #### Hierarchy Selection
 
-##### For AWS
-* `resource_id` - (Required) Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.
-* `display_name` - (Required) Display name for AWS OU, AWS account, or AWS organization.
-* `node_type` - (Required) Valid values: `OU`, `ACCOUNT`, `ORG`.
-* `selection_type` - (Required) Valid values: `INCLUDE` to include the specified resource to onboard, `EXCLUDE` to exclude the specified resource and onboard the rest, `ALL` to onboard all resources in the organization.
+##### for AWS
+* `resource_id` - (Required) Resource ID.  For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}
+* `display_name` - (Required) Display name for folder, project, or organization.
+* `node_type` - (Required) Node type. Valid values : `FOLDER`, `PROJECT`, or `ORG`.
+* `selection_type` - (Required) Selection type. Valid values: `INCLUDE`, `EXCLUDE`, or `ALL`. If `node_type` is `PROJECT` or `FOLDER`, then a valid value is either `INCLUDE` or `EXCLUDE`.
 
-##### For GCP
+##### for GCP
+
 * `resource_id` - (Required) Resource ID.  For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}
 * `display_name` - (Required) Display name for folder, project, or organization.
 * `node_type` - (Required) Node type. Valid values : `FOLDER`, `PROJECT`, or `ORG`.
