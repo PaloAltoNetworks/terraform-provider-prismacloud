@@ -104,7 +104,7 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `data_flow_enabled_project` - (Optional) GCP project for flow log compression.
 * `flow_log_storage_bucket` - (Optional) GCP Flow logs storage bucket.
 * `credentials_json` - (Required) Content of the JSON credentials file (read in using `file()`).
-* `account_type` - (Optional) Defaults to "account" if not specified
+* `account_type` - (Optional) Defaults to "account" if not specified. Valid values : `account`, `masterServiceAccount`.
 * `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
 
 ### Alibaba Cloud
