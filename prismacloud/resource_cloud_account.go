@@ -2,6 +2,7 @@ package prismacloud
 
 import (
 	"encoding/json"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"log"
 	"strings"
 	"time"
@@ -97,6 +98,13 @@ func resourceCloudAccount() *schema.Resource {
 							Optional:    true,
 							Default:     "MONITOR",
 							Description: "Monitor or Monitor and Protect",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"MONITOR",
+									"MONITOR_AND_PROTECT",
+								},
+								false,
+							),
 						},
 					},
 				},
@@ -248,12 +256,26 @@ func resourceCloudAccount() *schema.Resource {
 							Optional:    true,
 							Default:     "account",
 							Description: "Account type - organization or account",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"account",
+									"masterServiceAccount",
+								},
+								false,
+							),
 						},
 						"protection_mode": {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Default:     "MONITOR",
 							Description: "Monitor or Monitor and Protect",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"MONITOR",
+									"MONITOR_AND_PROTECT",
+								},
+								false,
+							),
 						},
 					},
 				},
