@@ -260,6 +260,7 @@ func resourceCloudAccount() *schema.Resource {
 								[]string{
 									"account",
 									"masterServiceAccount",
+									"workspace_domain",
 								},
 								false,
 							),
