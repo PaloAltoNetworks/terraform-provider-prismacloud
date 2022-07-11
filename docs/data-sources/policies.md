@@ -19,7 +19,7 @@ data "prismacloud_policies" "example" {
 
 ## Argument Reference
 
-* `filters` - (Optional, map) Filters to limit policies returned.  Filter options can be found [here](https://api.docs.prismacloud.io/reference#get-policies-v2).
+* `filters` - (Optional, map) Filters to limit policies returned.  Filter options can be found [here](https://prisma.pan.dev/api/cloud/cspm/policy#operation/get-policies).
 
 ## Attribute Reference
 

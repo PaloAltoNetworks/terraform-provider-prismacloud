@@ -68,6 +68,18 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `alibaba_cloud` - Alibaba account type spec, defined [below](#alibaba-cloud).
 
 ### AWS
+
+> **Lookahead Notice**
+> #### Change in existing behavior of `external_id` field to prevent confused deputy attack on AWS accounts
+> * By September 2022, the `external_id` field in resource `prismacloud_cloud_account` will not be considered as an input parameter for onboarding AWS account. 
+You will have to use the App Provisioner API to generate an External ID. This External ID is required to generate the Role ARN and grant Prisma Cloud access to your cloud account. 
+The generated External ID will be valid for 30 days. 
+If you don’t complete the onboarding flow within this 30-day period, you must generate a new External ID and restart the onboarding workflow. 
+> *  While onboarding an AWS account, you must first use the App Provisioner API to generate an External ID and use this External ID to create the AWS stack via CFT. 
+> * In resource `prismacloud_cloud_account` the field `external_id` will be converted from `Required` to `Optional` to support the backward compatibility and 
+to ensure that already onboarded AWS accounts should not get impacted, but terraform will ignore the value of `external_id` 
+and will not detect any drift on it irrespective of the value provided in terraform script.
+
 * `account_id` - (Required) AWS account ID.
 * `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
 * `external_id` - (Required) AWS account external ID.
