@@ -1,3 +1,8 @@
+## 1.2.7 (July 11, 2022)
+
+* Azure ORG hierarchy support
+* Documentation update for lookahead notice for AWS account onboarding
+
 ## 1.2.6 (April 26, 2022)
 
 * Fix for os/arch support
