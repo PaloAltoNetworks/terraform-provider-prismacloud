@@ -257,6 +257,56 @@ func resourceOrgCloudAccount() *schema.Resource {
 							Description: "Application ID key",
 							Sensitive:   true,
 						},
+						"root_sync_enabled": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Azure tenant has children. Must be set to true when azure tenant is onboarded with children",
+						},
+						"hierarchy_selection": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "List of subscriptions and/or management groups to onboard",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"resource_id": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Resource ID. Management group ID or subscription ID.\nNote you must escape any double quotes in the resource ID with a backslash.",
+									},
+									"display_name": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Display name for management group or subscription",
+									},
+									"node_type": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Node type. Valid values: SUBSCRIPTION, TENANT, MANAGEMENT_GROUP",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"SUBSCRIPTION",
+												"TENANT",
+												"MANAGEMENT_GROUP",
+											},
+											false,
+										),
+									},
+									"selection_type": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Selection type. Valid values: INCLUDE to include the specified resource to onboard, EXCLUDE to exclude the specified resource and onboard the rest, ALL to onboard all resources in the tenant.",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"INCLUDE",
+												"EXCLUDE",
+												"ALL",
+											},
+											false,
+										),
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -564,7 +614,7 @@ func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) 
 			UserOcid:              x["user_ocid"].(string),
 		}
 	} else if x := ResourceDataInterfaceMap(d, org.TypeAzureOrg); len(x) != 0 {
-		return org.TypeAzureOrg, x["name"].(string), org.AzureOrg{
+		ans := org.AzureOrg{
 			Account: org.AzureCloudAccount{
 				AccountId:      x["account_id"].(string),
 				Enabled:        x["enabled"].(bool),
@@ -578,7 +628,20 @@ func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) 
 			ServicePrincipalId: x["service_principal_id"].(string),
 			MonitorFlowLogs:    x["monitor_flow_logs"].(bool),
 			Key:                x["key"].(string),
+			RootSyncEnabled:    x["root_sync_enabled"].(bool),
 		}
+		hsl := x["hierarchy_selection"].(*schema.Set).List()
+		ans.HierarchySelection = make([]org.HierarchySelection, 0, len(hsl))
+		for _, hsi := range hsl {
+			hs := hsi.(map[string]interface{})
+			ans.HierarchySelection = append(ans.HierarchySelection, org.HierarchySelection{
+				ResourceId:    hs["resource_id"].(string),
+				DisplayName:   hs["display_name"].(string),
+				SelectionType: hs["selection_type"].(string),
+				NodeType:      hs["node_type"].(string),
+			})
+		}
+		return org.TypeAzureOrg, x["name"].(string), ans
 	} else if x := ResourceDataInterfaceMap(d, org.TypeGcpOrg); len(x) != 0 {
 		var creds org.GcpOrgCredentials
 		_ = json.Unmarshal([]byte(x["credentials_json"].(string)), &creds)
@@ -698,6 +761,37 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"service_principal_id": v.ServicePrincipalId,
 			"monitor_flow_logs":    v.MonitorFlowLogs,
 			"key":                  key,
+			"root_sync_enabled":    v.RootSyncEnabled,
+		}
+		if len(v.HierarchySelection) == 0 {
+			val["hierarchy_selection"] = nil
+		} else {
+			hsList := make([]interface{}, 0, len(v.HierarchySelection))
+			for _, hs := range v.HierarchySelection {
+				hsList = append(hsList, map[string]interface{}{
+					"resource_id":    hs.ResourceId,
+					"display_name":   hs.DisplayName,
+					"node_type":      hs.NodeType,
+					"selection_type": hs.SelectionType,
+				})
+			}
+			val["hierarchy_selection"] = hsList
+		}
+		if x["hierarchy_selection"] == nil {
+			val["hierarchy_selection"] = nil
+		} else {
+			hsl := x["hierarchy_selection"].(*schema.Set).List()
+			hsList := make([]interface{}, 0, len(hsl))
+			for _, hsi := range hsl {
+				hs := hsi.(map[string]interface{})
+				hsList = append(hsList, map[string]interface{}{
+					"resource_id":    hs["resource_id"].(string),
+					"display_name":   hs["display_name"].(string),
+					"selection_type": hs["selection_type"].(string),
+					"node_type":      hs["node_type"].(string),
+				})
+			}
+			val["hierarchy_selection"] = hsList
 		}
 	case org.GcpOrg:
 		b, _ := json.Marshal(v.Credentials)
