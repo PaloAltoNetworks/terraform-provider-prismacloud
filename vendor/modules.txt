@@ -250,7 +250,7 @@ github.com/mitchellh/mapstructure
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
-# github.com/paloaltonetworks/prisma-cloud-go v0.5.2
+# github.com/paloaltonetworks/prisma-cloud-go v0.5.3
 github.com/paloaltonetworks/prisma-cloud-go
 github.com/paloaltonetworks/prisma-cloud-go/alert
 github.com/paloaltonetworks/prisma-cloud-go/alert/rule
