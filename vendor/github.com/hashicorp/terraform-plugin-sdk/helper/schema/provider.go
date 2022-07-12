@@ -8,8 +8,8 @@ import (
 	"sync"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs/configschema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs/configschema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 var ReservedProviderFields = []string{
@@ -169,7 +169,7 @@ func (p *Provider) stopInit() {
 	p.stopCtx, p.stopCtxCancel = context.WithCancel(context.Background())
 }
 
-// Stop implementation of terraform.ResourceProvider interface.
+// Stop implementation of *schema.Provider interface.
 func (p *Provider) Stop() error {
 	p.stopOnce.Do(p.stopInit)
 
@@ -192,7 +192,7 @@ func (p *Provider) TestReset() error {
 	return nil
 }
 
-// GetSchema implementation of terraform.ResourceProvider interface
+// GetSchema implementation of *schema.Provider interface
 func (p *Provider) GetSchema(req *terraform.ProviderSchemaRequest) (*terraform.ProviderSchema, error) {
 	resourceTypes := map[string]*configschema.Block{}
 	dataSources := map[string]*configschema.Block{}
@@ -215,14 +215,14 @@ func (p *Provider) GetSchema(req *terraform.ProviderSchemaRequest) (*terraform.P
 	}, nil
 }
 
-// Input implementation of terraform.ResourceProvider interface.
+// Input implementation of *schema.Provider interface.
 func (p *Provider) Input(
 	input terraform.UIInput,
 	c *terraform.ResourceConfig) (*terraform.ResourceConfig, error) {
 	return schemaMap(p.Schema).Input(input, c)
 }
 
-// Validate implementation of terraform.ResourceProvider interface.
+// Validate implementation of *schema.Provider interface.
 func (p *Provider) Validate(c *terraform.ResourceConfig) ([]string, []error) {
 	if err := p.InternalValidate(); err != nil {
 		return nil, []error{fmt.Errorf(
@@ -234,7 +234,7 @@ func (p *Provider) Validate(c *terraform.ResourceConfig) ([]string, []error) {
 	return schemaMap(p.Schema).Validate(c)
 }
 
-// ValidateResource implementation of terraform.ResourceProvider interface.
+// ValidateResource implementation of *schema.Provider interface.
 func (p *Provider) ValidateResource(
 	t string, c *terraform.ResourceConfig) ([]string, []error) {
 	r, ok := p.ResourcesMap[t]
@@ -246,7 +246,7 @@ func (p *Provider) ValidateResource(
 	return r.Validate(c)
 }
 
-// Configure implementation of terraform.ResourceProvider interface.
+// Configure implementation of *schema.Provider interface.
 func (p *Provider) Configure(c *terraform.ResourceConfig) error {
 	// No configuration
 	if p.ConfigureFunc == nil {
@@ -281,7 +281,7 @@ func (p *Provider) Configure(c *terraform.ResourceConfig) error {
 	return nil
 }
 
-// Apply implementation of terraform.ResourceProvider interface.
+// Apply implementation of *schema.Provider interface.
 func (p *Provider) Apply(
 	info *terraform.InstanceInfo,
 	s *terraform.InstanceState,
@@ -294,7 +294,7 @@ func (p *Provider) Apply(
 	return r.Apply(s, d, p.meta)
 }
 
-// Diff implementation of terraform.ResourceProvider interface.
+// Diff implementation of *schema.Provider interface.
 func (p *Provider) Diff(
 	info *terraform.InstanceInfo,
 	s *terraform.InstanceState,
@@ -321,7 +321,7 @@ func (p *Provider) SimpleDiff(
 	return r.simpleDiff(s, c, p.meta)
 }
 
-// Refresh implementation of terraform.ResourceProvider interface.
+// Refresh implementation of *schema.Provider interface.
 func (p *Provider) Refresh(
 	info *terraform.InstanceInfo,
 	s *terraform.InstanceState) (*terraform.InstanceState, error) {
@@ -333,7 +333,7 @@ func (p *Provider) Refresh(
 	return r.Refresh(s, p.meta)
 }
 
-// Resources implementation of terraform.ResourceProvider interface.
+// Resources implementation of *schema.Provider interface.
 func (p *Provider) Resources() []terraform.ResourceType {
 	keys := make([]string, 0, len(p.ResourcesMap))
 	for k := range p.ResourcesMap {
@@ -413,7 +413,7 @@ func (p *Provider) ImportState(
 	return states, nil
 }
 
-// ValidateDataSource implementation of terraform.ResourceProvider interface.
+// ValidateDataSource implementation of *schema.Provider interface.
 func (p *Provider) ValidateDataSource(
 	t string, c *terraform.ResourceConfig) ([]string, []error) {
 	r, ok := p.DataSourcesMap[t]
@@ -425,7 +425,7 @@ func (p *Provider) ValidateDataSource(
 	return r.Validate(c)
 }
 
-// ReadDataDiff implementation of terraform.ResourceProvider interface.
+// ReadDataDiff implementation of *schema.Provider interface.
 func (p *Provider) ReadDataDiff(
 	info *terraform.InstanceInfo,
 	c *terraform.ResourceConfig) (*terraform.InstanceDiff, error) {
@@ -438,7 +438,7 @@ func (p *Provider) ReadDataDiff(
 	return r.Diff(nil, c, p.meta)
 }
 
-// RefreshData implementation of terraform.ResourceProvider interface.
+// RefreshData implementation of *schema.Provider interface.
 func (p *Provider) ReadDataApply(
 	info *terraform.InstanceInfo,
 	d *terraform.InstanceDiff) (*terraform.InstanceState, error) {
@@ -451,7 +451,7 @@ func (p *Provider) ReadDataApply(
 	return r.ReadDataApply(d, p.meta)
 }
 
-// DataSources implementation of terraform.ResourceProvider interface.
+// DataSources implementation of *schema.Provider interface.
 func (p *Provider) DataSources() []terraform.DataSource {
 	keys := make([]string, 0, len(p.DataSourcesMap))
 	for k := range p.DataSourcesMap {

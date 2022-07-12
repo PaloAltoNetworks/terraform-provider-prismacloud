@@ -3,7 +3,7 @@ package terraform
 import (
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/dag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/dag"
 )
 
 // DestroyEdge is an edge that represents a standard "destroy" relationship:

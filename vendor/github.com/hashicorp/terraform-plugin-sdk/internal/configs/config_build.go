@@ -5,7 +5,7 @@ import (
 
 	version "github.com/hashicorp/go-version"
 	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/addrs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs"
 )
 
 // BuildConfig constructs a Config from a root module by loading all of its

@@ -3,7 +3,7 @@ package registry
 import (
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/registry/regsrc"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/registry/regsrc"
 	"github.com/hashicorp/terraform-svchost/disco"
 )
 

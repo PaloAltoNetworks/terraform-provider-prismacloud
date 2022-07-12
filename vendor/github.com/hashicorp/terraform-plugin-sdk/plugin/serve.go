@@ -3,9 +3,9 @@ package plugin
 import (
 	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	grpcplugin "github.com/hashicorp/terraform-plugin-sdk/internal/helper/plugin"
-	proto "github.com/hashicorp/terraform-plugin-sdk/internal/tfplugin5"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	grpcplugin "github.com/hashicorp/terraform-plugin-sdk/v2/internal/helper/plugin"
+	proto "github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfplugin5"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 const (
@@ -35,7 +35,7 @@ var Handshake = plugin.HandshakeConfig{
 	MagicCookieValue: "d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2",
 }
 
-type ProviderFunc func() terraform.ResourceProvider
+type ProviderFunc func() *schema.Provider
 type GRPCProviderFunc func() proto.ProviderServer
 
 // ServeOpts are the configurations to serve a plugin.

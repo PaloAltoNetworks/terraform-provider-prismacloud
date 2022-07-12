@@ -3,7 +3,7 @@ package statefile
 import (
 	"io"
 
-	tfversion "github.com/hashicorp/terraform-plugin-sdk/internal/version"
+	tfversion "github.com/hashicorp/terraform-plugin-sdk/v2/internal/version"
 )
 
 // Write writes the given state to the given writer in the current state

@@ -3,8 +3,8 @@ package configload
 import (
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/registry"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/registry"
 	"github.com/hashicorp/terraform-svchost/disco"
 	"github.com/spf13/afero"
 )

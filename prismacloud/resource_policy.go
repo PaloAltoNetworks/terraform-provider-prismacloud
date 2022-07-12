@@ -9,8 +9,8 @@ import (
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account"
 	"github.com/paloaltonetworks/prisma-cloud-go/policy"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourcePolicy() *schema.Resource {

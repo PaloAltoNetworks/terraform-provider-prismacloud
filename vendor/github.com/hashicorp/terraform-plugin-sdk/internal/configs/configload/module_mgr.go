@@ -4,8 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/modsdir"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/registry"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/modsdir"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/registry"
 	"github.com/hashicorp/terraform-svchost/disco"
 	"github.com/spf13/afero"
 )

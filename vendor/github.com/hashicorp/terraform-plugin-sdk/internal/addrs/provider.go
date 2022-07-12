@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/idna"
 
 	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/tfdiags"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfdiags"
 	svchost "github.com/hashicorp/terraform-svchost"
 )
 

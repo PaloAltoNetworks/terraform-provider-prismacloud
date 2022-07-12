@@ -6,17 +6,17 @@ import (
 	"strconv"
 
 	tfjson "github.com/hashicorp/terraform-json"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/addrs"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs/hcl2shim"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/states"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/tfdiags"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs/hcl2shim"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/states"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfdiags"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/zclconf/go-cty/cty"
 )
 
 // shimState takes a new *states.State and reverts it to a legacy state for the provider ACC tests
-func shimNewState(newState *states.State, providers map[string]terraform.ResourceProvider) (*terraform.State, error) {
+func shimNewState(newState *states.State, providers map[string]*schema.Provider) (*terraform.State, error) {
 	state := terraform.NewState()
 
 	// in the odd case of a nil state, let the helper packages handle it
@@ -143,14 +143,14 @@ func shimNewState(newState *states.State, providers map[string]terraform.Resourc
 	return state, nil
 }
 
-func getResource(providers map[string]terraform.ResourceProvider, providerName string, addr addrs.Resource) *schema.Resource {
+func getResource(providers map[string]*schema.Provider, providerName string, addr addrs.Resource) *schema.Resource {
 	p := providers[providerName]
 	if p == nil {
 		panic(fmt.Sprintf("provider %q not found in test step", providerName))
 	}
 
 	// this is only for tests, so should only see schema.Providers
-	provider := p.(*schema.Provider)
+	provider := p
 
 	switch addr.Mode {
 	case addrs.ManagedResourceMode:

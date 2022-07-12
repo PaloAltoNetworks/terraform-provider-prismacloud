@@ -13,8 +13,8 @@ import (
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account/org"
 	"github.com/paloaltonetworks/prisma-cloud-go/settings/enterprise"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 const (
@@ -22,7 +22,7 @@ const (
 )
 
 var (
-	testAccProviders                   map[string]terraform.ResourceProvider
+	testAccProviders                   map[string]*schema.Provider
 	testAccProvider                    *schema.Provider
 	originalEnterpriseSettings         *enterprise.Config
 	cloudAccounts                      map[string][]string
@@ -32,8 +32,8 @@ var (
 func init() {
 	var err error
 
-	testAccProvider = Provider().(*schema.Provider)
-	testAccProviders = map[string]terraform.ResourceProvider{
+	testAccProvider = Provider()
+	testAccProviders = map[string]*schema.Provider{
 		"prismacloud": testAccProvider,
 	}
 
@@ -348,13 +348,13 @@ resource "prismacloud_org_cloud_account" %q {
 }
 
 func TestProvider(t *testing.T) {
-	if err := Provider().(*schema.Provider).InternalValidate(); err != nil {
+	if err := Provider().InternalValidate(); err != nil {
 		t.Fatalf("err: %s", err)
 	}
 }
 
 func TestProvider_impl(t *testing.T) {
-	var _ terraform.ResourceProvider = Provider()
+	var _ *schema.Provider = Provider()
 }
 
 func testAccPreCheck(t *testing.T) {

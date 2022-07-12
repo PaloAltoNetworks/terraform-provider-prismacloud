@@ -10,10 +10,10 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/addrs"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/states"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/states"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 // testStepImportState runs an imort state test step
@@ -140,7 +140,7 @@ func testStepImportState(
 			if providerAddr, diags := addrs.ParseAbsProviderConfigStr(r.Provider); !diags.HasErrors() {
 				providerType := providerAddr.ProviderConfig.Type
 				if provider, ok := step.providers[providerType]; ok {
-					if provider, ok := provider.(*schema.Provider); ok {
+					if provider, ok := provider; ok {
 						rsrcSchema = provider.ResourcesMap[r.Type]
 					}
 				}

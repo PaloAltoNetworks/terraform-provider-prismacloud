@@ -2,10 +2,10 @@ package terraform
 
 import (
 	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/addrs"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/dag"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/lang"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/dag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/lang"
 	"github.com/zclconf/go-cty/cty"
 )
 

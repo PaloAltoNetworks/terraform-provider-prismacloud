@@ -3,8 +3,8 @@ package terraform
 import (
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/providers"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/provisioners"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/providers"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/provisioners"
 )
 
 // contextComponentFactory is the interface that Context uses

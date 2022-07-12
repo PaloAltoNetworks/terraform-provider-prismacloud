@@ -5,11 +5,11 @@ import (
 	"net"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/helper/plugin"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/providers"
-	proto "github.com/hashicorp/terraform-plugin-sdk/internal/tfplugin5"
-	tfplugin "github.com/hashicorp/terraform-plugin-sdk/plugin"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/helper/plugin"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/providers"
+	proto "github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfplugin5"
+	tfplugin "github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
 )
@@ -17,7 +17,7 @@ import (
 // GRPCTestProvider takes a legacy ResourceProvider, wraps it in the new GRPC
 // shim and starts it in a grpc server using an inmem connection. It returns a
 // GRPCClient for this new server to test the shimmed resource provider.
-func GRPCTestProvider(rp terraform.ResourceProvider) providers.Interface {
+func GRPCTestProvider(rp *schema.Provider) providers.Interface {
 	listener := bufconn.Listen(256 * 1024)
 	grpcServer := grpc.NewServer()
 

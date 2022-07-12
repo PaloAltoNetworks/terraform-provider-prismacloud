@@ -3,11 +3,11 @@ package terraform
 import (
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/addrs"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/dag"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/plans"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/providers"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/states"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/dag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/plans"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/providers"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/states"
 )
 
 // ConcreteResourceInstanceDeposedNodeFunc is a callback type used to convert

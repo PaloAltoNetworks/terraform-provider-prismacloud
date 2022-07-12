@@ -3,10 +3,10 @@ package terraform
 import (
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/addrs"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/plans"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/providers"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/states"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/plans"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/providers"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/states"
 )
 
 // HookAction is an enum of actions that can be taken as a result of a hook

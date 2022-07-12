@@ -11,22 +11,22 @@ import (
 	"github.com/zclconf/go-cty/cty/msgpack"
 	context "golang.org/x/net/context"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs/configschema"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs/hcl2shim"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/plans/objchange"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/plugin/convert"
-	proto "github.com/hashicorp/terraform-plugin-sdk/internal/tfplugin5"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs/configschema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs/hcl2shim"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/plans/objchange"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/plugin/convert"
+	proto "github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfplugin5"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 const newExtraKey = "_new_extra_shim"
 
-// NewGRPCProviderServerShim wraps a terraform.ResourceProvider in a
+// NewGRPCProviderServerShim wraps a *schema.Provider in a
 // proto.ProviderServer implementation. If the provided provider is not a
 // *schema.Provider, this will return nil,
-func NewGRPCProviderServerShim(p terraform.ResourceProvider) *GRPCProviderServer {
-	sp, ok := p.(*schema.Provider)
+func NewGRPCProviderServerShim(p *schema.Provider) *GRPCProviderServer {
+	sp, ok := p
 	if !ok {
 		return nil
 	}

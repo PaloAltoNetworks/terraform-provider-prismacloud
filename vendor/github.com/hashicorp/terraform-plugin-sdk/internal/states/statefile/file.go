@@ -3,7 +3,7 @@ package statefile
 import (
 	version "github.com/hashicorp/go-version"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/states"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/states"
 )
 
 // File is the in-memory representation of a state file. It includes the state

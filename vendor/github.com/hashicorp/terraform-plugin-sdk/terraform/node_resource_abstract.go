@@ -5,13 +5,13 @@ import (
 	"log"
 	"sort"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/addrs"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs/configschema"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/dag"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/lang"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/states"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/tfdiags"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs/configschema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/dag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/lang"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/states"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfdiags"
 )
 
 // ConcreteResourceNodeFunc is a callback type used to convert an
@@ -245,7 +245,7 @@ func (n *NodeAbstractResourceInstance) References() []*addrs.Reference {
 			// difficult to reproduce, so we will fix the symptom here and hope
 			// to find the root cause another time.
 			//
-			// https://github.com/hashicorp/terraform-plugin-sdk/issues/21407
+			// https://github.com/hashicorp/terraform-plugin-sdk/v2/issues/21407
 			if s.Current == nil {
 				log.Printf("[WARN] no current state found for %s", n.Name())
 			} else {

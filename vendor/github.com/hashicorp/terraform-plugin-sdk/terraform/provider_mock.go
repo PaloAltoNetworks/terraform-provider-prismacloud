@@ -8,9 +8,9 @@ import (
 	"github.com/zclconf/go-cty/cty"
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs/hcl2shim"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/providers"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/tfdiags"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs/hcl2shim"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/providers"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfdiags"
 )
 
 var _ providers.Interface = (*MockProvider)(nil)
@@ -90,7 +90,7 @@ type MockProvider struct {
 	CloseError  error
 
 	// Legacy callbacks: if these are set, we will shim incoming calls for
-	// new-style methods to these old-fashioned terraform.ResourceProvider
+	// new-style methods to these old-fashioned *schema.Provider
 	// mock callbacks, for the benefit of older tests that were written against
 	// the old mock API.
 	ValidateFn  func(c *ResourceConfig) (ws []string, es []error)

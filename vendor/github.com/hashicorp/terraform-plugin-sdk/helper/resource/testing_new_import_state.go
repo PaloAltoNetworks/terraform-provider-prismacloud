@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/hashicorp/terraform-plugin-sdk/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/addrs"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	tftest "github.com/hashicorp/terraform-plugin-test/v2"
 )
 
@@ -149,7 +149,7 @@ func testStepNewImportState(t *testing.T, c TestCase, wd *tftest.WorkingDir, ste
 
 			providerType := providerAddr.ProviderConfig.Type
 			if provider, ok := step.providers[providerType]; ok {
-				if provider, ok := provider.(*schema.Provider); ok {
+				if provider, ok := provider; ok {
 					rsrcSchema = provider.ResourcesMap[r.Type]
 				}
 			}

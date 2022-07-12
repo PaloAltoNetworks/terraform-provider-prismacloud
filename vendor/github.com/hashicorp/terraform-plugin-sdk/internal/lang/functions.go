@@ -6,7 +6,7 @@ import (
 	"github.com/zclconf/go-cty/cty/function"
 	"github.com/zclconf/go-cty/cty/function/stdlib"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/lang/funcs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/lang/funcs"
 )
 
 var impureFunctions = []string{

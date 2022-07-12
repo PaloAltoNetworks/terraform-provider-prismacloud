@@ -18,7 +18,7 @@
 //     resource.TestMain(m)
 //   }
 //
-// Where `Provider` is the function that returns the instance of a configured `terraform.ResourceProvider`
+// Where `Provider` is the function that returns the instance of a configured `*schema.Provider`
 // Some providers already have a TestMain defined, usually for the purpose of enabling test
 // sweepers. These additional occurrences should be removed.
 //

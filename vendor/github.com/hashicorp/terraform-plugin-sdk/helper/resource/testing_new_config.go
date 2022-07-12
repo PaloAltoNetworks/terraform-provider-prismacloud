@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	tfjson "github.com/hashicorp/terraform-json"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	tftest "github.com/hashicorp/terraform-plugin-test/v2"
 )
 

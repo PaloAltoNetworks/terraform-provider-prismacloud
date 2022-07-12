@@ -1,7 +1,7 @@
 package terraform
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs"
 )
 
 // LocalTransformer is a GraphTransformer that adds all the local values

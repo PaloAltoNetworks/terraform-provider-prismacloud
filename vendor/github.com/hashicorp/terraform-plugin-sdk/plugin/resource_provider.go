@@ -4,12 +4,12 @@ import (
 	"net/rpc"
 
 	"github.com/hashicorp/go-plugin"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 // ResourceProviderPlugin is the plugin.Plugin implementation.
 type ResourceProviderPlugin struct {
-	ResourceProvider func() terraform.ResourceProvider
+	ResourceProvider func() *schema.Provider
 }
 
 func (p *ResourceProviderPlugin) Server(b *plugin.MuxBroker) (interface{}, error) {
@@ -24,7 +24,7 @@ func (p *ResourceProviderPlugin) Client(
 	return &ResourceProvider{Broker: b, Client: c}, nil
 }
 
-// ResourceProvider is an implementation of terraform.ResourceProvider
+// ResourceProvider is an implementation of *schema.Provider
 // that communicates over RPC.
 type ResourceProvider struct {
 	Broker *plugin.MuxBroker
@@ -326,7 +326,7 @@ func (p *ResourceProvider) Close() error {
 // a ResourceProvider. This should not be used directly.
 type ResourceProviderServer struct {
 	Broker   *plugin.MuxBroker
-	Provider terraform.ResourceProvider
+	Provider *schema.Provider
 }
 
 type ResourceProviderStopResponse struct {

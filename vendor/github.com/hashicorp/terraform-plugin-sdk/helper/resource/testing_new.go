@@ -9,12 +9,12 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	tfjson "github.com/hashicorp/terraform-json"
-	"github.com/hashicorp/terraform-plugin-sdk/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	tftest "github.com/hashicorp/terraform-plugin-test/v2"
 )
 
-func runPostTestDestroy(t *testing.T, c TestCase, wd *tftest.WorkingDir, factories map[string]terraform.ResourceProviderFactory, statePreDestroy *terraform.State) error {
+func runPostTestDestroy(t *testing.T, c TestCase, wd *tftest.WorkingDir, factories map[string]*schema.ProviderFactory, statePreDestroy *terraform.State) error {
 	t.Helper()
 
 	err := runProviderCommand(t, func() error {
@@ -34,7 +34,7 @@ func runPostTestDestroy(t *testing.T, c TestCase, wd *tftest.WorkingDir, factori
 	return nil
 }
 
-func RunNewTest(t *testing.T, c TestCase, providers map[string]terraform.ResourceProvider) {
+func RunNewTest(t *testing.T, c TestCase, providers map[string]*schema.Provider) {
 	t.Helper()
 
 	spewConf := spew.NewDefaultConfig()

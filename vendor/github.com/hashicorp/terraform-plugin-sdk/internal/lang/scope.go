@@ -5,7 +5,7 @@ import (
 
 	"github.com/zclconf/go-cty/cty/function"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/addrs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs"
 )
 
 // Scope is the main type in this package, allowing dynamic evaluation of

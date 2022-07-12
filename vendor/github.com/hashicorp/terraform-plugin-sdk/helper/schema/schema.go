@@ -22,8 +22,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs/hcl2shim"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs/hcl2shim"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/mitchellh/copystructure"
 	"github.com/mitchellh/mapstructure"
 )
@@ -625,7 +625,7 @@ func (m schemaMap) Diff(
 	return result, nil
 }
 
-// Input implements the terraform.ResourceProvider method by asking
+// Input implements the *schema.Provider method by asking
 // for input for required configuration keys that don't have a value.
 func (m schemaMap) Input(
 	input terraform.UIInput,

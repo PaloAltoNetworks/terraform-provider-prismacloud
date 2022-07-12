@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/configs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/configs"
 	"github.com/zclconf/go-cty/cty"
 )
 

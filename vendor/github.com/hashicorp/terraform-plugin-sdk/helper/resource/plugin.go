@@ -11,17 +11,17 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/terraform-exec/tfexec"
-	"github.com/hashicorp/terraform-plugin-sdk/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/logging"
-	grpcplugin "github.com/hashicorp/terraform-plugin-sdk/internal/helper/plugin"
-	proto "github.com/hashicorp/terraform-plugin-sdk/internal/tfplugin5"
-	"github.com/hashicorp/terraform-plugin-sdk/plugin"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
+	grpcplugin "github.com/hashicorp/terraform-plugin-sdk/v2/internal/helper/plugin"
+	proto "github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfplugin5"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	tftest "github.com/hashicorp/terraform-plugin-test/v2"
 	testing "github.com/mitchellh/go-testing-interface"
 )
 
-func runProviderCommand(t testing.T, f func() error, wd *tftest.WorkingDir, factories map[string]terraform.ResourceProviderFactory) error {
+func runProviderCommand(t testing.T, f func() error, wd *tftest.WorkingDir, factories map[string]*schema.ProviderFactory) error {
 	// don't point to this as a test failure location
 	// point to whatever called it
 	t.Helper()

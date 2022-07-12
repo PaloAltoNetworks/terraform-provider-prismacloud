@@ -6,7 +6,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/zclconf/go-cty/cty"
 )
 
@@ -184,7 +184,7 @@ type Resource struct {
 	// be used in all new resources to avoid bugs with sufficiently large
 	// user input.
 	//
-	// See github.com/hashicorp/terraform-plugin-sdk/issues/655 for more
+	// See github.com/hashicorp/terraform-plugin-sdk/v2/issues/655 for more
 	// details.
 	UseJSONNumber bool
 }

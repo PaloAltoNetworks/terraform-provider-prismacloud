@@ -7,7 +7,7 @@ import (
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/convert"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/provisioners"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/provisioners"
 )
 
 var _ provisioners.Interface = (*MockProvisioner)(nil)
@@ -41,7 +41,7 @@ type MockProvisioner struct {
 	CloseFn       func() error
 
 	// Legacy callbacks: if these are set, we will shim incoming calls for
-	// new-style methods to these old-fashioned terraform.ResourceProvider
+	// new-style methods to these old-fashioned *schema.Provider
 	// mock callbacks, for the benefit of older tests that were written against
 	// the old mock API.
 	ApplyFn func(rs *InstanceState, c *ResourceConfig) error

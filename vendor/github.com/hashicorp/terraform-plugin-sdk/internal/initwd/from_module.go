@@ -2,7 +2,7 @@ package initwd
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/earlyconfig"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/earlyconfig"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,9 +12,9 @@ import (
 
 	version "github.com/hashicorp/go-version"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/modsdir"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/registry"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/tfdiags"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/modsdir"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/registry"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfdiags"
 )
 
 const initFromModuleRootCallName = "root"

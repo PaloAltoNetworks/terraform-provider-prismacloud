@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/hashicorp/terraform-plugin-sdk/internal/addrs"
-	"github.com/hashicorp/terraform-plugin-sdk/internal/states"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/addrs"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/internal/states"
 )
 
 // ChangesSync is a wrapper around a Changes that provides a concurrency-safe
