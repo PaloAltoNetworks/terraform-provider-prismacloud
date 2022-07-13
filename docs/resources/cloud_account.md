@@ -63,6 +63,7 @@ The type of cloud account to add.  You need to specify one and only one of these
 
 * `disable_on_destroy` - (Optional, bool) To disable cloud account instead of deleting when calling Terraform destroy (default: `false`).
 * `aws` - AWS account type spec, defined [below](#aws).
+* `aws_eventbridge` - AWS EventBridge enabled account type spec, defined [below](#AWS_EventBridge)
 * `azure` - Azure account type spec, defined [below](#azure).
 * `gcp` - GCP account type spec, defined [below](#gcp).
 * `alibaba_cloud` - Alibaba account type spec, defined [below](#alibaba-cloud).
@@ -71,14 +72,14 @@ The type of cloud account to add.  You need to specify one and only one of these
 
 > **Lookahead Notice**
 > #### Change in existing behavior of `external_id` field to prevent confused deputy attack on AWS accounts
-> * By September 2022, the `external_id` field in resource `prismacloud_cloud_account` will not be considered as an input parameter for onboarding AWS account. 
-You will have to use the App Provisioner API to generate an External ID. This External ID is required to generate the Role ARN and grant Prisma Cloud access to your cloud account. 
-The generated External ID will be valid for 30 days. 
-If you don’t complete the onboarding flow within this 30-day period, you must generate a new External ID and restart the onboarding workflow. 
-> *  While onboarding an AWS account, you must first use the App Provisioner API to generate an External ID and use this External ID to create the AWS stack via CFT. 
-> * In resource `prismacloud_cloud_account` the field `external_id` will be converted from `Required` to `Optional` to support the backward compatibility and 
-to ensure that already onboarded AWS accounts should not get impacted, but terraform will ignore the value of `external_id` 
-and will not detect any drift on it irrespective of the value provided in terraform script.
+> * By September 2022, the `external_id` field in resource `prismacloud_cloud_account` will not be considered as an input parameter for onboarding AWS account.
+    You will have to use the App Provisioner API to generate an External ID. This External ID is required to generate the Role ARN and grant Prisma Cloud access to your cloud account.
+    The generated External ID will be valid for 30 days.
+    If you don’t complete the onboarding flow within this 30-day period, you must generate a new External ID and restart the onboarding workflow.
+> *  While onboarding an AWS account, you must first use the App Provisioner API to generate an External ID and use this External ID to create the AWS stack via CFT.
+> * In resource `prismacloud_cloud_account` the field `external_id` will be converted from `Required` to `Optional` to support the backward compatibility and
+    to ensure that already onboarded AWS accounts should not get impacted, but terraform will ignore the value of `external_id`
+    and will not detect any drift on it irrespective of the value provided in terraform script.
 
 * `account_id` - (Required) AWS account ID.
 * `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
@@ -88,6 +89,18 @@ and will not detect any drift on it irrespective of the value provided in terraf
 * `role_arn` - (Required) Unique identifier for an AWS resource (ARN).
 * `account_type` - (Optional) Defaults to "account" if not specified
 * `protection_mode` - (Optional) Defaults to "MONITOR".Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
+* `eb_rule_name_prefix` - (Optional) EventBridge Rule Name Prefix
+
+### AWS_EventBridge
+* `account_id` - (Required) AWS account ID.
+* `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
+* `external_id` - (Required) AWS account external ID.
+* `group_ids` - (Required) List of account IDs to which you are assigning this account.
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `role_arn` - (Required) Unique identifier for an AWS resource (ARN).
+* `account_type` - (Optional) Defaults to "account" if not specified
+* `protection_mode` - (Optional) Defaults to "MONITOR".Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
+* `eb_rule_name_prefix` - (Required) EventBridge Rule Name Prefix
 
 ### Azure
 
