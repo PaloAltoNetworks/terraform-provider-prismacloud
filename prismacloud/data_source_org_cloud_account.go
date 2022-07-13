@@ -24,6 +24,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 						org.TypeAzureOrg,
 						org.TypeGcpOrg,
 						org.TypeOci,
+						org.TypeAwsOrgEventBridge,
 					},
 					false,
 				),
@@ -144,6 +145,121 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 								},
 							},
 						},
+						"eb_rule_name_prefix": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "EventBridge Rule Name Prefix",
+						},
+					},
+				},
+			},
+
+			org.TypeAwsOrgEventBridge: {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "AWS eventBridge enabled account type",
+				MaxItems:    1,
+				ConflictsWith: []string{
+					org.TypeGcpOrg,
+					org.TypeAzureOrg,
+					org.TypeOci,
+					org.TypeAwsOrg,
+				},
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "AWS account ID",
+						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the account is enabled",
+						},
+						"external_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "AWS account external ID",
+							Sensitive:   true,
+						},
+						"group_ids": {
+							Type:        schema.TypeSet,
+							Computed:    true,
+							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Name to be used for the account on the Prisma Cloud platform (must be unique)",
+						},
+						"role_arn": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Unique identifier for an AWS resource (ARN)",
+						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Account type - organization or account",
+						},
+						"member_role_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "AWS Member account role name",
+						},
+						"member_external_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "AWS Member account role's external ID",
+						},
+						"member_role_status": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "true = The member role created using stack set exists in all the member accounts. All the Org accounts will be added.\nfalse = Only the master account will be added.",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Monitor or Monitor and Protect",
+						},
+						"hierarchy_selection": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "List of hierarchy selection. Each item has resource id, display name, node type and selection type",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"resource_id": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.",
+									},
+									"display_name": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Display name for AWS OU, AWS account, or AWS organization",
+									},
+									"node_type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Valid values: OU, ACCOUNT, ORG",
+									},
+									"selection_type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Selection type. Valid values: INCLUDE to include the specified resource to onboard, EXCLUDE to exclude the specified resource and onboard the rest, ALL to onboard all resources in the organization.",
+									},
+								},
+							},
+						},
+						"eb_rule_name_prefix": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "EventBridge Rule Name Prefix",
+						},
 					},
 				},
 			},
@@ -157,6 +273,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 					org.TypeGcpOrg,
 					org.TypeAwsOrg,
 					org.TypeOci,
+					org.TypeAwsOrgEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -266,6 +383,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 					org.TypeAwsOrg,
 					org.TypeAzureOrg,
 					org.TypeOci,
+					org.TypeAwsOrgEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -377,6 +495,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 					org.TypeAwsOrg,
 					org.TypeAzureOrg,
 					org.TypeGcpOrg,
+					org.TypeAwsOrgEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -471,6 +590,8 @@ func dataSourceOrgCloudAccountRead(d *schema.ResourceData, meta interface{}) err
 	if name == "" {
 		switch v := obj.(type) {
 		case org.AwsOrg:
+			name = v.Name
+		case org.AwsOrgEventBridge:
 			name = v.Name
 		case org.AzureOrg:
 			name = v.Account.Name

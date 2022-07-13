@@ -88,6 +88,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 
 * `disable_on_destroy` - (Optional,bool) To disable cloud account instead of deleting when calling Terraform destroy (default: `false`).
 * `aws` - AWS org account type spec, defined [below](#aws).
+* `aws_eventbridge` - AWS org EventBridge enabled account type spec, defined [below](#AWS_EventBridge)
 * `azure` - Azure org account type spec, defined [below](#azure).
 * `gcp` - GCP org account type spec, defined [below](#gcp).
 * `oci` - Oci account type spec, defined [below](#oci).
@@ -98,13 +99,13 @@ The type of org cloud account to add.  You need to specify one and only one of t
 > **Lookahead Notice**
 > #### Change in existing behavior of `external_id` and `member_external_id` fields to prevent confused deputy attack on AWS accounts
 > * By September 2022, the `external_id` and `member_external_id` fields in resource `prismacloud_org_cloud_account` will not be considered as input parameters for onboarding AWS org account.
-You will have to use the App Provisioner API to generate the External ID and Member External ID. This External ID is required to generate the Role ARN and grant Prisma Cloud access to your cloud account. 
-The generated External ID will be valid for 30 days.
-If you don’t complete the onboarding flow within this 30-day period, you must generate a new External ID and restart the onboarding workflow.
+    You will have to use the App Provisioner API to generate the External ID and Member External ID. This External ID is required to generate the Role ARN and grant Prisma Cloud access to your cloud account.
+    The generated External ID will be valid for 30 days.
+    If you don’t complete the onboarding flow within this 30-day period, you must generate a new External ID and restart the onboarding workflow.
 > *  While onboarding an AWS org account, you must first use the App Provisioner API to generate the External ID and Member External ID and use them to create the AWS stack via CFT.
 > * In resource `prismacloud_org_cloud_account` the fields `external_id` and `member_external_id` will be converted from `Required` to `Optional` to support the backward compatibility and
-to ensure that already onboarded AWS org accounts should not get impacted, but terraform will ignore the value of these fields
-and will not detect any drift on it irrespective of the value provided in terraform script.
+    to ensure that already onboarded AWS org accounts should not get impacted, but terraform will ignore the value of these fields
+    and will not detect any drift on it irrespective of the value provided in terraform script.
 
 * `account_id` - (Required) AWS Org account ID.
 * `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
@@ -113,12 +114,30 @@ and will not detect any drift on it irrespective of the value provided in terraf
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `role_arn` - (Required) Unique identifier for an AWS org resource (ARN).
 * `account_type` - (Optional) Defaults to "organization" if not specified.
-* `member_role_name`- (Required) AWS org Member account role name. 
+* `member_role_name`- (Required) AWS org Member account role name.
 * `member_external_id` - (Required) AWS org Member account role's external ID.
-* `member_role_status` - (Optional, bool) - True =  The member role created using stack set exists in all the member accounts. 
-                        All the Org accounts will be added. false = Only the master account will be added(Default = False).
+* `member_role_status` - (Optional, bool) - True =  The member role created using stack set exists in all the member accounts.
+  All the Org accounts will be added. false = Only the master account will be added(Default = False).
 * `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
 * `hierarchy_selection` -  (Optional) List of AWS Organization Units (OU), AWS accounts, and AWS Organizations to onboard under this organization. [below](#For-AWS)
+* `eb_rule_name_prefix` - (Optional) EventBridge Rule Name Prefix
+
+### AWS_EventBridge
+
+* `account_id` - (Required) AWS Org account ID.
+* `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
+* `external_id` - (Required) AWS org account external ID.
+* `group_ids` - (Required) List of account IDs to which you are assigning this account.
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `role_arn` - (Required) Unique identifier for an AWS org resource (ARN).
+* `account_type` - (Optional) Defaults to "organization" if not specified.
+* `member_role_name`- (Required) AWS org Member account role name.
+* `member_external_id` - (Required) AWS org Member account role's external ID.
+* `member_role_status` - (Optional, bool) - True =  The member role created using stack set exists in all the member accounts.
+  All the Org accounts will be added. false = Only the master account will be added(Default = False).
+* `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
+* `hierarchy_selection` -  (Optional) List of AWS Organization Units (OU), AWS accounts, and AWS Organizations to onboard under this organization. [below](#For-AWS)
+* `eb_rule_name_prefix` - (Required) EventBridge Rule Name Prefix
 
 ### Azure
 
@@ -149,12 +168,18 @@ and will not detect any drift on it irrespective of the value provided in terraf
 * `account_type` - (Optional) Account type. Defaults to `organization` if not specified.
 * `protection_mode` - (Optional) Protection Mode. Valid values : `MONITOR` or `MONITOR_AND_PROTECT`. Defaults to `MONITOR` if not specified.
 * `organization_name` - (Required) GCP org organization name.
-* `account_group_creation_mode` - (Optional) Cloud account group creation mode. Valid values : `MANUAL`: Create account groups manually, `AUTO`: Create high-level account groups based on folders identified, or `RECURSIVE`: Drill down in folder tree to create account groups (default : `MANUAL`). `AUTO` can't be used if `selection_type` in `hierarchy_selection` is `EXCLUDE`. 
-* `hierarchy_selection` - (Optional) List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#For-GCP). 
+* `account_group_creation_mode` - (Optional) Cloud account group creation mode. Valid values : `MANUAL`: Create account groups manually, `AUTO`: Create high-level account groups based on folders identified, or `RECURSIVE`: Drill down in folder tree to create account groups (default : `MANUAL`). `AUTO` can't be used if `selection_type` in `hierarchy_selection` is `EXCLUDE`.
+* `hierarchy_selection` - (Optional) List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#For-GCP).
 
 #### Hierarchy Selection
 
 ##### For AWS
+* `resource_id` - (Required) Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.
+* `display_name` - (Required) Display name for AWS OU, AWS account, or AWS organization.
+* `node_type` - (Required) Valid values: `OU`, `ACCOUNT`, `ORG`.
+* `selection_type` - (Required) Valid values: `INCLUDE` to include the specified resource to onboard, `EXCLUDE` to exclude the specified resource and onboard the rest, `ALL` to onboard all resources in the organization.
+
+##### For AWS_EventBridge
 * `resource_id` - (Required) Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.
 * `display_name` - (Required) Display name for AWS OU, AWS account, or AWS organization.
 * `node_type` - (Required) Valid values: `OU`, `ACCOUNT`, `ORG`.
@@ -178,13 +203,13 @@ and will not detect any drift on it irrespective of the value provided in terraf
 * `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
 * `group_name` - (Required) OCI identity group name that you define. Can be an existing group.
 * `group_ids` - (Required)  account ID to which you are assigning this account.
-* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique). 
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `group_name` - (Required) OCI identity group name that you define. Can be an existing group.
 * `ram_arn` - (Required) Unique identifier for an Alibaba RAM role resource.
 * `account_type` - (Required) Account type - account or tenant.
 * `default_account_group_id` - (Required)  account ID to which you are assigning this account.
 * `home_region` - (Required) OCI tenancy home region.
-* `policy_name` - (Required) OCI identity policy name that you define. Can be an existing policy that has the right policy statements. 
+* `policy_name` - (Required) OCI identity policy name that you define. Can be an existing policy that has the right policy statements.
 * `user_name` - (Required) OCI identity user name that you define. Can be an existing user that has the right privileges.
 * `user_ocid` - (Required) OCI identity user Ocid that you define. Can be an existing user that has the right privileges.
 
