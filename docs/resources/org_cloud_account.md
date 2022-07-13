@@ -88,6 +88,7 @@ The type of org cloud account to add.  You need to specify one and only one of t
 
 * `disable_on_destroy` - (Optional,bool) To disable cloud account instead of deleting when calling Terraform destroy (default: `false`).
 * `aws` - AWS org account type spec, defined [below](#aws).
+* `aws_eventbridge` - AWS org EventBridge enabled account type spec, defined [below](#AWS_EventBridge)
 * `azure` - Azure org account type spec, defined [below](#azure).
 * `gcp` - GCP org account type spec, defined [below](#gcp).
 * `oci` - Oci account type spec, defined [below](#oci).
@@ -122,6 +123,7 @@ and will not detect any drift on it irrespective of the value provided in terraf
 * `eb_rule_name_prefix` - (Optional) EventBridge Rule Name Prefix
 
 ### AWS_EventBridge
+
 * `account_id` - (Required) AWS Org account ID.
 * `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
 * `external_id` - (Required) AWS org account external ID.
@@ -172,6 +174,12 @@ and will not detect any drift on it irrespective of the value provided in terraf
 #### Hierarchy Selection
 
 ##### For AWS
+* `resource_id` - (Required) Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.
+* `display_name` - (Required) Display name for AWS OU, AWS account, or AWS organization.
+* `node_type` - (Required) Valid values: `OU`, `ACCOUNT`, `ORG`.
+* `selection_type` - (Required) Valid values: `INCLUDE` to include the specified resource to onboard, `EXCLUDE` to exclude the specified resource and onboard the rest, `ALL` to onboard all resources in the organization.
+
+##### For AWS_EventBridge
 * `resource_id` - (Required) Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.
 * `display_name` - (Required) Display name for AWS OU, AWS account, or AWS organization.
 * `node_type` - (Required) Valid values: `OU`, `ACCOUNT`, `ORG`.

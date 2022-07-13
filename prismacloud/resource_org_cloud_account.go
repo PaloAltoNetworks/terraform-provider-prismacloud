@@ -186,7 +186,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 			org.TypeAwsOrgEventBridge: {
 				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "AWS account type",
+				Description: "AWS eventBridge enabled account type",
 				MaxItems:    1,
 				ConflictsWith: []string{
 					org.TypeGcpOrg,
