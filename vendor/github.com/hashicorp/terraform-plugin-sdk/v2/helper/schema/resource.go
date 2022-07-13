@@ -577,7 +577,7 @@ type Resource struct {
 	// user input. This field is only valid when the Resource is a managed
 	// resource.
 	//
-	// See github.com/hashicorp/terraform-plugin-sdk/v2/issues/655 for more
+	// See github.com/hashicorp/terraform-plugin-sdk/issues/655 for more
 	// details.
 	UseJSONNumber bool
 }

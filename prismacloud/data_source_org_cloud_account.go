@@ -48,12 +48,6 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "AWS account type",
-				MaxItems:    1,
-				ConflictsWith: []string{
-					org.TypeGcpOrg,
-					org.TypeAzureOrg,
-					org.TypeOci,
-				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -152,12 +146,6 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "Azure account type",
-				MaxItems:    1,
-				ConflictsWith: []string{
-					org.TypeGcpOrg,
-					org.TypeAwsOrg,
-					org.TypeOci,
-				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"client_id": {
@@ -261,12 +249,6 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "GCP account type",
-				MaxItems:    1,
-				ConflictsWith: []string{
-					org.TypeAwsOrg,
-					org.TypeAzureOrg,
-					org.TypeOci,
-				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -372,12 +354,6 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Optional:    true,
 				Description: "Oci account type",
-				MaxItems:    1,
-				ConflictsWith: []string{
-					org.TypeAwsOrg,
-					org.TypeAzureOrg,
-					org.TypeGcpOrg,
-				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {

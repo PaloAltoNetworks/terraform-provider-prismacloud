@@ -49,7 +49,6 @@ func dataSourceCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "AWS account type",
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -105,7 +104,6 @@ func dataSourceCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "Azure account type",
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -175,7 +173,6 @@ func dataSourceCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "GCP account type",
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -243,7 +240,6 @@ func dataSourceCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "Alibaba account type",
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
