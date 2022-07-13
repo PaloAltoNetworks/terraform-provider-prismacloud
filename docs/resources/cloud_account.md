@@ -63,6 +63,7 @@ The type of cloud account to add.  You need to specify one and only one of these
 
 * `disable_on_destroy` - (Optional, bool) To disable cloud account instead of deleting when calling Terraform destroy (default: `false`).
 * `aws` - AWS account type spec, defined [below](#aws).
+* `aws_eventbridge` - AWS EventBridge enabled account type spec, defined [below](#AWS_EventBridge)
 * `azure` - Azure account type spec, defined [below](#azure).
 * `gcp` - GCP account type spec, defined [below](#gcp).
 * `alibaba_cloud` - Alibaba account type spec, defined [below](#alibaba-cloud).
@@ -88,6 +89,18 @@ and will not detect any drift on it irrespective of the value provided in terraf
 * `role_arn` - (Required) Unique identifier for an AWS resource (ARN).
 * `account_type` - (Optional) Defaults to "account" if not specified
 * `protection_mode` - (Optional) Defaults to "MONITOR".Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
+* `eb_rule_name_prefix` - (Optional) EventBridge Rule Name Prefix
+
+### AWS_EventBridge
+* `account_id` - (Required) AWS account ID.
+* `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
+* `external_id` - (Required) AWS account external ID.
+* `group_ids` - (Required) List of account IDs to which you are assigning this account.
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `role_arn` - (Required) Unique identifier for an AWS resource (ARN).
+* `account_type` - (Optional) Defaults to "account" if not specified
+* `protection_mode` - (Optional) Defaults to "MONITOR".Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
+* `eb_rule_name_prefix` - (Required) EventBridge Rule Name Prefix
 
 ### Azure
 

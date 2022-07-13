@@ -23,6 +23,7 @@ func List(c pc.PrismaCloudClient) ([]OrgAccount, error) {
 func Names(c pc.PrismaCloudClient) ([]NameTypeId, error) {
 	c.Log(pc.LogAction, "(get) %s names", singular)
 
+	Suffix = []string{"cloud"}
 	path := make([]string, 0, len(Suffix)+1)
 	path = append(path, Suffix...)
 	path = append(path, "name")
@@ -35,6 +36,9 @@ func Names(c pc.PrismaCloudClient) ([]NameTypeId, error) {
 
 // Identify returns the ID for the given cloud type and name.
 func Identify(c pc.PrismaCloudClient, cloudType, name string) (string, error) {
+	if cloudType == "aws_eventbridge" {
+		cloudType = "aws"
+	}
 	c.Log(pc.LogAction, "(get) id for %s type:%s name:%s", singular, cloudType, name)
 
 	ans, err := Names(c)
@@ -59,9 +63,13 @@ The interface returned will be one of the following:
 - account.Azure
 - account.Gcp
 - account.Alibaba
+- account.AwsEventBridge
 - nil
 */
 func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
+	if cloudType == "aws_eventbridge" {
+		cloudType = "aws"
+	}
 	c.Log(pc.LogAction, "(get) %s type:%s id:%s", singular, cloudType, id)
 
 	path := make([]string, 0, len(Suffix)+2)
@@ -73,6 +81,8 @@ func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
 	switch cloudType {
 	case TypeAwsOrg:
 		ans = &AwsOrg{}
+	case TypeAwsOrgEventBridge:
+		ans = &AwsOrgEventBridge{}
 	case TypeAzureOrg:
 		ans = &AzureOrg{}
 	case TypeGcpOrg:
@@ -90,6 +100,8 @@ func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
 	switch cloudType {
 	case TypeAwsOrg:
 		return *ans.(*AwsOrg), err
+	case TypeAwsOrgEventBridge:
+		return *ans.(*AwsOrgEventBridge), err
 	case TypeAzureOrg:
 		return *ans.(*AzureOrg), err
 	case TypeGcpOrg:
@@ -113,6 +125,9 @@ func Update(c pc.PrismaCloudClient, account interface{}) error {
 
 // Delete removes an onboarded cloud account using the cloud account ID.
 func Delete(c pc.PrismaCloudClient, cloudType, id string) error {
+	if cloudType == "aws_eventbridge" {
+		cloudType = "aws"
+	}
 	c.Log(pc.LogAction, "(delete) %s type:%s id:%s", singular, cloudType, id)
 
 	//path := strings.Join([]string{Suffix, cloudType, id}, "/")
@@ -149,6 +164,10 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 		logMsg.WriteString("aws")
 		cloudType = TypeAwsOrg
 		id = v.AccountId
+	case AwsOrgEventBridge:
+		logMsg.WriteString("aws")
+		cloudType = TypeAwsOrgEventBridge
+		id = v.AccountId
 	case AzureOrg:
 		logMsg.WriteString("azure")
 		cloudType = TypeAzureOrg
@@ -174,7 +193,14 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 	c.Log(pc.LogAction, logMsg.String())
 
 	path := make([]string, 0, len(Suffix)+2)
-	path = append(path, Suffix...)
+	if cloudType == TypeAwsOrgEventBridge {
+		cloudType = TypeAwsOrg
+		Suffix = []string{"v2/cloud"}
+		path = append(path, Suffix...)
+		Suffix = []string{"cloud"}
+	} else {
+		path = append(path, Suffix...)
+	}
 	path = append(path, cloudType)
 	if exists {
 		path = append(path, id)

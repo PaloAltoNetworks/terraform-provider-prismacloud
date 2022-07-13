@@ -6,5 +6,6 @@ require (
 )
 
 //replace github.com/paloaltonetworks/prisma-cloud-go => ../prisma-cloud-go
+replace github.com/paloaltonetworks/prisma-cloud-go =>  /users/naware/go/src/github.com/terraform-providers/terraform-provider-prismacloud/vendor/github.com/paloaltonetworks/prisma-cloud-go
 
 go 1.13

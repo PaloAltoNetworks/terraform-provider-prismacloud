@@ -47,6 +47,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 					org.TypeGcpOrg,
 					org.TypeAzureOrg,
 					org.TypeOci,
+					org.TypeAwsOrgEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -172,6 +173,156 @@ func resourceOrgCloudAccount() *schema.Resource {
 								},
 							},
 						},
+						"eb_rule_name_prefix": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "EventBridge Rule Name Prefix",
+						},
+					},
+				},
+			},
+
+			// Aws org event bridge support
+			org.TypeAwsOrgEventBridge: {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "AWS account type",
+				MaxItems:    1,
+				ConflictsWith: []string{
+					org.TypeGcpOrg,
+					org.TypeAzureOrg,
+					org.TypeOci,
+					org.TypeAwsOrg,
+				},
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "AWS account ID",
+						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Whether or not the account is enabled",
+							Default:     true,
+						},
+						"external_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "AWS account external ID",
+							Sensitive:   true,
+						},
+						"group_ids": {
+							Type:        schema.TypeSet,
+							Required:    true,
+							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name to be used for the account on the Prisma Cloud platform (must be unique)",
+						},
+						"role_arn": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Unique identifier for an AWS resource (ARN)",
+						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "organization",
+							Description: "Account type - organization or account",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"organization",
+									"account",
+								},
+								true,
+							),
+						},
+						"member_role_name": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "AWS Member account role name",
+						},
+						"member_external_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "AWS Member account role's external ID",
+						},
+						"member_role_status": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Default:     false,
+							Description: "true = The member role created using stack set exists in all the member accounts. All the Org accounts will be added.\nfalse = Only the master account will be added.",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "MONITOR",
+							Description: "Monitor or Monitor and Protect",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"MONITOR",
+									"MONITOR_AND_PROTECT",
+								},
+								false,
+							),
+						},
+						"hierarchy_selection": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "List of hierarchy selection. Each item has resource id, display name, node type and selection type",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"resource_id": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Resource ID. Valid values are AWS OU ID, AWS account ID, or AWS Organization ID. Note you must escape any double quotes in the resource ID with a backslash.",
+									},
+									"display_name": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Display name for AWS OU, AWS account, or AWS organization",
+									},
+									"node_type": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Valid values: OU, ACCOUNT, ORG",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"OU",
+												"ACCOUNT",
+												"ORG",
+											},
+											false,
+										),
+									},
+									"selection_type": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Selection type. Valid values: INCLUDE to include the specified resource to onboard, EXCLUDE to exclude the specified resource and onboard the rest, ALL to onboard all resources in the organization.",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"INCLUDE",
+												"EXCLUDE",
+												"ALL",
+											},
+											false,
+										),
+									},
+								},
+							},
+						},
+						"eb_rule_name_prefix": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "EventBridge Rule Name Prefix",
+						},
 					},
 				},
 			},
@@ -185,6 +336,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 					org.TypeGcpOrg,
 					org.TypeAwsOrg,
 					org.TypeOci,
+					org.TypeAwsOrgEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -320,6 +472,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 					org.TypeAwsOrg,
 					org.TypeAzureOrg,
 					org.TypeOci,
+					org.TypeAwsOrgEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -481,6 +634,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 					org.TypeAwsOrg,
 					org.TypeAzureOrg,
 					org.TypeGcpOrg,
+					org.TypeAwsOrgEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -587,6 +741,7 @@ func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) 
 			MemberRoleName:   x["member_role_name"].(string),
 			MemberExternalId: x["member_external_id"].(string),
 			MemberRoleStatus: x["member_role_status"].(bool),
+			EBRuleNamePrefix: x["eb_rule_name_prefix"].(string),
 		}
 		hsl := x["hierarchy_selection"].(*schema.Set).List()
 		ans.HierarchySelection = make([]org.HierarchySelection, 0, len(hsl))
@@ -600,6 +755,33 @@ func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) 
 			})
 		}
 		return org.TypeAwsOrg, x["name"].(string), ans
+	} else if x := ResourceDataInterfaceMap(d, org.TypeAwsOrgEventBridge); len(x) != 0 {
+		ans := org.AwsOrgEventBridge{
+			AccountId:        x["account_id"].(string),
+			Enabled:          x["enabled"].(bool),
+			ExternalId:       x["external_id"].(string),
+			GroupIds:         SetToStringSlice(x["group_ids"].(*schema.Set)),
+			Name:             x["name"].(string),
+			RoleArn:          x["role_arn"].(string),
+			ProtectionMode:   x["protection_mode"].(string),
+			AccountType:      x["account_type"].(string),
+			MemberRoleName:   x["member_role_name"].(string),
+			MemberExternalId: x["member_external_id"].(string),
+			MemberRoleStatus: x["member_role_status"].(bool),
+			EBRuleNamePrefix: x["eb_rule_name_prefix"].(string),
+		}
+		hsl := x["hierarchy_selection"].(*schema.Set).List()
+		ans.HierarchySelection = make([]org.HierarchySelection, 0, len(hsl))
+		for _, hsi := range hsl {
+			hs := hsi.(map[string]interface{})
+			ans.HierarchySelection = append(ans.HierarchySelection, org.HierarchySelection{
+				ResourceId:    hs["resource_id"].(string),
+				DisplayName:   hs["display_name"].(string),
+				SelectionType: hs["selection_type"].(string),
+				NodeType:      hs["node_type"].(string),
+			})
+		}
+		return org.TypeAwsOrgEventBridge, x["name"].(string), ans
 	} else if x := ResourceDataInterfaceMap(d, org.TypeOci); len(x) != 0 {
 		return org.TypeOci, x["name"].(string), org.Oci{
 			AccountId:             x["account_id"].(string),
@@ -712,6 +894,51 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			val["hierarchy_selection"] = hsList
 		}
 		x := ResourceDataInterfaceMap(d, org.TypeAwsOrg)
+		if x["hierarchy_selection"] == nil {
+			val["hierarchy_selection"] = nil
+		} else {
+			hsl := x["hierarchy_selection"].(*schema.Set).List()
+			hsList := make([]interface{}, 0, len(hsl))
+			for _, hsi := range hsl {
+				hs := hsi.(map[string]interface{})
+				hsList = append(hsList, map[string]interface{}{
+					"resource_id":    hs["resource_id"].(string),
+					"display_name":   hs["display_name"].(string),
+					"selection_type": hs["selection_type"].(string),
+					"node_type":      hs["node_type"].(string),
+				})
+			}
+			val["hierarchy_selection"] = hsList
+		}
+	case org.AwsOrgEventBridge:
+		val = map[string]interface{}{
+			"account_id":         v.AccountId,
+			"enabled":            v.Enabled,
+			"external_id":        v.ExternalId,
+			"group_ids":          v.GroupIds,
+			"name":               v.Name,
+			"role_arn":           v.RoleArn,
+			"protection_mode":    v.ProtectionMode,
+			"account_type":       v.AccountType,
+			"member_role_name":   v.MemberRoleName,
+			"member_external_id": v.MemberExternalId,
+			"member_role_status": v.MemberRoleStatus,
+		}
+		if len(v.HierarchySelection) == 0 {
+			val["hierarchy_selection"] = nil
+		} else {
+			hsList := make([]interface{}, 0, len(v.HierarchySelection))
+			for _, hs := range v.HierarchySelection {
+				hsList = append(hsList, map[string]interface{}{
+					"resource_id":    hs.ResourceId,
+					"display_name":   hs.DisplayName,
+					"node_type":      hs.NodeType,
+					"selection_type": hs.SelectionType,
+				})
+			}
+			val["hierarchy_selection"] = hsList
+		}
+		x := ResourceDataInterfaceMap(d, org.TypeAwsOrgEventBridge)
 		if x["hierarchy_selection"] == nil {
 			val["hierarchy_selection"] = nil
 		} else {
@@ -842,7 +1069,7 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 		}
 	}
 
-	for _, key := range []string{org.TypeAwsOrg, org.TypeGcpOrg, org.TypeAzureOrg, org.TypeOci} {
+	for _, key := range []string{org.TypeAwsOrg, org.TypeAwsOrgEventBridge, org.TypeGcpOrg, org.TypeAzureOrg, org.TypeOci} {
 		if key != dest {
 			d.Set(key, nil)
 			continue
@@ -926,6 +1153,15 @@ func deleteOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			cloudAccountAws := cloudAccount.(org.AwsOrg)
 			cloudAccountAws.Enabled = false
 			if err := org.Update(client, cloudAccountAws); err != nil {
+				return err
+			}
+			return nil
+
+		case org.TypeAwsOrgEventBridge:
+			cloudAccount, _ := org.Get(client, cloudType, id)
+			cloudAccountAwsEventBridge := cloudAccount.(org.AwsOrgEventBridge)
+			cloudAccountAwsEventBridge.Enabled = false
+			if err := org.Update(client, cloudAccountAwsEventBridge); err != nil {
 				return err
 			}
 			return nil

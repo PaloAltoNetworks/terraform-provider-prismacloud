@@ -8,8 +8,9 @@ const (
 var Suffix = []string{"cloud"}
 
 const (
-	TypeAwsOrg   = "aws"
-	TypeAzureOrg = "azure"
-	TypeGcpOrg   = "gcp"
-	TypeOci      = "oci"
+	TypeAwsOrg            = "aws"
+	TypeAzureOrg          = "azure"
+	TypeGcpOrg            = "gcp"
+	TypeOci               = "oci"
+	TypeAwsOrgEventBridge = "aws_eventbridge"
 )

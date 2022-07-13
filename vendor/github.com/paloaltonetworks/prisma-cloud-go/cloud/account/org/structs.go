@@ -46,6 +46,7 @@ type AwsOrg struct {
 	MemberExternalId   string               `json:"memberExternalId"`
 	MemberRoleStatus   bool                 `json:"memberRoleStatus"`
 	HierarchySelection []HierarchySelection `json:"hierarchySelection"`
+	EBRuleNamePrefix   string               `json:"eb_rule_name_prefix"`
 }
 
 type GcpCloudAccount struct {
@@ -119,4 +120,20 @@ type Oci struct {
 	PolicyName            string `json:"policyName"`
 	UserName              string `json:"userName"`
 	UserOcid              string `json:"userOcid"`
+}
+
+type AwsOrgEventBridge struct {
+	AccountId          string               `json:"accountId"`
+	Enabled            bool                 `json:"enabled"`
+	ExternalId         string               `json:"externalId"`
+	GroupIds           []string             `json:"groupIds"`
+	Name               string               `json:"name"`
+	RoleArn            string               `json:"roleArn"`
+	ProtectionMode     string               `json:"protectionMode"`
+	AccountType        string               `json:"accountType"`
+	MemberRoleName     string               `json:"memberRoleName"`
+	MemberExternalId   string               `json:"memberExternalId"`
+	MemberRoleStatus   bool                 `json:"memberRoleStatus"`
+	HierarchySelection []HierarchySelection `json:"hierarchySelection"`
+	EBRuleNamePrefix   string               `json:"eb_rule_name_prefix"`
 }

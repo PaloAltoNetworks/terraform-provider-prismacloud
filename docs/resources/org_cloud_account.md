@@ -119,6 +119,23 @@ and will not detect any drift on it irrespective of the value provided in terraf
                         All the Org accounts will be added. false = Only the master account will be added(Default = False).
 * `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
 * `hierarchy_selection` -  (Optional) List of AWS Organization Units (OU), AWS accounts, and AWS Organizations to onboard under this organization. [below](#For-AWS)
+* `eb_rule_name_prefix` - (Optional) EventBridge Rule Name Prefix
+
+### AWS_EventBridge
+* `account_id` - (Required) AWS Org account ID.
+* `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
+* `external_id` - (Required) AWS org account external ID.
+* `group_ids` - (Required) List of account IDs to which you are assigning this account.
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `role_arn` - (Required) Unique identifier for an AWS org resource (ARN).
+* `account_type` - (Optional) Defaults to "organization" if not specified.
+* `member_role_name`- (Required) AWS org Member account role name.
+* `member_external_id` - (Required) AWS org Member account role's external ID.
+* `member_role_status` - (Optional, bool) - True =  The member role created using stack set exists in all the member accounts.
+  All the Org accounts will be added. false = Only the master account will be added(Default = False).
+* `protection_mode` - (Optional) Defaults to "MONITOR". Valid values : `MONITOR` or `MONITOR_AND_PROTECT`
+* `hierarchy_selection` -  (Optional) List of AWS Organization Units (OU), AWS accounts, and AWS Organizations to onboard under this organization. [below](#For-AWS)
+* `eb_rule_name_prefix` - (Required) EventBridge Rule Name Prefix
 
 ### Azure
 
