@@ -49,6 +49,7 @@ func resourceCloudAccount() *schema.Resource {
 					account.TypeAzure,
 					account.TypeGcp,
 					account.TypeAlibaba,
+					account.TypeAwsEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -106,6 +107,88 @@ func resourceCloudAccount() *schema.Resource {
 								false,
 							),
 						},
+						"eb_rule_name_prefix": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "EventBridge Rule Name Prefix",
+						},
+					},
+				},
+			},
+
+			// AWS EventBridge enabled account type
+			account.TypeAwsEventBridge: {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "AWS EventBridge enabled account type",
+				MaxItems:    1,
+				ConflictsWith: []string{
+					account.TypeAws,
+					account.TypeAzure,
+					account.TypeGcp,
+					account.TypeAlibaba,
+				},
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "AWS account ID",
+						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Whether or not the account is enabled",
+							Default:     true,
+						},
+						"external_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "AWS account external ID",
+							Sensitive:   true,
+						},
+						"group_ids": {
+							Type:        schema.TypeSet,
+							Required:    true,
+							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name to be used for the account on the Prisma Cloud platform (must be unique)",
+						},
+						"role_arn": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Unique identifier for an AWS resource (ARN)",
+						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "account",
+							Description: "Account type - organization or account",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "MONITOR",
+							Description: "Monitor or Monitor and Protect",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"MONITOR",
+									"MONITOR_AND_PROTECT",
+								},
+								false,
+							),
+						},
+						"eb_rule_name_prefix": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "EventBridge Rule Name Prefix",
+						},
 					},
 				},
 			},
@@ -120,6 +203,7 @@ func resourceCloudAccount() *schema.Resource {
 					account.TypeAws,
 					account.TypeGcp,
 					account.TypeAlibaba,
+					account.TypeAwsEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -200,6 +284,7 @@ func resourceCloudAccount() *schema.Resource {
 					account.TypeAws,
 					account.TypeAzure,
 					account.TypeAlibaba,
+					account.TypeAwsEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -284,6 +369,7 @@ func resourceCloudAccount() *schema.Resource {
 					account.TypeAws,
 					account.TypeAzure,
 					account.TypeGcp,
+					account.TypeAwsEventBridge,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -352,14 +438,27 @@ func gcpCredentialsMatch(k, old, new string, d *schema.ResourceData) bool {
 func parseCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
 	if x := ResourceDataInterfaceMap(d, account.TypeAws); len(x) != 0 {
 		return account.TypeAws, x["name"].(string), account.Aws{
-			AccountId:      x["account_id"].(string),
-			Enabled:        x["enabled"].(bool),
-			ExternalId:     x["external_id"].(string),
-			GroupIds:       SetToStringSlice(x["group_ids"].(*schema.Set)),
-			Name:           x["name"].(string),
-			RoleArn:        x["role_arn"].(string),
-			ProtectionMode: x["protection_mode"].(string),
-			AccountType:    x["account_type"].(string),
+			AccountId:        x["account_id"].(string),
+			Enabled:          x["enabled"].(bool),
+			ExternalId:       x["external_id"].(string),
+			GroupIds:         SetToStringSlice(x["group_ids"].(*schema.Set)),
+			Name:             x["name"].(string),
+			RoleArn:          x["role_arn"].(string),
+			ProtectionMode:   x["protection_mode"].(string),
+			AccountType:      x["account_type"].(string),
+			EBRuleNamePrefix: x["eb_rule_name_prefix"].(string),
+		}
+	} else if x := ResourceDataInterfaceMap(d, account.TypeAwsEventBridge); len(x) != 0 {
+		return account.TypeAwsEventBridge, x["name"].(string), account.AwsEventBridge{
+			AccountId:        x["account_id"].(string),
+			Enabled:          x["enabled"].(bool),
+			ExternalId:       x["external_id"].(string),
+			GroupIds:         SetToStringSlice(x["group_ids"].(*schema.Set)),
+			Name:             x["name"].(string),
+			RoleArn:          x["role_arn"].(string),
+			ProtectionMode:   x["protection_mode"].(string),
+			AccountType:      x["account_type"].(string),
+			EBRuleNamePrefix: x["eb_rule_name_prefix"].(string),
 		}
 	} else if x := ResourceDataInterfaceMap(d, account.TypeAzure); len(x) != 0 {
 		return account.TypeAzure, x["name"].(string), account.Azure{
@@ -414,14 +513,27 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 	switch v := obj.(type) {
 	case account.Aws:
 		val = map[string]interface{}{
-			"account_id":      v.AccountId,
-			"enabled":         v.Enabled,
-			"external_id":     v.ExternalId,
-			"group_ids":       v.GroupIds,
-			"name":            v.Name,
-			"role_arn":        v.RoleArn,
-			"protection_mode": v.ProtectionMode,
-			"account_type":    v.AccountType,
+			"account_id":          v.AccountId,
+			"enabled":             v.Enabled,
+			"external_id":         v.ExternalId,
+			"group_ids":           v.GroupIds,
+			"name":                v.Name,
+			"role_arn":            v.RoleArn,
+			"protection_mode":     v.ProtectionMode,
+			"account_type":        v.AccountType,
+			"eb_rule_name_prefix": v.EBRuleNamePrefix,
+		}
+	case account.AwsEventBridge:
+		val = map[string]interface{}{
+			"account_id":          v.AccountId,
+			"enabled":             v.Enabled,
+			"external_id":         v.ExternalId,
+			"group_ids":           v.GroupIds,
+			"name":                v.Name,
+			"role_arn":            v.RoleArn,
+			"protection_mode":     v.ProtectionMode,
+			"account_type":        v.AccountType,
+			"eb_rule_name_prefix": v.EBRuleNamePrefix,
 		}
 	case account.Azure:
 		x := ResourceDataInterfaceMap(d, account.TypeAzure)
@@ -468,7 +580,7 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 		}
 	}
 
-	for _, key := range []string{account.TypeAws, account.TypeAzure, account.TypeGcp, account.TypeAlibaba} {
+	for _, key := range []string{account.TypeAws, account.TypeAwsEventBridge, account.TypeAzure, account.TypeGcp, account.TypeAlibaba} {
 		if key != dest {
 			d.Set(key, nil)
 			continue
@@ -558,7 +670,14 @@ func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 				return err
 			}
 			return nil
-
+		case account.TypeAwsEventBridge:
+			cloudAccount, _ := account.Get(client, cloudType, id)
+			cloudAccountAwsEventBridge := cloudAccount.(account.AwsEventBridge)
+			cloudAccountAwsEventBridge.Enabled = false
+			if err := account.Update(client, cloudAccountAwsEventBridge); err != nil {
+				return err
+			}
+			return nil
 		case account.TypeAzure:
 			cloudAccount, _ := account.Get(client, cloudType, id)
 			cloudAccountAzure := cloudAccount.(account.Azure)
