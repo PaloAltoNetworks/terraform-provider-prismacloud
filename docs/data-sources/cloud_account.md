@@ -29,6 +29,7 @@ The cloud type given above determines which of the attributes are populated:
 
 * `disable_on_destroy` - (bool) To disable cloud account instead of deleting when calling Terraform destroy.
 * `aws` - AWS account type spec, defined [below](#aws).
+* * `aws_eventbridge` - AWS EventBridge enabled account type spec, defined [below](#AWS_EventBridge).
 * `azure` - Azure account type spec, defined [below](#azure).
 * `gcp` - GCP account type spec, defined [below](#gcp).
 * `alibaba_cloud` - Alibaba account type spec, defined [below](#alibaba-cloud).
@@ -41,6 +42,16 @@ The cloud type given above determines which of the attributes are populated:
 * `group_ids` - List of account IDs to which you are assigning this account.
 * `name` - Name to be used for the account on the Prisma Cloud platform.
 * `role_arn` - Unique identifier for an AWS resource (ARN).
+* `eb_rule_name_prefix` - EventBridge Rule Name Prefix
+
+### AWS_EventBridge
+* `account_id` - AWS account ID.
+* `enabled` - (bool) Whether or not the account is enabled.
+* `external_id` - AWS account external ID.
+* `group_ids` - List of account IDs to which you are assigning this account.
+* `name` - Name to be used for the account on the Prisma Cloud platform.
+* `role_arn` - Unique identifier for an AWS resource (ARN).
+* `eb_rule_name_prefix` - EventBridge Rule Name Prefix
 
 ### Azure
 
