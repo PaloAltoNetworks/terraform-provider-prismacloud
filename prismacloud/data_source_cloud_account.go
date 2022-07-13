@@ -24,6 +24,7 @@ func dataSourceCloudAccount() *schema.Resource {
 						account.TypeAzure,
 						account.TypeGcp,
 						account.TypeAlibaba,
+						account.TypeAwsEventBridge,
 					},
 					false,
 				),
@@ -96,10 +97,75 @@ func dataSourceCloudAccount() *schema.Resource {
 							Computed:    true,
 							Description: "Protection Mode setting",
 						},
+						"eb_rule_name_prefix": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "EventBridge Rule Name Prefix",
+						},
 					},
 				},
 			},
 
+			// Aws Event bridge enabled account
+			account.TypeAwsEventBridge: {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "AWS account type",
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "AWS account ID",
+						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the account is enabled",
+						},
+						"external_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "AWS account external ID",
+							Sensitive:   true,
+						},
+						"group_ids": {
+							Type:        schema.TypeSet,
+							Computed:    true,
+							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Name to be used for the account on the Prisma Cloud platform (must be unique)",
+						},
+						"role_arn": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Unique identifier for an AWS resource (ARN)",
+						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Account Type",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Protection Mode setting",
+						},
+						"eb_rule_name_prefix": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "EventBridge Rule Name Prefix",
+						},
+					},
+				},
+			},
 			// Azure type.
 			account.TypeAzure: {
 				Type:        schema.TypeList,
@@ -315,6 +381,8 @@ func dataSourceCloudAccountRead(d *schema.ResourceData, meta interface{}) error 
 	if name == "" {
 		switch v := obj.(type) {
 		case account.Aws:
+			name = v.Name
+		case account.AwsEventBridge:
 			name = v.Name
 		case account.Azure:
 			name = v.Account.Name
