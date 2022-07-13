@@ -8,8 +8,9 @@ const (
 var Suffix = []string{"cloud"}
 
 const (
-	TypeAws     = "aws"
-	TypeAzure   = "azure"
-	TypeGcp     = "gcp"
-	TypeAlibaba = "alibaba_cloud"
+	TypeAws            = "aws"
+	TypeAzure          = "azure"
+	TypeGcp            = "gcp"
+	TypeAlibaba        = "alibaba_cloud"
+	TypeAwsEventBridge = "aws_eventbridge"
 )

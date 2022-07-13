@@ -34,14 +34,15 @@ type Group struct {
 }
 
 type Aws struct {
-	AccountId      string   `json:"accountId"`
-	Enabled        bool     `json:"enabled"`
-	ExternalId     string   `json:"externalId"`
-	GroupIds       []string `json:"groupIds"`
-	Name           string   `json:"name"`
-	RoleArn        string   `json:"roleArn"`
-	ProtectionMode string   `json:"protectionMode"`
-	AccountType    string   `json:"accountType"`
+	AccountId        string   `json:"accountId"`
+	Enabled          bool     `json:"enabled"`
+	ExternalId       string   `json:"externalId"`
+	GroupIds         []string `json:"groupIds"`
+	Name             string   `json:"name"`
+	RoleArn          string   `json:"roleArn"`
+	ProtectionMode   string   `json:"protectionMode"`
+	AccountType      string   `json:"accountType"`
+	EBRuleNamePrefix string   `json:"eb_rule_name_prefix"`
 }
 
 type CloudAccount struct {
@@ -89,4 +90,16 @@ type Alibaba struct {
 	Name      string   `json:"name"`
 	RamArn    string   `json:"ramArn"`
 	Enabled   bool     `json:"enabled"`
+}
+
+type AwsEventBridge struct {
+	AccountId        string   `json:"accountId"`
+	Enabled          bool     `json:"enabled"`
+	ExternalId       string   `json:"externalId"`
+	GroupIds         []string `json:"groupIds"`
+	Name             string   `json:"name"`
+	RoleArn          string   `json:"roleArn"`
+	ProtectionMode   string   `json:"protectionMode"`
+	AccountType      string   `json:"accountType"`
+	EBRuleNamePrefix string   `json:"eb_rule_name_prefix"`
 }
