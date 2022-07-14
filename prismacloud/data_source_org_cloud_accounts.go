@@ -4,7 +4,7 @@ import (
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account/org"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 )
 
