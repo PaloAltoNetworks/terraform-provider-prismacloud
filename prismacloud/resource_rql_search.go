@@ -1,6 +1,7 @@
 package prismacloud
 
 import (
+	"github.com/paloaltonetworks/prisma-cloud-go/rql/history"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
@@ -399,6 +400,23 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		})
 
 		id = buildRqlSearchId(searchType, query, resp.Id)
+		savedSearchReq := history.SavedSearch{
+			Id:          resp.Id,
+			Name:        resp.Id,
+			Query:       query,
+			Description: resp.Description,
+			TimeRange:   tr,
+		}
+
+		if err := history.Save(client, savedSearchReq); err != nil {
+			return err
+		}
+
+		PollApiUntilSuccess(func() error {
+			_, err := history.Get(client, resp.Id)
+			return err
+		})
+		d.SetId(resp.Id)
 	case "network":
 		req := search.NetworkRequest{
 			Query:     query,
@@ -423,6 +441,23 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		})
 
 		id = buildRqlSearchId(searchType, query, resp.Id)
+		savedSearchReq := history.SavedSearch{
+			Id:          resp.Id,
+			Name:        resp.Id,
+			Query:       query,
+			Description: resp.Description,
+			TimeRange:   tr,
+		}
+
+		if err := history.Save(client, savedSearchReq); err != nil {
+			return err
+		}
+
+		PollApiUntilSuccess(func() error {
+			_, err := history.Get(client, resp.Id)
+			return err
+		})
+		d.SetId(resp.Id)
 	case "event":
 		req := search.EventRequest{
 			Query:     query,
@@ -447,6 +482,23 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		})
 
 		id = buildRqlSearchId(searchType, query, resp.Id)
+		savedSearchReq := history.SavedSearch{
+			Id:          resp.Id,
+			Name:        resp.Id,
+			Query:       query,
+			Description: resp.Description,
+			TimeRange:   tr,
+		}
+
+		if err := history.Save(client, savedSearchReq); err != nil {
+			return err
+		}
+
+		PollApiUntilSuccess(func() error {
+			_, err := history.Get(client, resp.Id)
+			return err
+		})
+		d.SetId(resp.Id)
 	case "iam":
 		req := search.IamRequest{
 			Query: query,
@@ -469,18 +521,27 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		})
 
 		id = buildRqlSearchId(searchType, query, resp.Id)
+		savedSearchReq := history.SavedSearch{
+			Id:          resp.Id,
+			Name:        resp.Id,
+			Query:       query,
+			Description: resp.Description,
+			TimeRange:   tr,
+		}
+
+		if err := history.Save(client, savedSearchReq); err != nil {
+			return err
+		}
+
+		PollApiUntilSuccess(func() error {
+			_, err := history.Get(client, resp.Id)
+			return err
+		})
+		d.SetId(resp.Id)
 	}
 
 	d.SetId(id)
-
-	return readRqlSearch(d, meta)
-}
-
-func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*pc.Client)
-	searchType, query, searchId := parseRqlSearchId(d.Id())
-	limit := d.Get("limit").(int)
-	tr := ParseTimeRange(ResourceDataInterfaceMap(d, "time_range"))
+	_, _, searchId := parseRqlSearchId(d.Id())
 
 	switch searchType {
 	case "config":
@@ -685,6 +746,30 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 			}
 
 		}
+	}
+	return readRqlSearch(d, meta)
+}
+
+func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
+	client := meta.(*pc.Client)
+	_, _, searchId := parseRqlSearchId(d.Id())
+
+	info, err := history.Get(client, searchId)
+	if err != nil {
+		return err
+	}
+
+	d.Set("query", info.Query)
+	d.Set("search_id", searchId)
+	d.Set("name", info.Name)
+	d.Set("description", info.Description)
+	d.Set("saved", info.Saved)
+	d.Set("time_range", info.TimeRange)
+	d.Set("cloud_type", info.CloudType)
+	d.Set("search_type", info.SearchType)
+
+	if err != nil {
+		return err
 	}
 	return nil
 }
