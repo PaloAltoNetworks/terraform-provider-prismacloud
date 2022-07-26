@@ -1,23 +1,25 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account/group"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAccountGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: createAccountGroup,
-		Read:   readAccountGroup,
-		Update: updateAccountGroup,
-		Delete: deleteAccountGroup,
+		CreateContext: createAccountGroup,
+		ReadContext:   readAccountGroup,
+		UpdateContext: updateAccountGroup,
+		DeleteContext: deleteAccountGroup,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -166,12 +168,12 @@ func saveAccountGroup(d *schema.ResourceData, obj group.Group) {
 	*/
 }
 
-func createAccountGroup(d *schema.ResourceData, meta interface{}) error {
+func createAccountGroup(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	obj := parseAccountGroup(d, "")
 
 	if err := group.Create(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -181,7 +183,7 @@ func createAccountGroup(d *schema.ResourceData, meta interface{}) error {
 
 	id, err := group.Identify(client, obj.Name)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -190,10 +192,10 @@ func createAccountGroup(d *schema.ResourceData, meta interface{}) error {
 	})
 
 	d.SetId(id)
-	return readAccountGroup(d, meta)
+	return readAccountGroup(ctx, d, meta)
 }
 
-func readAccountGroup(d *schema.ResourceData, meta interface{}) error {
+func readAccountGroup(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
@@ -203,7 +205,7 @@ func readAccountGroup(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveAccountGroup(d, obj)
@@ -211,18 +213,18 @@ func readAccountGroup(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func updateAccountGroup(d *schema.ResourceData, meta interface{}) error {
+func updateAccountGroup(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	obj := parseAccountGroup(d, d.Id())
 
 	if err := group.Update(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readAccountGroup(d, meta)
+	return readAccountGroup(ctx, d, meta)
 }
 
-func deleteAccountGroup(d *schema.ResourceData, meta interface{}) error {
+func deleteAccountGroup(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
@@ -230,12 +232,12 @@ func deleteAccountGroup(d *schema.ResourceData, meta interface{}) error {
 	obj.AccountIds = make([]string, 0)
 	obj.ChildGroupIds = make([]string, 0)
 	if err := group.Update(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if err := group.Delete(client, id); err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
