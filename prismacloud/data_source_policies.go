@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
@@ -14,7 +16,7 @@ import (
 
 func dataSourcePolicies() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourcePoliciesRead,
+		ReadContext: dataSourcePoliciesRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -120,7 +122,7 @@ func dataSourcePolicies() *schema.Resource {
 	}
 }
 
-func dataSourcePoliciesRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourcePoliciesRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var buf bytes.Buffer
 	client := meta.(*pc.Client)
 
@@ -136,7 +138,7 @@ func dataSourcePoliciesRead(d *schema.ResourceData, meta interface{}) error {
 
 	items, err := policy.List(client, query)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if buf.Len() == 0 {

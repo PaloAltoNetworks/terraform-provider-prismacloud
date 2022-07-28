@@ -1,15 +1,17 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/user/role"
+	"golang.org/x/net/context"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceUserRole() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceUserRoleRead,
+		ReadContext: dataSourceUserRoleRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -119,7 +121,7 @@ func dataSourceUserRole() *schema.Resource {
 	}
 }
 
-func dataSourceUserRoleRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	var err error
@@ -133,7 +135,7 @@ func dataSourceUserRoleRead(d *schema.ResourceData, meta interface{}) error {
 				d.SetId("")
 				return nil
 			}
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -143,7 +145,7 @@ func dataSourceUserRoleRead(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(id)

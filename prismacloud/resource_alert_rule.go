@@ -1,6 +1,8 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
@@ -12,13 +14,13 @@ import (
 
 func resourceAlertRule() *schema.Resource {
 	return &schema.Resource{
-		Create: createAlertRule,
-		Read:   readAlertRule,
-		Update: updateAlertRule,
-		Delete: deleteAlertRule,
+		CreateContext: createAlertRule,
+		ReadContext:   readAlertRule,
+		UpdateContext: updateAlertRule,
+		DeleteContext: deleteAlertRule,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -534,13 +536,13 @@ func saveAlertRule(d *schema.ResourceData, o rule.Rule) {
 	}
 }
 
-func createAlertRule(d *schema.ResourceData, meta interface{}) error {
+func createAlertRule(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var err error
 	client := meta.(*pc.Client)
 	o := parseAlertRule(d, "")
 
 	if err = rule.Create(client, o); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -550,7 +552,7 @@ func createAlertRule(d *schema.ResourceData, meta interface{}) error {
 
 	id, err := rule.Identify(client, o.Name)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -559,10 +561,10 @@ func createAlertRule(d *schema.ResourceData, meta interface{}) error {
 	})
 
 	d.SetId(id)
-	return readAlertRule(d, meta)
+	return readAlertRule(ctx, d, meta)
 }
 
-func readAlertRule(d *schema.ResourceData, meta interface{}) error {
+func readAlertRule(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
@@ -572,14 +574,14 @@ func readAlertRule(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveAlertRule(d, o)
 	return nil
 }
 
-func updateAlertRule(d *schema.ResourceData, meta interface{}) error {
+func updateAlertRule(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var err error
 	client := meta.(*pc.Client)
 	id := d.Id()
@@ -590,19 +592,19 @@ func updateAlertRule(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readAlertRule(d, meta)
+	return readAlertRule(ctx, d, meta)
 }
 
-func deleteAlertRule(d *schema.ResourceData, meta interface{}) error {
+func deleteAlertRule(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
 	if err := rule.Delete(client, id); err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 

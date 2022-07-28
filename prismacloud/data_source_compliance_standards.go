@@ -1,6 +1,8 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
@@ -11,7 +13,7 @@ import (
 
 func dataSourceComplianceStandards() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceComplianceStandardsRead,
+		ReadContext: dataSourceComplianceStandardsRead,
 
 		Schema: map[string]*schema.Schema{
 			// Output.
@@ -82,12 +84,12 @@ func dataSourceComplianceStandards() *schema.Resource {
 	}
 }
 
-func dataSourceComplianceStandardsRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceComplianceStandardsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	items, err := standard.List(client)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId("compliance_standards")

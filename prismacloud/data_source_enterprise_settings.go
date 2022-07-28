@@ -6,7 +6,7 @@ import (
 
 func dataSourceEnterpriseSettings() *schema.Resource {
 	return &schema.Resource{
-		Read: readEnterpriseSettings,
+		ReadContext: readEnterpriseSettings,
 
 		Schema: map[string]*schema.Schema{
 			// Output.

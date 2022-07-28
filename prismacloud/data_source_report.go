@@ -1,15 +1,17 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/report"
+	"golang.org/x/net/context"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceReport() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceReportRead,
+		ReadContext: dataSourceReportRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -210,7 +212,7 @@ func dataSourceReport() *schema.Resource {
 	}
 }
 
-func dataSourceReportRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceReportRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var err error
 	client := meta.(*pc.Client)
 
@@ -224,7 +226,7 @@ func dataSourceReportRead(d *schema.ResourceData, meta interface{}) error {
 				d.SetId("")
 				return nil
 			}
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -234,7 +236,7 @@ func dataSourceReportRead(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(id)

@@ -1,6 +1,8 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 	"strconv"
 
@@ -13,7 +15,7 @@ import (
 
 func dataSourceRqlHistoricSearches() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceRqlHistoricSearchesRead,
+		ReadContext: dataSourceRqlHistoricSearchesRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -82,7 +84,7 @@ func dataSourceRqlHistoricSearches() *schema.Resource {
 	}
 }
 
-func dataSourceRqlHistoricSearchesRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceRqlHistoricSearchesRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	filter := d.Get("filter").(string)
@@ -90,7 +92,7 @@ func dataSourceRqlHistoricSearchesRead(d *schema.ResourceData, meta interface{})
 
 	items, err := history.List(client, filter, limit)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(TwoStringsToId(filter, strconv.Itoa(limit)))

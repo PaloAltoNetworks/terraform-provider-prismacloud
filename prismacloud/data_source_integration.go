@@ -1,15 +1,17 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
+	"golang.org/x/net/context"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceIntegration() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceIntegrationRead,
+		ReadContext: dataSourceIntegrationRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -351,7 +353,7 @@ func dataSourceIntegration() *schema.Resource {
 	}
 }
 
-func dataSourceIntegrationRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceIntegrationRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	var err error
@@ -371,7 +373,7 @@ func dataSourceIntegrationRead(d *schema.ResourceData, meta interface{}) error {
 				d.SetId("")
 				return nil
 			}
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -381,7 +383,7 @@ func dataSourceIntegrationRead(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(o.Id)

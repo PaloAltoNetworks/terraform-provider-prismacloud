@@ -1,6 +1,8 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
@@ -11,13 +13,13 @@ import (
 
 func resourceComplianceStandard() *schema.Resource {
 	return &schema.Resource{
-		Create: createComplianceStandard,
-		Read:   readComplianceStandard,
-		Update: updateComplianceStandard,
-		Delete: deleteComplianceStandard,
+		CreateContext: createComplianceStandard,
+		ReadContext:   readComplianceStandard,
+		UpdateContext: updateComplianceStandard,
+		DeleteContext: deleteComplianceStandard,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -103,12 +105,12 @@ func saveComplianceStandard(d *schema.ResourceData, o standard.Standard) {
 	}
 }
 
-func createComplianceStandard(d *schema.ResourceData, meta interface{}) error {
+func createComplianceStandard(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	o := parseComplianceStandard(d, "")
 
 	if err := standard.Create(client, o); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -118,7 +120,7 @@ func createComplianceStandard(d *schema.ResourceData, meta interface{}) error {
 
 	csId, err := standard.Identify(client, o.Name)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -127,10 +129,10 @@ func createComplianceStandard(d *schema.ResourceData, meta interface{}) error {
 	})
 
 	d.SetId(csId)
-	return readComplianceStandard(d, meta)
+	return readComplianceStandard(ctx, d, meta)
 }
 
-func readComplianceStandard(d *schema.ResourceData, meta interface{}) error {
+func readComplianceStandard(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	csId := d.Id()
 
@@ -140,7 +142,7 @@ func readComplianceStandard(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveComplianceStandard(d, o)
@@ -148,26 +150,26 @@ func readComplianceStandard(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func updateComplianceStandard(d *schema.ResourceData, meta interface{}) error {
+func updateComplianceStandard(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	csId := d.Id()
 	o := parseComplianceStandard(d, csId)
 
 	if err := standard.Update(client, o); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readComplianceStandard(d, meta)
+	return readComplianceStandard(ctx, d, meta)
 }
 
-func deleteComplianceStandard(d *schema.ResourceData, meta interface{}) error {
+func deleteComplianceStandard(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	csId := d.Id()
 
 	err := standard.Delete(client, csId)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 

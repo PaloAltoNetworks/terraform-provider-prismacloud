@@ -1,15 +1,17 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/data-security/datapattern"
+	"golang.org/x/net/context"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceDataPattern() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceDataPatternRead,
+		ReadContext: dataSourceDataPatternRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -120,7 +122,7 @@ func dataSourceDataPattern() *schema.Resource {
 	}
 }
 
-func dataSourceDataPatternRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceDataPatternRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var err error
 	client := meta.(*pc.Client)
 
@@ -134,7 +136,7 @@ func dataSourceDataPatternRead(d *schema.ResourceData, meta interface{}) error {
 				d.SetId("")
 				return nil
 			}
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -144,7 +146,7 @@ func dataSourceDataPatternRead(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(id)

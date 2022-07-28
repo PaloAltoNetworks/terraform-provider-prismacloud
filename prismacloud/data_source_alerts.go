@@ -1,6 +1,8 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
@@ -11,7 +13,7 @@ import (
 
 func dataSourceAlerts() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceAlertsRead,
+		ReadContext: dataSourceAlertsRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -137,13 +139,13 @@ func parseAlertsRequest(d *schema.ResourceData) *alert.Request {
 	return &ans
 }
 
-func dataSourceAlertsRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceAlertsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	req := parseAlertsRequest(d)
 	ans, err := alert.List(client, *req)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(client.Url)

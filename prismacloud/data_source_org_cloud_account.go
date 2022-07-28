@@ -1,8 +1,10 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account/org"
+	"golang.org/x/net/context"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -10,7 +12,7 @@ import (
 
 func dataSourceOrgCloudAccount() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceOrgCloudAccountRead,
+		ReadContext: dataSourceOrgCloudAccountRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -413,7 +415,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 	}
 }
 
-func dataSourceOrgCloudAccountRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceOrgCloudAccountRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	var (
 		obj interface{}
@@ -431,7 +433,7 @@ func dataSourceOrgCloudAccountRead(d *schema.ResourceData, meta interface{}) err
 				d.SetId("")
 				return nil
 			}
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -441,7 +443,7 @@ func dataSourceOrgCloudAccountRead(d *schema.ResourceData, meta interface{}) err
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	if name == "" {
