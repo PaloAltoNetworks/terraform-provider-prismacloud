@@ -111,6 +111,7 @@ func Provider() terraform.ResourceProvider {
 			"prismacloud_dataprofile":                              dataSourceDataProfile(),
 			"prismacloud_dataprofiles":                             dataSourceDataProfiles(),
 			"prismacloud_enterprise_settings":                      dataSourceEnterpriseSettings(),
+			"prismacloud_external_id":                              dataSourceExternalId(),
 			"prismacloud_integration":                              dataSourceIntegration(),
 			"prismacloud_integrations":                             dataSourceIntegrations(),
 			"prismacloud_policies":                                 dataSourcePolicies(),
