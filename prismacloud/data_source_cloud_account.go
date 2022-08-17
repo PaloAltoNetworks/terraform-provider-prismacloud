@@ -1,16 +1,18 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account"
+	"golang.org/x/net/context"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceCloudAccount() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceCloudAccountRead,
+		ReadContext: dataSourceCloudAccountRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -49,7 +51,6 @@ func dataSourceCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "AWS account type",
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -105,7 +106,6 @@ func dataSourceCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "Azure account type",
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -175,7 +175,6 @@ func dataSourceCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "GCP account type",
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -243,7 +242,6 @@ func dataSourceCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "Alibaba account type",
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -281,7 +279,7 @@ func dataSourceCloudAccount() *schema.Resource {
 	}
 }
 
-func dataSourceCloudAccountRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceCloudAccountRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	var (
 		obj interface{}
@@ -299,7 +297,7 @@ func dataSourceCloudAccountRead(d *schema.ResourceData, meta interface{}) error 
 				d.SetId("")
 				return nil
 			}
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -309,7 +307,7 @@ func dataSourceCloudAccountRead(d *schema.ResourceData, meta interface{}) error 
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	if name == "" {

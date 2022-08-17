@@ -1,19 +1,21 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/rql/history"
+	"golang.org/x/net/context"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceSavedSearch() *schema.Resource {
 	return &schema.Resource{
-		Create: createSavedSearch,
-		Read:   readSavedSearch,
-		Delete: deleteSavedSearch,
+		CreateContext: createSavedSearch,
+		ReadContext:   readSavedSearch,
+		DeleteContext: deleteSavedSearch,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -54,7 +56,7 @@ func resourceSavedSearch() *schema.Resource {
 	}
 }
 
-func createSavedSearch(d *schema.ResourceData, meta interface{}) error {
+func createSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	req := history.SavedSearch{
@@ -66,7 +68,7 @@ func createSavedSearch(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := history.Save(client, req); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -76,16 +78,16 @@ func createSavedSearch(d *schema.ResourceData, meta interface{}) error {
 
 	d.SetId(req.Id)
 
-	return readSavedSearch(d, meta)
+	return readSavedSearch(ctx, d, meta)
 }
 
-func readSavedSearch(d *schema.ResourceData, meta interface{}) error {
+func readSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
 	info, err := history.Get(client, id)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.Set("query", info.Query)
@@ -97,7 +99,7 @@ func readSavedSearch(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func deleteSavedSearch(d *schema.ResourceData, meta interface{}) error {
+func deleteSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 

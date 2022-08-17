@@ -2,7 +2,9 @@ package prismacloud
 
 import (
 	"encoding/json"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"golang.org/x/net/context"
 	"log"
 	"strings"
 	"time"
@@ -10,15 +12,15 @@ import (
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceCloudAccount() *schema.Resource {
 	return &schema.Resource{
-		Create: createCloudAccount,
-		Read:   readCloudAccount,
-		Update: updateCloudAccount,
-		Delete: deleteCloudAccount,
+		CreateContext: createCloudAccount,
+		ReadContext:   readCloudAccount,
+		UpdateContext: updateCloudAccount,
+		DeleteContext: deleteCloudAccount,
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(10 * time.Minute),
@@ -27,7 +29,7 @@ func resourceCloudAccount() *schema.Resource {
 		},
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -480,17 +482,17 @@ func saveCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 	}
 }
 
-func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
+func createCloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	cloudType, name, obj := parseCloudAccount(d)
 
 	if err := account.Create(client, obj); err != nil {
 		if strings.Contains(err.Error(), "duplicate_cloud_account") {
 			if err := account.Update(client, obj); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		} else {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -501,7 +503,7 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 
 	id, err := account.Identify(client, cloudType, name)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -510,10 +512,10 @@ func createCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	})
 
 	d.SetId(TwoStringsToId(cloudType, id))
-	return readCloudAccount(d, meta)
+	return readCloudAccount(ctx, d, meta)
 }
 
-func readCloudAccount(d *schema.ResourceData, meta interface{}) error {
+func readCloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
 
@@ -523,7 +525,7 @@ func readCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveCloudAccount(d, cloudType, obj)
@@ -531,19 +533,19 @@ func readCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func updateCloudAccount(d *schema.ResourceData, meta interface{}) error {
+func updateCloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	_, _, obj := parseCloudAccount(d)
 
 	if err := account.Update(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readCloudAccount(d, meta)
+	return readCloudAccount(ctx, d, meta)
 }
 
-func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
+func deleteCloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
 	disable := d.Get("disable_on_destroy").(bool)
@@ -555,7 +557,7 @@ func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			cloudAccountAws := cloudAccount.(account.Aws)
 			cloudAccountAws.Enabled = false
 			if err := account.Update(client, cloudAccountAws); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			return nil
 
@@ -564,7 +566,7 @@ func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			cloudAccountAzure := cloudAccount.(account.Azure)
 			cloudAccountAzure.Account.Enabled = false
 			if err := account.Update(client, cloudAccountAzure); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			return nil
 
@@ -573,7 +575,7 @@ func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			cloudAccountGcp := cloudAccount.(account.Gcp)
 			cloudAccountGcp.Account.Enabled = false
 			if err := account.Update(client, cloudAccountGcp); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			return nil
 
@@ -582,7 +584,7 @@ func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			cloudAccountAlibaba := cloudAccount.(account.Alibaba)
 			cloudAccountAlibaba.Enabled = false
 			if err := account.Update(client, cloudAccountAlibaba); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			return nil
 		}
@@ -591,7 +593,7 @@ func deleteCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	err := account.Delete(client, cloudType, id)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 

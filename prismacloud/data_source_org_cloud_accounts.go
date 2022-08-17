@@ -1,16 +1,18 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account/org"
+	"golang.org/x/net/context"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 )
 
 func dataSourceOrgCloudAccounts() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceOrgCloudAccountsRead,
+		ReadContext: dataSourceOrgCloudAccountsRead,
 
 		Schema: map[string]*schema.Schema{
 			// Output.
@@ -43,12 +45,12 @@ func dataSourceOrgCloudAccounts() *schema.Resource {
 	}
 }
 
-func dataSourceOrgCloudAccountsRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceOrgCloudAccountsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	items, err := org.Names(client)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId("cloud_accounts")

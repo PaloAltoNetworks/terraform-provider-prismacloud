@@ -1,23 +1,25 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/settings/enterprise"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceEnterpriseSettings() *schema.Resource {
 	return &schema.Resource{
-		Create: createUpdateEnterpriseSettings,
-		Read:   readEnterpriseSettings,
-		Update: createUpdateEnterpriseSettings,
-		Delete: deleteEnterpriseSettings,
+		CreateContext: createUpdateEnterpriseSettings,
+		ReadContext:   readEnterpriseSettings,
+		UpdateContext: createUpdateEnterpriseSettings,
+		DeleteContext: deleteEnterpriseSettings,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -96,25 +98,25 @@ func saveEnterpriseSettings(d *schema.ResourceData, conf enterprise.Config) {
 	d.Set("alarm_enabled", conf.AlarmEnabled)
 }
 
-func createUpdateEnterpriseSettings(d *schema.ResourceData, meta interface{}) error {
+func createUpdateEnterpriseSettings(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	conf := parseEnterpriseSettings(d)
 
 	if err := enterprise.Update(client, conf); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId("config")
 
-	return readEnterpriseSettings(d, meta)
+	return readEnterpriseSettings(ctx, d, meta)
 }
 
-func readEnterpriseSettings(d *schema.ResourceData, meta interface{}) error {
+func readEnterpriseSettings(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	conf, err := enterprise.Get(client)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId("config")
@@ -123,6 +125,6 @@ func readEnterpriseSettings(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func deleteEnterpriseSettings(d *schema.ResourceData, meta interface{}) error {
+func deleteEnterpriseSettings(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	return nil
 }

@@ -1,25 +1,27 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 	"strings"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceIntegration() *schema.Resource {
 	return &schema.Resource{
-		Create: createIntegration,
-		Read:   readIntegration,
-		Update: updateIntegration,
-		Delete: deleteIntegration,
+		CreateContext: createIntegration,
+		ReadContext:   readIntegration,
+		UpdateContext: updateIntegration,
+		DeleteContext: deleteIntegration,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -660,7 +662,7 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 	}
 }
 
-func createIntegration(d *schema.ResourceData, meta interface{}) error {
+func createIntegration(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	o := parseIntegration(d, "")
 
@@ -671,7 +673,7 @@ func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := integration.Create(client, o, prismaIdRequired); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -681,7 +683,7 @@ func createIntegration(d *schema.ResourceData, meta interface{}) error {
 
 	id, err := integration.Identify(client, o.Name, prismaIdRequired)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -690,10 +692,10 @@ func createIntegration(d *schema.ResourceData, meta interface{}) error {
 	})
 
 	d.SetId(id)
-	return readIntegration(d, meta)
+	return readIntegration(ctx, d, meta)
 }
 
-func readIntegration(d *schema.ResourceData, meta interface{}) error {
+func readIntegration(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
@@ -709,7 +711,7 @@ func readIntegration(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveIntegration(d, o)
@@ -717,7 +719,7 @@ func readIntegration(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func updateIntegration(d *schema.ResourceData, meta interface{}) error {
+func updateIntegration(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 	o := parseIntegration(d, id)
@@ -729,13 +731,13 @@ func updateIntegration(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := integration.Update(client, o, prismaIdRequired); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readIntegration(d, meta)
+	return readIntegration(ctx, d, meta)
 }
 
-func deleteIntegration(d *schema.ResourceData, meta interface{}) error {
+func deleteIntegration(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
@@ -748,7 +750,7 @@ func deleteIntegration(d *schema.ResourceData, meta interface{}) error {
 	err := integration.Delete(client, id, prismaIdRequired)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 

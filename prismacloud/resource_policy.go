@@ -2,6 +2,8 @@ package prismacloud
 
 import (
 	"encoding/json"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 	"time"
 
@@ -9,16 +11,16 @@ import (
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account"
 	"github.com/paloaltonetworks/prisma-cloud-go/policy"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourcePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: createPolicy,
-		Read:   readPolicy,
-		Update: updatePolicy,
-		Delete: deletePolicy,
+		CreateContext: createPolicy,
+		ReadContext:   readPolicy,
+		UpdateContext: updatePolicy,
+		DeleteContext: deletePolicy,
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(10 * time.Minute),
@@ -27,7 +29,7 @@ func resourcePolicy() *schema.Resource {
 		},
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -602,12 +604,12 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 	}
 }
 
-func createPolicy(d *schema.ResourceData, meta interface{}) error {
+func createPolicy(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	obj := parsePolicy(d, "")
 
 	if err := policy.Create(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -617,7 +619,7 @@ func createPolicy(d *schema.ResourceData, meta interface{}) error {
 
 	id, err := policy.Identify(client, obj.Name)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -626,10 +628,10 @@ func createPolicy(d *schema.ResourceData, meta interface{}) error {
 	})
 
 	d.SetId(id)
-	return readPolicy(d, meta)
+	return readPolicy(ctx, d, meta)
 }
 
-func readPolicy(d *schema.ResourceData, meta interface{}) error {
+func readPolicy(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
@@ -639,7 +641,7 @@ func readPolicy(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	savePolicy(d, obj)
@@ -647,26 +649,26 @@ func readPolicy(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func updatePolicy(d *schema.ResourceData, meta interface{}) error {
+func updatePolicy(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 	obj := parsePolicy(d, id)
 
 	if err := policy.Update(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readPolicy(d, meta)
+	return readPolicy(ctx, d, meta)
 }
 
-func deletePolicy(d *schema.ResourceData, meta interface{}) error {
+func deletePolicy(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
 	err := policy.Delete(client, id)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 

@@ -1,23 +1,25 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement/section"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceComplianceStandardRequirementSection() *schema.Resource {
 	return &schema.Resource{
-		Create: createComplianceStandardRequirementSection,
-		Read:   readComplianceStandardRequirementSection,
-		Update: updateComplianceStandardRequirementSection,
-		Delete: deleteComplianceStandardRequirementSection,
+		CreateContext: createComplianceStandardRequirementSection,
+		ReadContext:   readComplianceStandardRequirementSection,
+		UpdateContext: updateComplianceStandardRequirementSection,
+		DeleteContext: deleteComplianceStandardRequirementSection,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -136,12 +138,12 @@ func saveComplianceStandardRequirementSection(d *schema.ResourceData, csrId stri
 	}
 }
 
-func createComplianceStandardRequirementSection(d *schema.ResourceData, meta interface{}) error {
+func createComplianceStandardRequirementSection(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	o := parseComplianceStandardRequirementSection(d, "")
 
 	if err := section.Create(client, o); err != nil {
-		return err
+		diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -151,7 +153,7 @@ func createComplianceStandardRequirementSection(d *schema.ResourceData, meta int
 
 	liveObj, err := section.Get(client, o.RequirementId, o.SectionId)
 	if err != nil {
-		return err
+		diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -160,10 +162,10 @@ func createComplianceStandardRequirementSection(d *schema.ResourceData, meta int
 	})
 
 	d.SetId(TwoStringsToId(o.RequirementId, liveObj.Id))
-	return readComplianceStandardRequirementSection(d, meta)
+	return readComplianceStandardRequirementSection(ctx, d, meta)
 }
 
-func readComplianceStandardRequirementSection(d *schema.ResourceData, meta interface{}) error {
+func readComplianceStandardRequirementSection(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	csrId, csrsId := IdToTwoStrings(d.Id())
 
@@ -173,7 +175,7 @@ func readComplianceStandardRequirementSection(d *schema.ResourceData, meta inter
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveComplianceStandardRequirementSection(d, csrId, o)
@@ -181,26 +183,26 @@ func readComplianceStandardRequirementSection(d *schema.ResourceData, meta inter
 	return nil
 }
 
-func updateComplianceStandardRequirementSection(d *schema.ResourceData, meta interface{}) error {
+func updateComplianceStandardRequirementSection(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	csrsId := d.Get("csrs_id").(string)
 	o := parseComplianceStandardRequirementSection(d, csrsId)
 
 	if err := section.Update(client, o); err != nil {
-		return err
+		diag.FromErr(err)
 	}
 
-	return readComplianceStandardRequirementSection(d, meta)
+	return readComplianceStandardRequirementSection(ctx, d, meta)
 }
 
-func deleteComplianceStandardRequirementSection(d *schema.ResourceData, meta interface{}) error {
+func deleteComplianceStandardRequirementSection(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	_, csrsId := IdToTwoStrings(d.Id())
 
 	err := section.Delete(client, csrsId)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			diag.FromErr(err)
 		}
 	}
 

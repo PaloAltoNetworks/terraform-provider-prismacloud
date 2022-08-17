@@ -1,15 +1,17 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account/group"
+	"golang.org/x/net/context"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAccountGroup() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceAccountGroupRead,
+		ReadContext: dataSourceAccountGroupRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -109,7 +111,7 @@ func dataSourceAccountGroup() *schema.Resource {
 	}
 }
 
-func dataSourceAccountGroupRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceAccountGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	var err error
@@ -123,7 +125,7 @@ func dataSourceAccountGroupRead(d *schema.ResourceData, meta interface{}) error 
 				d.SetId("")
 				return nil
 			}
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -133,7 +135,7 @@ func dataSourceAccountGroupRead(d *schema.ResourceData, meta interface{}) error 
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(obj.Id)

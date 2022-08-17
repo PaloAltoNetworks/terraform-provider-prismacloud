@@ -1,17 +1,19 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/alert/rule"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAlertRules() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceAlertRulesRead,
+		ReadContext: dataSourceAlertRulesRead,
 
 		Schema: map[string]*schema.Schema{
 			// Output.
@@ -82,13 +84,13 @@ func dataSourceAlertRules() *schema.Resource {
 	}
 }
 
-func dataSourceAlertRulesRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceAlertRulesRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var err error
 	client := meta.(*pc.Client)
 
 	items, err := rule.List(client)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	ans := make([]interface{}, 0, len(items))

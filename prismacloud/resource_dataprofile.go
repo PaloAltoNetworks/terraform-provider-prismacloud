@@ -1,24 +1,26 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/data-security/dataprofile"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceDataProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: createDataProfile,
-		Read:   readDataProfile,
-		Update: updateDataProfile,
-		Delete: deleteDataProfile,
+		CreateContext: createDataProfile,
+		ReadContext:   readDataProfile,
+		UpdateContext: updateDataProfile,
+		DeleteContext: deleteDataProfile,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -270,12 +272,12 @@ func saveDataProfile(d *schema.ResourceData, o dataprofile.Profile) {
 	}
 }
 
-func createDataProfile(d *schema.ResourceData, meta interface{}) error {
+func createDataProfile(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	obj := parseDataProfile(d, "")
 
 	if err := dataprofile.Create(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -285,7 +287,7 @@ func createDataProfile(d *schema.ResourceData, meta interface{}) error {
 
 	id, err := dataprofile.Identify(client, obj.Name)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -294,10 +296,10 @@ func createDataProfile(d *schema.ResourceData, meta interface{}) error {
 	})
 
 	d.SetId(id)
-	return readDataProfile(d, meta)
+	return readDataProfile(ctx, d, meta)
 }
 
-func readDataProfile(d *schema.ResourceData, meta interface{}) error {
+func readDataProfile(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
@@ -307,7 +309,7 @@ func readDataProfile(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveDataProfile(d, obj)
@@ -315,26 +317,26 @@ func readDataProfile(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func updateDataProfile(d *schema.ResourceData, meta interface{}) error {
+func updateDataProfile(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 	obj := parseDataProfile(d, id)
 
 	if err := dataprofile.Update(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readDataProfile(d, meta)
+	return readDataProfile(ctx, d, meta)
 }
 
-func deleteDataProfile(d *schema.ResourceData, meta interface{}) error {
+func deleteDataProfile(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
 	err := dataprofile.Delete(client, id)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 

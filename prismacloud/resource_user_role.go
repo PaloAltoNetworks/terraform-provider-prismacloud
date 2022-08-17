@@ -1,24 +1,26 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/user/role"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceUserRole() *schema.Resource {
 	return &schema.Resource{
-		Create: createUserRole,
-		Read:   readUserRole,
-		Update: updateUserRole,
-		Delete: deleteUserRole,
+		CreateContext: createUserRole,
+		ReadContext:   readUserRole,
+		UpdateContext: updateUserRole,
+		DeleteContext: deleteUserRole,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -230,12 +232,12 @@ func saveUserRole(d *schema.ResourceData, obj role.Role) {
 	}
 }
 
-func createUserRole(d *schema.ResourceData, meta interface{}) error {
+func createUserRole(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	obj := parseUserRole(d)
 
 	if err := role.Create(client, *obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -245,7 +247,7 @@ func createUserRole(d *schema.ResourceData, meta interface{}) error {
 
 	id, err := role.Identify(client, obj.Name)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -254,10 +256,10 @@ func createUserRole(d *schema.ResourceData, meta interface{}) error {
 	})
 
 	d.SetId(id)
-	return readUserRole(d, meta)
+	return readUserRole(ctx, d, meta)
 }
 
-func readUserRole(d *schema.ResourceData, meta interface{}) error {
+func readUserRole(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
@@ -267,7 +269,7 @@ func readUserRole(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveUserRole(d, obj)
@@ -275,26 +277,26 @@ func readUserRole(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func updateUserRole(d *schema.ResourceData, meta interface{}) error {
+func updateUserRole(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	obj := parseUserRole(d)
 	obj.Id = d.Id()
 
 	if err := role.Update(client, *obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readUserRole(d, meta)
+	return readUserRole(ctx, d, meta)
 }
 
-func deleteUserRole(d *schema.ResourceData, meta interface{}) error {
+func deleteUserRole(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
 	err := role.Delete(client, id)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
