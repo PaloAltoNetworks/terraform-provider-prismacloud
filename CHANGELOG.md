@@ -1,3 +1,7 @@
+## 1.2.8 (August 17, 2022)
+
+* Terraform SDK upgrade
+
 ## 1.2.7 (July 11, 2022)
 
 * Azure ORG hierarchy support
