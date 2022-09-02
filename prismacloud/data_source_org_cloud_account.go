@@ -1,16 +1,18 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account/org"
+	"golang.org/x/net/context"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceOrgCloudAccount() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceOrgCloudAccountRead,
+		ReadContext: dataSourceOrgCloudAccountRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -48,12 +50,6 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "AWS account type",
-				MaxItems:    1,
-				ConflictsWith: []string{
-					org.TypeGcpOrg,
-					org.TypeAzureOrg,
-					org.TypeOci,
-				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -152,12 +148,6 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "Azure account type",
-				MaxItems:    1,
-				ConflictsWith: []string{
-					org.TypeGcpOrg,
-					org.TypeAwsOrg,
-					org.TypeOci,
-				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"client_id": {
@@ -261,12 +251,6 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: "GCP account type",
-				MaxItems:    1,
-				ConflictsWith: []string{
-					org.TypeAwsOrg,
-					org.TypeAzureOrg,
-					org.TypeOci,
-				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -372,12 +356,6 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 				Type:        schema.TypeList,
 				Optional:    true,
 				Description: "Oci account type",
-				MaxItems:    1,
-				ConflictsWith: []string{
-					org.TypeAwsOrg,
-					org.TypeAzureOrg,
-					org.TypeGcpOrg,
-				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -437,7 +415,7 @@ func dataSourceOrgCloudAccount() *schema.Resource {
 	}
 }
 
-func dataSourceOrgCloudAccountRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceOrgCloudAccountRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	var (
 		obj interface{}
@@ -455,7 +433,7 @@ func dataSourceOrgCloudAccountRead(d *schema.ResourceData, meta interface{}) err
 				d.SetId("")
 				return nil
 			}
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -465,7 +443,7 @@ func dataSourceOrgCloudAccountRead(d *schema.ResourceData, meta interface{}) err
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	if name == "" {

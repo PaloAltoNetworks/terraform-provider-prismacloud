@@ -2,23 +2,25 @@ package prismacloud
 
 import (
 	"encoding/json"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/user/profile"
+	"golang.org/x/net/context"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceUserProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: createUserProfile,
-		Read:   readUserProfile,
-		Update: updateUserProfile,
-		Delete: deleteUserProfile,
+		CreateContext: createUserProfile,
+		ReadContext:   readUserProfile,
+		UpdateContext: updateUserProfile,
+		DeleteContext: deleteUserProfile,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -248,7 +250,7 @@ func saveUserProfile(d *schema.ResourceData, o profile.Profile) {
 	}
 }
 
-func createUserProfile(d *schema.ResourceData, meta interface{}) error {
+func createUserProfile(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var err error
 	client := meta.(*pc.Client)
 	o := parseUserProfile(d, "")
@@ -256,7 +258,7 @@ func createUserProfile(d *schema.ResourceData, meta interface{}) error {
 	id := o.Username
 	var keyResponse []byte
 	if keyResponse, err = profile.Create(client, o); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	var accessKeyResponse profile.AccessKeyResponse
 	json.Unmarshal(keyResponse, &accessKeyResponse)
@@ -268,10 +270,10 @@ func createUserProfile(d *schema.ResourceData, meta interface{}) error {
 	d.SetId(id)
 	d.Set("access_key_id", accessKeyResponse.AccessKeyId)
 	d.Set("secret_key", accessKeyResponse.SecretKey)
-	return readUserProfile(d, meta)
+	return readUserProfile(ctx, d, meta)
 }
 
-func readUserProfile(d *schema.ResourceData, meta interface{}) error {
+func readUserProfile(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
@@ -281,33 +283,33 @@ func readUserProfile(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveUserProfile(d, o)
 	return nil
 }
 
-func updateUserProfile(d *schema.ResourceData, meta interface{}) error {
+func updateUserProfile(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 	o := parseUserProfile(d, id)
 
 	if _, err := profile.Update(client, o); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readUserProfile(d, meta)
+	return readUserProfile(ctx, d, meta)
 }
 
-func deleteUserProfile(d *schema.ResourceData, meta interface{}) error {
+func deleteUserProfile(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 	accountType := d.Get("account_type").(string)
 	err := profile.Delete(client, id, accountType)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 

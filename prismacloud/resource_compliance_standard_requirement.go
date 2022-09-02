@@ -1,21 +1,23 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement"
+	"golang.org/x/net/context"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceComplianceStandardRequirement() *schema.Resource {
 	return &schema.Resource{
-		Create: createComplianceStandardRequirement,
-		Read:   readComplianceStandardRequirement,
-		Update: updateComplianceStandardRequirement,
-		Delete: deleteComplianceStandardRequirement,
+		CreateContext: createComplianceStandardRequirement,
+		ReadContext:   readComplianceStandardRequirement,
+		UpdateContext: updateComplianceStandardRequirement,
+		DeleteContext: deleteComplianceStandardRequirement,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -116,12 +118,12 @@ func saveComplianceStandardRequirement(d *schema.ResourceData, csId string, o re
 	d.Set("view_order", o.ViewOrder)
 }
 
-func createComplianceStandardRequirement(d *schema.ResourceData, meta interface{}) error {
+func createComplianceStandardRequirement(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	o := parseComplianceStandardRequirement(d, "")
 
 	if err := requirement.Create(client, o); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -131,7 +133,7 @@ func createComplianceStandardRequirement(d *schema.ResourceData, meta interface{
 
 	csrId, err := requirement.Identify(client, o.ComplianceId, o.Name)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -140,10 +142,10 @@ func createComplianceStandardRequirement(d *schema.ResourceData, meta interface{
 	})
 
 	d.SetId(TwoStringsToId(o.ComplianceId, csrId))
-	return readComplianceStandardRequirement(d, meta)
+	return readComplianceStandardRequirement(ctx, d, meta)
 }
 
-func readComplianceStandardRequirement(d *schema.ResourceData, meta interface{}) error {
+func readComplianceStandardRequirement(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	csId, csrId := IdToTwoStrings(d.Id())
 
@@ -153,7 +155,7 @@ func readComplianceStandardRequirement(d *schema.ResourceData, meta interface{})
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveComplianceStandardRequirement(d, csId, o)
@@ -161,26 +163,26 @@ func readComplianceStandardRequirement(d *schema.ResourceData, meta interface{})
 	return nil
 }
 
-func updateComplianceStandardRequirement(d *schema.ResourceData, meta interface{}) error {
+func updateComplianceStandardRequirement(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	csrId := d.Get("csr_id").(string)
 	o := parseComplianceStandardRequirement(d, csrId)
 
 	if err := requirement.Update(client, o); err != nil {
-		return err
+		diag.FromErr(err)
 	}
 
-	return readComplianceStandardRequirement(d, meta)
+	return readComplianceStandardRequirement(ctx, d, meta)
 }
 
-func deleteComplianceStandardRequirement(d *schema.ResourceData, meta interface{}) error {
+func deleteComplianceStandardRequirement(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	_, csrId := IdToTwoStrings(d.Id())
 
 	err := requirement.Delete(client, csrId)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			diag.FromErr(err)
 		}
 	}
 

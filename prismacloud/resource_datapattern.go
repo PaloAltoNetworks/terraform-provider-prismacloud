@@ -1,23 +1,25 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/data-security/datapattern"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceDataPattern() *schema.Resource {
 	return &schema.Resource{
-		Create: createDataPattern,
-		Read:   readDataPattern,
-		Update: updateDataPattern,
-		Delete: deleteDataPattern,
+		CreateContext: createDataPattern,
+		ReadContext:   readDataPattern,
+		UpdateContext: updateDataPattern,
+		DeleteContext: deleteDataPattern,
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -182,12 +184,12 @@ func saveDataPattern(d *schema.ResourceData, obj datapattern.Pattern) {
 	}
 }
 
-func createDataPattern(d *schema.ResourceData, meta interface{}) error {
+func createDataPattern(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	obj := parseDataPattern(d, "")
 
 	if err := datapattern.Create(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -197,7 +199,7 @@ func createDataPattern(d *schema.ResourceData, meta interface{}) error {
 
 	id, err := datapattern.Identify(client, obj.Name)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -206,10 +208,10 @@ func createDataPattern(d *schema.ResourceData, meta interface{}) error {
 	})
 
 	d.SetId(id)
-	return readDataPattern(d, meta)
+	return readDataPattern(ctx, d, meta)
 }
 
-func readDataPattern(d *schema.ResourceData, meta interface{}) error {
+func readDataPattern(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
@@ -219,7 +221,7 @@ func readDataPattern(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveDataPattern(d, obj)
@@ -227,26 +229,26 @@ func readDataPattern(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func updateDataPattern(d *schema.ResourceData, meta interface{}) error {
+func updateDataPattern(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 	obj := parseDataPattern(d, id)
 
 	if err := datapattern.Update(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readDataPattern(d, meta)
+	return readDataPattern(ctx, d, meta)
 }
 
-func deleteDataPattern(d *schema.ResourceData, meta interface{}) error {
+func deleteDataPattern(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
 
 	err := datapattern.Delete(client, id)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 

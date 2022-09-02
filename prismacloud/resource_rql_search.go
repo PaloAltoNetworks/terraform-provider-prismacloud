@@ -1,21 +1,23 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/rql/search"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceRqlSearch() *schema.Resource {
 	return &schema.Resource{
-		Create: createUpdateRqlSearch,
-		Read:   readRqlSearch,
-		Update: createUpdateRqlSearch,
-		Delete: deleteRqlSearch,
+		CreateContext: createUpdateRqlSearch,
+		ReadContext:   readRqlSearch,
+		UpdateContext: createUpdateRqlSearch,
+		DeleteContext: deleteRqlSearch,
 		Schema: map[string]*schema.Schema{
 			// Input.
 			"search_type": {
@@ -362,7 +364,7 @@ func resourceRqlSearch() *schema.Resource {
 	}
 }
 
-func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
+func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	query := d.Get("query").(string)
 	limit := d.Get("limit").(int)
@@ -371,7 +373,7 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 	var id string
 
 	if d.Id() != "" {
-		return readRqlSearch(d, meta)
+		return readRqlSearch(ctx, d, meta)
 	}
 
 	switch searchType {
@@ -384,7 +386,7 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 
 		resp, err := search.ConfigSearch(client, req)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		PollApiUntilSuccess(func() error {
@@ -408,7 +410,7 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 
 		resp, err := search.NetworkSearch(client, req)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		PollApiUntilSuccess(func() error {
@@ -432,7 +434,7 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 
 		resp, err := search.EventSearch(client, req)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		PollApiUntilSuccess(func() error {
@@ -455,7 +457,7 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 
 		resp, err := search.IamSearch(client, req)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		PollApiUntilSuccess(func() error {
@@ -473,10 +475,10 @@ func createUpdateRqlSearch(d *schema.ResourceData, meta interface{}) error {
 
 	d.SetId(id)
 
-	return readRqlSearch(d, meta)
+	return readRqlSearch(ctx, d, meta)
 }
 
-func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
+func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	searchType, query, searchId := parseRqlSearchId(d.Id())
 	limit := d.Get("limit").(int)
@@ -493,7 +495,7 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 
 		resp, err := search.ConfigSearch(client, req)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		if err = d.Set("group_by", resp.GroupBy); err != nil {
@@ -533,7 +535,7 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 
 		resp, err := search.NetworkSearch(client, req)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		if err = d.Set("group_by", resp.GroupBy); err != nil {
@@ -572,7 +574,7 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 		}
 		resp, err := search.EventSearch(client, req)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		if err = d.Set("group_by", resp.GroupBy); err != nil {
 			log.Printf("[WARN] Error setting 'group_by' for %q: %s", d.Id(), err)
@@ -609,7 +611,7 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 
 		resp, err := search.IamSearch(client, req)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 
 		d.Set("search_id", resp.Id)
@@ -688,7 +690,7 @@ func readRqlSearch(d *schema.ResourceData, meta interface{}) error {
 	}
 	return nil
 }
-func deleteRqlSearch(d *schema.ResourceData, meta interface{}) error {
+func deleteRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	// There is no way to delete a search, so this is a no-op.
 	return nil
 }

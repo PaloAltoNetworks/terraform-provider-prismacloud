@@ -1,15 +1,17 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement"
+	"golang.org/x/net/context"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceComplianceStandardRequirement() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceComplianceStandardRequirementRead,
+		ReadContext: dataSourceComplianceStandardRequirementRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -88,7 +90,7 @@ func dataSourceComplianceStandardRequirement() *schema.Resource {
 	}
 }
 
-func dataSourceComplianceStandardRequirementRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceComplianceStandardRequirementRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var err error
 	client := meta.(*pc.Client)
 	csId := d.Get("cs_id").(string)
@@ -102,7 +104,7 @@ func dataSourceComplianceStandardRequirementRead(d *schema.ResourceData, meta in
 				d.SetId("")
 				return nil
 			}
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -112,7 +114,7 @@ func dataSourceComplianceStandardRequirementRead(d *schema.ResourceData, meta in
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(TwoStringsToId(csId, csrId))

@@ -1,15 +1,17 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement/section"
+	"golang.org/x/net/context"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceComplianceStandardRequirementSection() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceComplianceStandardRequirementSectionRead,
+		ReadContext: dataSourceComplianceStandardRequirementSectionRead,
 
 		Schema: map[string]*schema.Schema{
 			// Input.
@@ -106,7 +108,7 @@ func dataSourceComplianceStandardRequirementSection() *schema.Resource {
 	}
 }
 
-func dataSourceComplianceStandardRequirementSectionRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceComplianceStandardRequirementSectionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	var o section.Section
 	var err error
@@ -125,7 +127,7 @@ func dataSourceComplianceStandardRequirementSectionRead(d *schema.ResourceData, 
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(TwoStringsToId(csrId, o.Id))

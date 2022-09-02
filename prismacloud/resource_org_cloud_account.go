@@ -2,6 +2,8 @@ package prismacloud
 
 import (
 	"encoding/json"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 	"log"
 	"strings"
 	"time"
@@ -9,16 +11,16 @@ import (
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account/org"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceOrgCloudAccount() *schema.Resource {
 	return &schema.Resource{
-		Create: createOrgCloudAccount,
-		Read:   readOrgCloudAccount,
-		Update: updateOrgCloudAccount,
-		Delete: deleteOrgCloudAccount,
+		CreateContext: createOrgCloudAccount,
+		ReadContext:   readOrgCloudAccount,
+		UpdateContext: updateOrgCloudAccount,
+		DeleteContext: deleteOrgCloudAccount,
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(10 * time.Minute),
@@ -27,7 +29,7 @@ func resourceOrgCloudAccount() *schema.Resource {
 		},
 
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -854,16 +856,16 @@ func saveOrgCloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 	}
 }
 
-func createOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
+func createOrgCloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	cloudType, name, obj := parseOrgCloudAccount(d)
 	if err := org.Create(client, obj); err != nil {
 		if strings.Contains(err.Error(), "duplicate_cloud_account") {
 			if err := org.Update(client, obj); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		} else {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 	PollApiUntilSuccess(func() error {
@@ -873,7 +875,7 @@ func createOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 
 	id, err := org.Identify(client, cloudType, name)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -882,10 +884,10 @@ func createOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	})
 
 	d.SetId(TwoStringsToId(cloudType, id))
-	return readOrgCloudAccount(d, meta)
+	return readOrgCloudAccount(ctx, d, meta)
 }
 
-func readOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
+func readOrgCloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
 
@@ -895,7 +897,7 @@ func readOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	saveOrgCloudAccount(d, cloudType, obj)
@@ -903,18 +905,18 @@ func readOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func updateOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
+func updateOrgCloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	_, _, obj := parseOrgCloudAccount(d)
 
 	if err := org.Update(client, obj); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return readOrgCloudAccount(d, meta)
+	return readOrgCloudAccount(ctx, d, meta)
 }
 
-func deleteOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
+func deleteOrgCloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
 	disable := d.Get("disable_on_destroy").(bool)
@@ -926,7 +928,7 @@ func deleteOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			cloudAccountAws := cloudAccount.(org.AwsOrg)
 			cloudAccountAws.Enabled = false
 			if err := org.Update(client, cloudAccountAws); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			return nil
 
@@ -935,7 +937,7 @@ func deleteOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			cloudAccountAzure := cloudAccount.(org.AzureOrg)
 			cloudAccountAzure.Account.Enabled = false
 			if err := org.Update(client, cloudAccountAzure); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			return nil
 
@@ -944,7 +946,7 @@ func deleteOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			cloudAccountGcp := cloudAccount.(org.GcpOrg)
 			cloudAccountGcp.Account.Enabled = false
 			if err := org.Update(client, cloudAccountGcp); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			return nil
 		case org.TypeOci:
@@ -952,7 +954,7 @@ func deleteOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 			cloudAccountGcp := cloudAccount.(org.Oci)
 			cloudAccountGcp.Enabled = false
 			if err := org.Update(client, cloudAccountGcp); err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 			return nil
 		}
@@ -961,7 +963,7 @@ func deleteOrgCloudAccount(d *schema.ResourceData, meta interface{}) error {
 	err := org.Delete(client, cloudType, id)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 

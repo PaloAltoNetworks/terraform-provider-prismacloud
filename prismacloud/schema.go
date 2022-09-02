@@ -6,8 +6,8 @@ import (
 
 	"github.com/paloaltonetworks/prisma-cloud-go/timerange"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func totalSchema(desc string) *schema.Schema {
@@ -89,19 +89,16 @@ func timeRangeSchema(style string) *schema.Schema {
 			"absolute": {
 				Type:        schema.TypeList,
 				Description: "An absolute time range",
-				MaxItems:    1,
 				Elem:        absolute_resource,
 			},
 			"relative": {
 				Type:        schema.TypeList,
 				Description: "Relative time range",
-				MaxItems:    1,
 				Elem:        relative_resource,
 			},
 			"to_now": {
 				Type:        schema.TypeList,
 				Description: "From some time in the past to now",
-				MaxItems:    1,
 				Elem:        to_now_resource,
 			},
 		},
@@ -110,7 +107,6 @@ func timeRangeSchema(style string) *schema.Schema {
 	ans := &schema.Schema{
 		Type:        schema.TypeList,
 		Description: "The time range spec",
-		MaxItems:    1,
 		Elem:        model,
 	}
 
@@ -133,19 +129,24 @@ func timeRangeSchema(style string) *schema.Schema {
 		to_now_resource.Schema["unit"].ValidateFunc = nil
 	case "resource_saved_search":
 		ans.ForceNew = true
+		ans.MaxItems = 1
 
+		model.Schema["absolute"].MaxItems = 1
 		absolute_resource.Schema["start"].ForceNew = true
 		absolute_resource.Schema["end"].ForceNew = true
 
+		model.Schema["relative"].MaxItems = 1
 		relative_resource.Schema["amount"].ForceNew = true
 		relative_resource.Schema["unit"].ForceNew = true
 
+		model.Schema["to_now"].MaxItems = 1
 		to_now_resource.Schema["unit"].ForceNew = true
 
 		fallthrough
 	default:
 		ans.Optional = true
 		ans.Computed = true
+		ans.MaxItems = 1
 
 		model.Schema["absolute"].Optional = true
 		absolute_resource.Schema["start"].Required = true
@@ -161,7 +162,7 @@ func timeRangeSchema(style string) *schema.Schema {
 	}
 
 	switch style {
-	case "resource_report", "data_source_report":
+	case "resource_report", "data_source_report", "data_source_rql_historic_search":
 		// Commenting this out until the SDK allows for nested and
 		// relative ConflictsWith.
 		/*

@@ -1,12 +1,12 @@
 package prismacloud
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceEnterpriseSettings() *schema.Resource {
 	return &schema.Resource{
-		Read: readEnterpriseSettings,
+		ReadContext: readEnterpriseSettings,
 
 		Schema: map[string]*schema.Schema{
 			// Output.
