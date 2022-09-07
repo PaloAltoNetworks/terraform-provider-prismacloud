@@ -2,10 +2,11 @@ package prismacloud
 
 import (
 	"encoding/json"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"golang.org/x/net/context"
 	"log"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"golang.org/x/net/context"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/mitchellh/mapstructure"
 )
 
 func resourcePolicy() *schema.Resource {
@@ -299,6 +301,48 @@ func resourcePolicy() *schema.Resource {
 								false,
 							),
 						},
+						"children": {
+							Type:        schema.TypeList,
+							Optional:    true,
+							Description: "Children",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"criteria": {
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "Criteria for build policy",
+									},
+									"metadata": {
+										Type:        schema.TypeMap,
+										Optional:    true,
+										Computed:    true,
+										Description: "YAML string for code build policy",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"type": {
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "Type of build policy",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"tf",
+												"cft",
+												"k8s",
+												"build",
+											},
+											false,
+										),
+									},
+									"recommendation": {
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "Recommendation",
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -422,9 +466,11 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 			ResourceType:   rspec["resource_type"].(string),
 			ApiName:        rspec["api_name"].(string),
 			ResourceIdPath: rspec["resource_id_path"].(string),
-			Criteria:       rspec["criteria"].(string),
 			Type:           rspec["rule_type"].(string),
 		},
+	}
+	if rspec["criteria"].(string) != "" {
+		ans.Rule.Criteria = rspec["criteria"].(string)
 	}
 
 	dataCriteria := rspec["data_criteria"].([]interface{})
@@ -434,6 +480,23 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 			ans.Rule.DataCriteria.Exposure = data["exposure"].(string)
 			ans.Rule.DataCriteria.Extension = SetToStringSlice(data["extension"].(*schema.Set))
 		}
+	}
+
+	cld := rspec["children"].([]interface{})
+	ans.Rule.Children = make([]policy.Children, 0, len(cld))
+	for _, chi := range cld {
+		cl := chi.(map[string]interface{})
+		var md policy.Metadata
+		err := mapstructure.Decode(cl["metadata"], &md)
+		if err != nil {
+			panic(err)
+		}
+		ans.Rule.Children = append(ans.Rule.Children, policy.Children{
+			Criteria:       cl["criteria"].(string),
+			Type:           cl["type"].(string),
+			Recommendation: cl["recommendation"].(string),
+			Metadata:       md,
+		})
 	}
 
 	rem := d.Get("remediation").([]interface{})
@@ -537,6 +600,17 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 		}
 		rv["data_criteria"] = []interface{}{data}
 	}
+
+	cld := make([]interface{}, 0, len(obj.Rule.Children))
+	for _, chi := range obj.Rule.Children {
+		cld = append(cld, map[string]interface{}{
+			"criteria":       chi.Criteria,
+			"type":           chi.Type,
+			"recommendation": chi.Recommendation,
+			"metadata":       map[string]string{"code": chi.Metadata.Code},
+		})
+	}
+	rv["children"] = cld
 
 	pm := make(map[string]interface{})
 	for k, v := range obj.Rule.Parameters {
