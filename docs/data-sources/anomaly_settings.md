@@ -16,7 +16,7 @@ resource "prismacloud_anomaly_settings" "example" {
 
 ## Argument Reference
 
-* `type` - (Required) Type. Valid values are `Network`, `UEBA`.
+* `type` - (Required) Type. Valid values are `Network`, `UEBA` or `DNS`.
 
 ## Attribute Reference
 
