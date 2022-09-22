@@ -1,3 +1,17 @@
+## 1.2.9 (September 22, 2022)
+
+NEW DATA SOURCES:
+
+* `anomaly_setting` / `anomaly_settings`
+* `anomaly_trusted_list`/ `anomaly_trusted_lists`
+
+NEW RESOURCES: 
+
+* `anomaly_settings`
+* `anomaly_trusted_list`
+
+* Custom build policy and code security policy support.
+
 ## 1.2.8 (August 17, 2022)
 
 * Terraform SDK upgrade
