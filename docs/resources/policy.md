@@ -53,6 +53,7 @@ One and only one of these must be present:
 * `resource_id_path` - Resource ID path
 * `criteria` - (Required for Config, Audit Event, IAM and Network policies) Saved search ID that defines the rule criteria
 * `data_criteria` - (Required for Data policy) Criteria for DLP Rule, as defined [below](#data-criteria)
+* `children` - (Required for Config build policy) Children description for build policy, as defined [below](#children)
 * `parameters` - (Required for Config, Audit Event, IAM and Network policies, map of strings) Parameters. Valid keys are `withIac` and `savedSearch` and value is `"true"`or `"false"` (`SavedSearch` is true when we are using savedsearch and it is false when we directly give search query and `withIac` is true for build policies otherwise false)
 * `rule_type` - (Required) Type of rule or RQL query. Valid values are `Config`, `AuditEvent`, `IAM`, `Network`, `DLP`, or `Anomaly`
 
@@ -74,6 +75,13 @@ This section may be present or may be omitted:
 * `classification_result` - (Required) Data Profile name required for DLP rule criteria
 * `exposure` - File exposure. Valid values are `private`, `public`, or `conditional`
 * `extension` - List of file extensions
+
+#### Children
+
+* `criteria` - (Required for custom build policy) Criteria for build policy.
+* `metadata` - (Required for custom code build policy, map of string) YAML string for code build policy. Valid key is `code`. 
+* `recommendation` - (Optional, string) Recommendation.
+* `type` - (Required) Type of policy. Valid values are: `tf`, `cft`, `k8s` or `build`.
 
 ## Attribute Reference
 

@@ -233,6 +233,40 @@ func dataSourcePolicy() *schema.Resource {
 							Computed:    true,
 							Description: "Type of rule or RQL query",
 						},
+						"children": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "Children",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"criteria": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Criteria for build policy",
+										Optional:    true,
+									},
+									"metadata": {
+										Type:        schema.TypeMap,
+										Computed:    true,
+										Description: "YAML string for code build policy",
+										Optional:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Type of build policy",
+									},
+									"recommendation": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Recommendation",
+									},
+								},
+							},
+						},
 					},
 				},
 			},
