@@ -72,8 +72,7 @@ The type of cloud account to add.  You need to specify one and only one of these
 > **Notice**
 > #### No Change in existing behavior of AWS cloud accounts onboarding
 > *In version 1.2.7 of Prismacloud Terraform Provider, we published a lookahead notice regarding the confused deputy attack changes for AWS cloud account onboarding.
-> *The upstream API is no longer moving ahead with the previous approach, we have decided to not make any changes to the existing terraform provider. The AWS cloud account onboarding will remain the same.
-> *We regret any inconvenience that it may have caused you.
+> *The upstream API is no longer moving ahead with the previous approach, so the corresponding changes to the Terraform Provider will not be released at this time. Subsequent upstream API changes related to cloud account onboarding will be incorporated into the Terraform Provider through a similar approach as they are made available.
 
 * `account_id` - (Required) AWS account ID.
 * `enabled` - (Optional, bool) Whether or not the account is enabled (default: `true`).
