@@ -47,6 +47,7 @@ type Rule struct {
 	ResourceIdPath string            `json:"resourceIdPath,omitempty"`
 	Criteria       interface{}       `json:"criteria,omitempty"`
 	DataCriteria   DataCriteria      `json:"dataCriteria,omitempty"`
+	Children       []Children        `json:"children,omitempty"`
 	Parameters     map[string]string `json:"parameters"`
 	Type           string            `json:"type"`
 }
@@ -76,4 +77,15 @@ type DataCriteria struct {
 	ClassificationResult string   `json:"classificationResult,omitempty"`
 	Exposure             string   `json:"exposure,omitempty"`
 	Extension            []string `json:"extension,omitempty"`
+}
+
+type Children struct {
+	Criteria       string   `json:"criteria,omitempty"`
+	Metadata       Metadata `json:"metadata,omitempty"`
+	Type           string   `json:"type,omitempty"`
+	Recommendation string   `json:"recommendation,omitempty"`
+}
+
+type Metadata struct {
+	Code string `json:"code"`
 }

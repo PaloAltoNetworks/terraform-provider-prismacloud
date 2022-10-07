@@ -60,6 +60,7 @@ You must specify at least one of the following:
 * `resource_id_path` - Resource ID path
 * `criteria` - Saved search ID that defines the rule criteria
 * `data_criteria` - Criteria for DLP Rule, as defined [below](#data-criteria)
+* `children` - Children description for build policy, as defined [below](#children)
 * `parameters` - (map of strings) Parameters
 * `rule_type` - Type of rule or RQL query
 
@@ -89,3 +90,10 @@ You must specify at least one of the following:
 * `classification_result` - Data Profile name required for DLP rule criteria
 * `exposure` - File exposure
 * `extension` - List of file extensions
+
+#### Children
+
+* `criteria` - Criteria for build policy.
+* `metadata` - YAML string for code build policy. 
+* `recommendation` - Recommendation.
+* `type` - Type of policy. 
