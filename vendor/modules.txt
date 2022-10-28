@@ -244,11 +244,13 @@ github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 ## explicit
 github.com/oklog/run
-# github.com/paloaltonetworks/prisma-cloud-go v0.5.4
+# github.com/paloaltonetworks/prisma-cloud-go v0.5.5
 ## explicit; go 1.13
 github.com/paloaltonetworks/prisma-cloud-go
 github.com/paloaltonetworks/prisma-cloud-go/alert
 github.com/paloaltonetworks/prisma-cloud-go/alert/rule
+github.com/paloaltonetworks/prisma-cloud-go/anomalySettings
+github.com/paloaltonetworks/prisma-cloud-go/anomalySettings/anomalyTrustedList
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account/group
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account/org

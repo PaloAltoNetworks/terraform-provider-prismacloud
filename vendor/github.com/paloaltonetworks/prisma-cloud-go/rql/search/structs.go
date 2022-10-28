@@ -10,6 +10,7 @@ type ConfigRequest struct {
 	Query            string              `json:"query"`
 	Limit            int                 `json:"limit,omitempty"`
 	WithResourceJson bool                `json:"withResourceJson,omitempty"`
+	SkipResult       bool                `json:"skipResult,omitempty"`
 }
 
 type ConfigResponse struct {
@@ -57,6 +58,7 @@ type EventRequest struct {
 	Query            string              `json:"query"`
 	Limit            int                 `json:"limit,omitempty"`
 	WithResourceJson bool                `json:"withResourceJson,omitempty"`
+	SkipResult       bool                `json:"skipResult,omitempty"`
 }
 
 type EventResponse struct {
@@ -112,6 +114,7 @@ type NetworkRequest struct {
 	Query            string              `json:"query"`
 	Limit            int                 `json:"limit,omitempty"`
 	WithResourceJson bool                `json:"withResourceJson,omitempty"`
+	SkipResult       bool                `json:"skipResult,omitempty"`
 }
 
 type NetworkResponse struct {
