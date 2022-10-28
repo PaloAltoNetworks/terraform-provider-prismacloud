@@ -1,3 +1,8 @@
+## 1.2.10 (Oct 28, 2022)
+
+* Added support for 'Developer' and 'NetSecOps' user roles
+* Added support for 'skipResult' flag in RQL search resource
+
 ## 1.2.9 (September 22, 2022)
 
 NEW DATA SOURCES:
