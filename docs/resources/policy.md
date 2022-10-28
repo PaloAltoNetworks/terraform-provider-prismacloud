@@ -59,7 +59,7 @@ resource "prismacloud_policy" "example" {
   name        = "sample custom run policy created with terraform"
   severity = "low"
   labels      = ["some_tag"]
-  description = "sample custom run policy created with terraform"
+  description = "this describes the policy"
   rule {
     name     = "sample custom run policy created with terraform"
     rule_type = "Config"
@@ -75,19 +75,44 @@ resource "prismacloud_policy" "example" {
 ## Example Usage (Custom Run Policy with an RQL saved search)
 ```hcl
 resource "prismacloud_policy" "example" {
-  policy_type = "config"
-  cloud_type  = "aws"
   name        = "sample custom run policy created with terraform"
-  severity = "low"
+  policy_type = "config"
+  cloud_type  = "azure"
+  severity    = "low"
   labels      = ["some_tag"]
-  description = "sample custom run policy created with terraform"
+  description = "this describes the policy"
+  enabled     = false
   rule {
-    name     = "sample custom run policy created with terraform"
+    name      = "sample custom run policy created with terraform"
     rule_type = "Config"
-    criteria = file("folder/run_policy.rql")
     parameters = {
-      savedSearch = false
+      savedSearch = true
       withIac     = false
+    }
+    criteria = file("policies/aks/aks001.rql")
+  }
+}
+
+resource "prismacloud_saved_search" "example" {
+  name        = "example"
+  description = "sample saved RQL search"
+  search_id   = prismacloud_rql_search.example.search_id
+  query       = prismacloud_rql_search.example.query
+  time_range {
+    relative {
+      unit   = prismacloud_rql_search.example.time_range.0.relative.0.unit
+      amount = prismacloud_rql_search.example.time_range.0.relative.0.amount
+    }
+  }
+}
+
+resource "prismacloud_rql_search" "example" {
+  search_type = "config"
+  query       = "config from cloud.resource where api.name = 'azure-kubernetes-cluster' AND json.rule = properties.enableRBAC is true'"
+  time_range {
+    relative {
+      unit   = "hour"
+      amount = 24
     }
   }
 }
