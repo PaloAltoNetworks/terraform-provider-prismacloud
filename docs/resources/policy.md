@@ -16,11 +16,80 @@ resource "prismacloud_policy" "example" {
         name = "my rule"
         criteria = "savedSearchId"
         parameters = {
-            "savedSearch": "true",
-            "withIac": "false",
+          savedSearch = false
+          withIac     = false
         }
         rule_type = "Network"
     }
+}
+```
+
+## Example Usage (Custom Build Policy)
+```hcl
+resource "prismacloud_policy" "example" {
+  name        = "sample custom build policy created with terraform"
+  policy_type = "config"
+  cloud_type  = "aws"
+  severity    = "high"
+  labels      = ["some_tag"]
+  description = "this describes the policy"
+  rule {
+    name = "sample custom build policy created with terraform"
+    rule_type = "Config"
+    parameters = {
+      savedSearch = false
+      withIac     = false
+    }
+    children {
+      type           = "build"
+      recommendation = "fix it"
+      metadata = {
+        "code" : file("folder/build_policy.yaml"),
+      }
+    }
+  }
+} 
+```
+
+## Example Usage (Custom Run Policy without any RQL saved search)
+```hcl
+resource "prismacloud_policy" "example" {
+  policy_type = "config"
+  cloud_type  = "aws"
+  name        = "sample custom run policy created with terraform"
+  severity = "low"
+  labels      = ["some_tag"]
+  description = "sample custom run policy created with terraform"
+  rule {
+    name     = "sample custom run policy created with terraform"
+    rule_type = "Config"
+    parameters = {
+      savedSearch = false
+      withIac     = false
+    }
+    criteria = file("folder/run_policy.rql")
+  }
+}
+```
+
+## Example Usage (Custom Run Policy with an RQL saved search)
+```hcl
+resource "prismacloud_policy" "example" {
+  policy_type = "config"
+  cloud_type  = "aws"
+  name        = "sample custom run policy created with terraform"
+  severity = "low"
+  labels      = ["some_tag"]
+  description = "sample custom run policy created with terraform"
+  rule {
+    name     = "sample custom run policy created with terraform"
+    rule_type = "Config"
+    criteria = file("folder/run_policy.rql")
+    parameters = {
+      savedSearch = false
+      withIac     = false
+    }
+  }
 }
 ```
 
