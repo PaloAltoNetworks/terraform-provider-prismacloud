@@ -2,8 +2,10 @@ module github.com/terraform-providers/terraform-provider-prismacloud
 
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.3
+	github.com/mitchellh/mapstructure v1.1.2
 	github.com/paloaltonetworks/prisma-cloud-go v0.5.4
 	golang.org/x/net v0.0.0-20220802222814-0bcc04d9c69b
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -49,7 +51,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.0 // indirect
-	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/mitchellh/reflectwalk v1.0.1 // indirect
 	github.com/oklog/run v1.0.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect

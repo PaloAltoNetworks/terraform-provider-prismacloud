@@ -249,6 +249,8 @@ github.com/oklog/run
 github.com/paloaltonetworks/prisma-cloud-go
 github.com/paloaltonetworks/prisma-cloud-go/alert
 github.com/paloaltonetworks/prisma-cloud-go/alert/rule
+github.com/paloaltonetworks/prisma-cloud-go/anomalySettings
+github.com/paloaltonetworks/prisma-cloud-go/anomalySettings/anomalyTrustedList
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account/group
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account/org
@@ -504,3 +506,6 @@ google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/emptypb
 google.golang.org/protobuf/types/known/fieldmaskpb
 google.golang.org/protobuf/types/known/timestamppb
+# gopkg.in/yaml.v2 v2.4.0
+## explicit; go 1.15
+gopkg.in/yaml.v2
