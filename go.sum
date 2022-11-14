@@ -347,8 +347,8 @@ github.com/nsf/jsondiff v0.0.0-20200515183724-f29ed568f4ce h1:RPclfga2SEJmgMmz2k
 github.com/nsf/jsondiff v0.0.0-20200515183724-f29ed568f4ce/go.mod h1:uFMI8w+ref4v2r9jz+c9i1IfIttS/OkmLfrk1jne5hs=
 github.com/oklog/run v1.0.0 h1:Ru7dDtJNOyC66gQ5dQmaCa0qIsAUFY3sFpK1Xk8igrw=
 github.com/oklog/run v1.0.0/go.mod h1:dlhp/R75TPv97u0XWUtDeV/lRKWPKSdTuV0TZvrmrQA=
-github.com/paloaltonetworks/prisma-cloud-go v0.5.4 h1:KEz1f0TjP79PAKUvQYA8akYJUQzqdjyLPO7gPNbpXfI=
-github.com/paloaltonetworks/prisma-cloud-go v0.5.4/go.mod h1:B1WWrW8CE2xroRVyP2rUjsqmb1rWAzcxrOyNUvxYSfs=
+github.com/paloaltonetworks/prisma-cloud-go v0.5.5 h1:djtIh25lr+5FrC/MPLH0CGrp1A9qY81qrn1wiqPclW0=
+github.com/paloaltonetworks/prisma-cloud-go v0.5.5/go.mod h1:B1WWrW8CE2xroRVyP2rUjsqmb1rWAzcxrOyNUvxYSfs=
 github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

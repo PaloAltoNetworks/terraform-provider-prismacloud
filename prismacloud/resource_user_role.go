@@ -51,6 +51,8 @@ func resourceUserRole() *schema.Resource {
 						role.TypeCloudProvisioningAdmin,
 						role.TypeAccountAndCloudProvisioningAdmin,
 						role.TypeBuildAndDeploySecurity,
+						role.TypeDeveloper,
+						role.TypeNetSecOps,
 					},
 					false,
 				),

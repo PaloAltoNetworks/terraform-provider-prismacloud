@@ -32,6 +32,7 @@ The following arguments are supported:
   (default) `event`, `network` and `iam`.
 * `query` - (Required) The RQL query.
 * `limit` - (int) Limit rules (default: `10`).
+* `skip_result` - (bool) Skip RQL search results in response. Applicable for `config`, `event` and `network` RQL search.
 * `time_range` - (Required for config, event and network RQL search) The RQL time range spec, as defined [below](#time-range).
 
 ### Time Range

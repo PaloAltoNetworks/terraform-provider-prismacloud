@@ -13,6 +13,8 @@ const (
 	TypeCloudProvisioningAdmin           = "Cloud Provisioning Admin"
 	TypeAccountAndCloudProvisioningAdmin = "Account and Cloud Provisioning Admin"
 	TypeBuildAndDeploySecurity           = "Build and Deploy Security"
+	TypeDeveloper                        = "Developer"
+	TypeNetSecOps                        = "NetSecOps"
 )
 
 var Suffix = []string{"user", "role"}
