@@ -29,7 +29,7 @@ resource "prismacloud_policy" "example" {
 * `name` - (Required) Policy name
 * `policy_type` - (Required) Policy type. Valid values are `config`, `audit_event`, `iam`, `network`, `data`, or `anomaly`
 * `description` - Description
-* `severity` - Severity. Valid values are `low` (default), `medium`, or `high`.
+* `severity` - Severity. Valid values are `low` (default), `medium`, `high` `critical` or `informational`.
 * `recommendation` - Remediation recommendation
 * `cloud_type` - Cloud type (Optional for policies having RQL query with multiway joins, otherwise required) - valid values are `aws`,`azure`,`gcp`,`alibaba_cloud` and `all`
 * `labels` - List of labels
