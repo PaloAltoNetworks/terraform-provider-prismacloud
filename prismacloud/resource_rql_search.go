@@ -46,6 +46,11 @@ func resourceRqlSearch() *schema.Resource {
 				Description: "Limit results",
 				Default:     10,
 			},
+			"skip_result": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Skip search results in response",
+			},
 			// Output.
 			"group_by": {
 				Type:        schema.TypeList,
@@ -370,6 +375,7 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 	limit := d.Get("limit").(int)
 	searchType := d.Get("search_type").(string)
 	tr := ParseTimeRange(ResourceDataInterfaceMap(d, "time_range"))
+	skipResult := d.Get("skip_result").(bool)
 	var id string
 
 	if d.Id() != "" {
@@ -382,6 +388,7 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 			Query:     query,
 			Limit:     limit,
 			TimeRange: tr,
+			SkipResult: skipResult,
 		}
 
 		resp, err := search.ConfigSearch(client, req)
@@ -395,6 +402,7 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 				Query:     query,
 				Limit:     limit,
 				TimeRange: tr,
+				SkipResult: skipResult,
 			}
 			_, err := search.ConfigSearch(client, r)
 			return err
@@ -406,6 +414,7 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 			Query:     query,
 			Limit:     limit,
 			TimeRange: tr,
+			SkipResult: skipResult,
 		}
 
 		resp, err := search.NetworkSearch(client, req)
@@ -419,6 +428,7 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 				Query:     query,
 				Limit:     limit,
 				TimeRange: tr,
+				SkipResult: skipResult,
 			}
 			_, err := search.NetworkSearch(client, r)
 			return err
@@ -430,6 +440,7 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 			Query:     query,
 			Limit:     limit,
 			TimeRange: tr,
+			SkipResult: skipResult,
 		}
 
 		resp, err := search.EventSearch(client, req)
@@ -443,6 +454,7 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 				Query:     query,
 				Limit:     limit,
 				TimeRange: tr,
+				SkipResult: skipResult,
 			}
 			_, err := search.EventSearch(client, r)
 			return err
@@ -483,6 +495,7 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 	searchType, query, searchId := parseRqlSearchId(d.Id())
 	limit := d.Get("limit").(int)
 	tr := ParseTimeRange(ResourceDataInterfaceMap(d, "time_range"))
+	skipResult := d.Get("skip_result").(bool)
 
 	switch searchType {
 	case "config":
@@ -491,6 +504,7 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 			Query:     query,
 			Limit:     limit,
 			TimeRange: tr,
+			SkipResult: skipResult,
 		}
 
 		resp, err := search.ConfigSearch(client, req)
@@ -531,6 +545,7 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 			Query:     query,
 			Limit:     limit,
 			TimeRange: tr,
+			SkipResult: skipResult,
 		}
 
 		resp, err := search.NetworkSearch(client, req)
@@ -571,6 +586,7 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 			Query:     query,
 			Limit:     limit,
 			TimeRange: tr,
+			SkipResult: skipResult,
 		}
 		resp, err := search.EventSearch(client, req)
 		if err != nil {
