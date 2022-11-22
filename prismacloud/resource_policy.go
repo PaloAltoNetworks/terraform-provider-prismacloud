@@ -89,6 +89,8 @@ func resourcePolicy() *schema.Resource {
 						policy.SeverityLow,
 						policy.SeverityMedium,
 						policy.SeverityHigh,
+						policy.SeverityCritical,
+						policy.SeverityInformational,
 					},
 					false,
 				),
