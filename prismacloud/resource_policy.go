@@ -297,6 +297,7 @@ func resourcePolicy() *schema.Resource {
 									policy.RuleTypeIAM,
 									policy.RuleTypeAnomaly,
 									policy.RuleTypeData,
+									policy.RuleTypeNetworkConfig,
 								},
 								false,
 							),

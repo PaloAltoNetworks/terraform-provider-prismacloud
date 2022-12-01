@@ -55,7 +55,7 @@ One and only one of these must be present:
 * `data_criteria` - (Required for Data policy) Criteria for DLP Rule, as defined [below](#data-criteria)
 * `children` - (Required for Config build policy) Children description for build policy, as defined [below](#children)
 * `parameters` - (Required for Config, Audit Event, IAM and Network policies, map of strings) Parameters. Valid keys are `withIac` and `savedSearch` and value is `"true"`or `"false"` (`SavedSearch` is true when we are using savedsearch and it is false when we directly give search query and `withIac` is true for build policies otherwise false)
-* `rule_type` - (Required) Type of rule or RQL query. Valid values are `Config`, `AuditEvent`, `IAM`, `Network`, `DLP`, or `Anomaly`
+* `rule_type` - (Required) Type of rule or RQL query. Valid values are `Config`, `AuditEvent`, `IAM`, `Network`, `DLP`, `Anomaly` or `NetworkConfig`
 
 ### Remediation
 
