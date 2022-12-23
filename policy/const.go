@@ -27,9 +27,11 @@ const (
 
 // Valid values for Policy.Rule.Severity.
 const (
-	SeverityLow    = "low"
-	SeverityMedium = "medium"
-	SeverityHigh   = "high"
+	SeverityLow           = "low"
+	SeverityMedium        = "medium"
+	SeverityHigh          = "high"
+	SeverityCritical      = "critical"
+	SeverityInformational = "informational"
 )
 
 var Suffix = []string{"policy"}
