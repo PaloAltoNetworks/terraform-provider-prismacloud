@@ -7,12 +7,13 @@ const (
 
 // Valid values for Policy.Rule.RuleType.
 const (
-	RuleTypeConfig     = "Config"
-	RuleTypeAuditEvent = "AuditEvent"
-	RuleTypeNetwork    = "Network"
-	RuleTypeIAM        = "IAM"
-	RuleTypeAnomaly    = "Anomaly"
-	RuleTypeData       = "DLP"
+	RuleTypeConfig        = "Config"
+	RuleTypeAuditEvent    = "AuditEvent"
+	RuleTypeNetwork       = "Network"
+	RuleTypeIAM           = "IAM"
+	RuleTypeAnomaly       = "Anomaly"
+	RuleTypeData          = "DLP"
+	RuleTypeNetworkConfig = "NetworkConfig"
 )
 
 // Valid values for Policy.PolicyType.
