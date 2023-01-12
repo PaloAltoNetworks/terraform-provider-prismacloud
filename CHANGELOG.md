@@ -1,3 +1,8 @@
+## 1.2.11 (Dec 23, 2022)
+
+* Added support for 'Critical' and 'Informational' severity for policy
+* Added support for policy rule type 'NetworkConfig'
+
 ## 1.2.10 (Oct 28, 2022)
 
 * Added support for 'Developer' and 'NetSecOps' user roles
