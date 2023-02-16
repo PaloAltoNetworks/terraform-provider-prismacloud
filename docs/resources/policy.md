@@ -38,7 +38,7 @@ resource "prismacloud_policy" "example" {
     rule_type = "Config"
     parameters = {
       savedSearch = false
-      withIac     = false
+      withIac     = true
     }
     children {
       type           = "build"
@@ -87,7 +87,7 @@ resource "prismacloud_policy" "example" {
     rule_type = "Config"
     parameters = {
       savedSearch = true
-      withIac     = false
+      withIac     = true
     }
     criteria = file("policies/aks/aks001.rql")
   }
