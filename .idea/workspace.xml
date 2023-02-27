@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d5328cbd-a69a-4d7c-8b02-66efa302e2f3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/prismacloud/resource_account_group.go" beforeDir="false" afterPath="$PROJECT_DIR$/prismacloud/resource_account_group.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/github.com/paloaltonetworks/prisma-cloud-go/error.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/paloaltonetworks/prisma-cloud-go/error.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
