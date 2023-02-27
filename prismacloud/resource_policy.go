@@ -164,6 +164,7 @@ func resourcePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Description: "Deleted",
+				ForceNew:    true,
 			},
 			"restrict_alert_dismissal": {
 				Type:        schema.TypeBool,
@@ -741,8 +742,9 @@ func updatePolicy(ctx context.Context, d *schema.ResourceData, meta interface{})
 func deletePolicy(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
+	obj := parsePolicy(d, "")
 
-	err := policy.Delete(client, id)
+	err := policy.Delete(client, id, obj)
 	if err != nil {
 		if err != pc.ObjectNotFoundError {
 			return diag.FromErr(err)
