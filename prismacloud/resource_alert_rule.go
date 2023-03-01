@@ -44,6 +44,7 @@ func resourceAlertRule() *schema.Resource {
 				Optional:    true,
 				Description: "Enabled",
 				Default:     true,
+				ForceNew:    true,
 			},
 			"scan_all": {
 				Type:        schema.TypeBool,
@@ -224,6 +225,7 @@ func resourceAlertRule() *schema.Resource {
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Description: "Scan enabled",
+							ForceNew:    true,
 						},
 						"recipients": {
 							Type:        schema.TypeSet,
@@ -601,8 +603,9 @@ func updateAlertRule(ctx context.Context, d *schema.ResourceData, meta interface
 func deleteAlertRule(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
+	obj := parseAlertRule(d, id)
 
-	if err := rule.Delete(client, id); err != nil {
+	if err := rule.Delete(client, id, obj); err != nil {
 		if err != pc.ObjectNotFoundError {
 			return diag.FromErr(err)
 		}

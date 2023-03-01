@@ -151,7 +151,7 @@ func readComplianceStandardRequirement(ctx context.Context, d *schema.ResourceDa
 
 	o, err := requirement.Get(client, csrId)
 	if err != nil {
-		if err == pc.ObjectNotFoundError {
+		if err == pc.InternalError {
 			d.SetId("")
 			return nil
 		}
