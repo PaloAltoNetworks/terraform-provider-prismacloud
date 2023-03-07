@@ -116,6 +116,7 @@ func dataSourcePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Computed:    true,
 				Description: "Deleted",
+				ForceNew:    true,
 			},
 			"restrict_alert_dismissal": {
 				Type:        schema.TypeBool,
