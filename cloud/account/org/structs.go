@@ -79,16 +79,28 @@ type AzureOrg struct {
 }
 
 type GcpOrgCredentials struct {
-	Type            string `json:"type"`
-	ProjectId       string `json:"project_id"`
-	PrivateKeyId    string `json:"private_key_id"`
-	PrivateKey      string `json:"private_key"`
-	ClientEmail     string `json:"client_email"`
-	ClientId        string `json:"client_id"`
-	AuthUri         string `json:"auth_uri"`
-	TokenUri        string `json:"token_uri"`
-	ProviderCertUrl string `json:"auth_provider_x509_cert_url"`
-	ClientCertUrl   string `json:"client_x509_cert_url"`
+	Type                           string           `json:"type"`
+	ProjectId                      string           `json:"project_id"`
+	PrivateKeyId                   string           `json:"private_key_id"`
+	PrivateKey                     string           `json:"private_key"`
+	ClientEmail                    string           `json:"client_email"`
+	ClientId                       string           `json:"client_id"`
+	AuthUri                        string           `json:"auth_uri"`
+	TokenUri                       string           `json:"token_uri"`
+	ProviderCertUrl                string           `json:"auth_provider_x509_cert_url"`
+	ClientCertUrl                  string           `json:"client_x509_cert_url"`
+	Audience                       string           `json:"audience"`
+	SubjectTokenType               string           `json:"subject_token_type"`
+	ServiceAccountImpersonationUrl string           `json:"service_account_impersonation_url"`
+	CredentialSource               CredentialSource `json:"credential_source"`
+	TokenUrl                       string           `json:"token_url"`
+}
+
+type CredentialSource struct {
+	EnvironmentId               string `json:"environment_id"`
+	RegionUrl                   string `json:"region_url"`
+	Url                         string `json:"url"`
+	RegionalCredVerificationUrl string `json:"regional_cred_verification_url"`
 }
 
 type HierarchySelection struct {
