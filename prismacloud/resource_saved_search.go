@@ -12,6 +12,7 @@ import (
 func resourceSavedSearch() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: createSavedSearch,
+		UpdateContext: updateSavedSearch,
 		ReadContext:   readSavedSearch,
 		DeleteContext: deleteSavedSearch,
 		Importer: &schema.ResourceImporter{
@@ -24,13 +25,11 @@ func resourceSavedSearch() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The RQL search to perform",
-				ForceNew:    true,
 			},
 			"search_id": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The RQL UUID",
-				ForceNew:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
@@ -42,7 +41,6 @@ func resourceSavedSearch() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "Description",
-				ForceNew:    true,
 			},
 			"time_range": timeRangeSchema("resource_saved_search"),
 
@@ -57,6 +55,31 @@ func resourceSavedSearch() *schema.Resource {
 }
 
 func createSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	client := meta.(*pc.Client)
+
+	req := history.SavedSearch{
+		Id:          d.Get("search_id").(string),
+		Name:        d.Get("name").(string),
+		Query:       d.Get("query").(string),
+		Description: d.Get("description").(string),
+		TimeRange:   ParseTimeRange(ResourceDataInterfaceMap(d, "time_range")),
+	}
+
+	if err := history.Save(client, req); err != nil {
+		return diag.FromErr(err)
+	}
+
+	PollApiUntilSuccess(func() error {
+		_, err := history.Get(client, req.Id)
+		return err
+	})
+
+	d.SetId(req.Id)
+
+	return readSavedSearch(ctx, d, meta)
+}
+
+func updateSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
 	req := history.SavedSearch{

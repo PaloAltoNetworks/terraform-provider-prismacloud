@@ -37,7 +37,6 @@ func resourceRqlSearch() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The RQL search to perform",
-				ForceNew:    true,
 			},
 			"time_range": timeRangeSchema("resource_rql_search"),
 			"limit": {
@@ -62,6 +61,7 @@ func resourceRqlSearch() *schema.Resource {
 			},
 			"search_id": {
 				Type:        schema.TypeString,
+				Optional:    true,
 				Computed:    true,
 				Description: "The search ID",
 			},
@@ -385,9 +385,9 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 	switch searchType {
 	case "config":
 		req := search.ConfigRequest{
-			Query:     query,
-			Limit:     limit,
-			TimeRange: tr,
+			Query:      query,
+			Limit:      limit,
+			TimeRange:  tr,
 			SkipResult: skipResult,
 		}
 
@@ -398,10 +398,10 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 
 		PollApiUntilSuccess(func() error {
 			r := search.ConfigRequest{
-				Id:        resp.Id,
-				Query:     query,
-				Limit:     limit,
-				TimeRange: tr,
+				Id:         resp.Id,
+				Query:      query,
+				Limit:      limit,
+				TimeRange:  tr,
 				SkipResult: skipResult,
 			}
 			_, err := search.ConfigSearch(client, r)
@@ -411,9 +411,9 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 		id = buildRqlSearchId(searchType, query, resp.Id)
 	case "network":
 		req := search.NetworkRequest{
-			Query:     query,
-			Limit:     limit,
-			TimeRange: tr,
+			Query:      query,
+			Limit:      limit,
+			TimeRange:  tr,
 			SkipResult: skipResult,
 		}
 
@@ -424,10 +424,10 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 
 		PollApiUntilSuccess(func() error {
 			r := search.NetworkRequest{
-				Id:        resp.Id,
-				Query:     query,
-				Limit:     limit,
-				TimeRange: tr,
+				Id:         resp.Id,
+				Query:      query,
+				Limit:      limit,
+				TimeRange:  tr,
 				SkipResult: skipResult,
 			}
 			_, err := search.NetworkSearch(client, r)
@@ -437,9 +437,9 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 		id = buildRqlSearchId(searchType, query, resp.Id)
 	case "event":
 		req := search.EventRequest{
-			Query:     query,
-			Limit:     limit,
-			TimeRange: tr,
+			Query:      query,
+			Limit:      limit,
+			TimeRange:  tr,
 			SkipResult: skipResult,
 		}
 
@@ -450,10 +450,10 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 
 		PollApiUntilSuccess(func() error {
 			r := search.EventRequest{
-				Id:        resp.Id,
-				Query:     query,
-				Limit:     limit,
-				TimeRange: tr,
+				Id:         resp.Id,
+				Query:      query,
+				Limit:      limit,
+				TimeRange:  tr,
 				SkipResult: skipResult,
 			}
 			_, err := search.EventSearch(client, r)
@@ -500,10 +500,10 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 	switch searchType {
 	case "config":
 		req := search.ConfigRequest{
-			Id:        searchId,
-			Query:     query,
-			Limit:     limit,
-			TimeRange: tr,
+			Id:         searchId,
+			Query:      query,
+			Limit:      limit,
+			TimeRange:  tr,
 			SkipResult: skipResult,
 		}
 
@@ -541,10 +541,10 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 		}
 	case "network":
 		req := search.NetworkRequest{
-			Id:        searchId,
-			Query:     query,
-			Limit:     limit,
-			TimeRange: tr,
+			Id:         searchId,
+			Query:      query,
+			Limit:      limit,
+			TimeRange:  tr,
 			SkipResult: skipResult,
 		}
 
@@ -582,10 +582,10 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 		}
 	case "event":
 		req := search.EventRequest{
-			Id:        searchId,
-			Query:     query,
-			Limit:     limit,
-			TimeRange: tr,
+			Id:         searchId,
+			Query:      query,
+			Limit:      limit,
+			TimeRange:  tr,
 			SkipResult: skipResult,
 		}
 		resp, err := search.EventSearch(client, req)
