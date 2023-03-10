@@ -1,13 +1,17 @@
+## 1.3.1 (March 10, 2023)
+
+* Documentation fix
+
 ## 1.3.0 (March 10, 2023)
 
-* The following new data sources and resources are added related to AWS account onbaording with Security Capabilities and Permissions and to generate External ID in the IAM Role.
+* The following new data sources and resources are added, mainly related to AWS Cloud account onboarding with Security Capabilities and Permissions and to generate External ID in the CFT for IAM Role creation.
 
-  * data 'prismacloud_aws_cft_generator'
-  * data 'prismacloud_account_supported_features'
-  * data 'prismacloud_cloud_account_v2'
+  * data 'prismacloud_aws_cft_generator' - For AWS CFT Generation 
+  * data 'prismacloud_account_supported_features' - For Fetching supported features for cloud type and account type.
+  * data 'prismacloud_cloud_account_v2' 
   * data 'prismacloud_org_cloud_account_v2'
-  * resource 'prismacloud_cloud_account_v2'
-  * resource 'prismacloud_org_cloud_account_v2'
+  * resource 'prismacloud_cloud_account_v2' - For Onboarding AWS Cloud Account
+  * resource 'prismacloud_org_cloud_account_v2' - For Onboarding AWS Cloud Organization
 * Added support for WIF credentials for gcp org account
 * Support for updating saved_search query
 
