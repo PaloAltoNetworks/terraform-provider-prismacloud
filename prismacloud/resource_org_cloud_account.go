@@ -563,16 +563,25 @@ func gcpOrgCredentialsMatch(k, old, new string, d *schema.ResourceData) bool {
 	if err = json.Unmarshal([]byte(new), &cur); err != nil {
 		return false
 	}
+	if cur.Type == "service_account" {
+		return (prev.Type == cur.Type &&
+			prev.ProjectId == cur.ProjectId &&
+			prev.PrivateKeyId == cur.PrivateKeyId &&
+			prev.ClientEmail == cur.ClientEmail &&
+			prev.ClientId == cur.ClientId &&
+			prev.AuthUri == cur.AuthUri &&
+			prev.TokenUri == cur.TokenUri &&
+			prev.ProviderCertUrl == cur.ProviderCertUrl &&
+			prev.ClientCertUrl == cur.ClientCertUrl)
+	} else {
+		return (prev.Type == cur.Type &&
+			prev.Audience == cur.Audience &&
+			prev.ServiceAccountImpersonationUrl == cur.ServiceAccountImpersonationUrl &&
+			prev.SubjectTokenType == cur.SubjectTokenType &&
+			prev.TokenUrl == cur.TokenUrl &&
+			prev.CredentialSource == cur.CredentialSource)
+	}
 
-	return (prev.Type == cur.Type &&
-		prev.ProjectId == cur.ProjectId &&
-		prev.PrivateKeyId == cur.PrivateKeyId &&
-		prev.ClientEmail == cur.ClientEmail &&
-		prev.ClientId == cur.ClientId &&
-		prev.AuthUri == cur.AuthUri &&
-		prev.TokenUri == cur.TokenUri &&
-		prev.ProviderCertUrl == cur.ProviderCertUrl &&
-		prev.ClientCertUrl == cur.ClientCertUrl)
 }
 
 func parseOrgCloudAccount(d *schema.ResourceData) (string, string, interface{}) {
