@@ -16,11 +16,105 @@ resource "prismacloud_policy" "example" {
         name = "my rule"
         criteria = "savedSearchId"
         parameters = {
-            "savedSearch": "true",
-            "withIac": "false",
+          savedSearch = false
+          withIac     = false
         }
         rule_type = "Network"
     }
+}
+```
+
+## Example Usage (Custom Build Policy)
+```hcl
+resource "prismacloud_policy" "example" {
+  name        = "sample custom build policy created with terraform"
+  policy_type = "config"
+  cloud_type  = "aws"
+  severity    = "high"
+  labels      = ["some_tag"]
+  description = "this describes the policy"
+  rule {
+    name = "sample custom build policy created with terraform"
+    rule_type = "Config"
+    parameters = {
+      savedSearch = false
+      withIac     = true
+    }
+    children {
+      type           = "build"
+      recommendation = "fix it"
+      metadata = {
+        "code" : file("folder/build_policy.yaml"),
+      }
+    }
+  }
+} 
+```
+
+## Example Usage (Custom Run Policy without any RQL saved search)
+```hcl
+resource "prismacloud_policy" "example" {
+  policy_type = "config"
+  cloud_type  = "aws"
+  name        = "sample custom run policy created with terraform"
+  severity = "low"
+  labels      = ["some_tag"]
+  description = "this describes the policy"
+  rule {
+    name     = "sample custom run policy created with terraform"
+    rule_type = "Config"
+    parameters = {
+      savedSearch = false
+      withIac     = false
+    }
+    criteria = file("folder/run_policy.rql")
+  }
+}
+```
+
+## Example Usage (Custom Run Policy with an RQL saved search)
+```hcl
+resource "prismacloud_policy" "example" {
+  name        = "sample custom run policy created with terraform"
+  policy_type = "config"
+  cloud_type  = "azure"
+  severity    = "low"
+  labels      = ["some_tag"]
+  description = "this describes the policy"
+  enabled     = false
+  rule {
+    name      = "sample custom run policy created with terraform"
+    rule_type = "Config"
+    parameters = {
+      savedSearch = true
+      withIac     = true
+    }
+    criteria = file("policies/aks/aks001.rql")
+  }
+}
+
+resource "prismacloud_saved_search" "example" {
+  name        = "example"
+  description = "sample saved RQL search"
+  search_id   = prismacloud_rql_search.example.search_id
+  query       = prismacloud_rql_search.example.query
+  time_range {
+    relative {
+      unit   = prismacloud_rql_search.example.time_range.0.relative.0.unit
+      amount = prismacloud_rql_search.example.time_range.0.relative.0.amount
+    }
+  }
+}
+
+resource "prismacloud_rql_search" "example" {
+  search_type = "config"
+  query       = "config from cloud.resource where api.name = 'azure-kubernetes-cluster' AND json.rule = properties.enableRBAC is true'"
+  time_range {
+    relative {
+      unit   = "hour"
+      amount = 24
+    }
+  }
 }
 ```
 
