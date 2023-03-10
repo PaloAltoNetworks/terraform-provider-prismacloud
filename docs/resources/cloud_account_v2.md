@@ -7,7 +7,7 @@ page_title: "Prisma Cloud: prismacloud_cloud_account_v2"
 Manage a cloud account on the Prisma Cloud platform.
 
 ## **Example Usage 1**: AWS cloud account onboarding
-### `Step 1`: Fetch the supported features. Refer **[Supported features readme](/docs/data-sources/cloud_account_supported_features.md)** for more details.
+### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
 ```hcl
 data "prismacloud_account_supported_features" "prismacloud_supported_features" {
     cloud_type = "aws"
@@ -20,7 +20,7 @@ output "features_supported" {
 }
 ```
 
-### `Step 2`: Fetch the AWS CFT s3 presigned url based on required features. Refer **[AWS CFT generator Readme](/docs/data-sources/aws_cft_generator_external_id.md)** for more details.
+### `Step 2`: Fetch the AWS CFT s3 presigned url based on required features. Refer **[AWS CFT generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/aws_cft_generator_external_id)** for more details.
 ```hcl
 data "prismacloud_aws_cft_generator" "prismacloud_account_cft" {
     account_type = "account"
@@ -89,8 +89,8 @@ data "prismacloud_account_group" "existing_account_group_id" {
 # }
 
 ```
-#### **Consolidated code snippet for all the above steps**
----------------------------------------------------
+### **Consolidated code snippet for all the above steps**
+
 ```
 data "prismacloud_account_supported_features" "prismacloud_supported_features" {
     cloud_type = "aws"
@@ -144,7 +144,6 @@ data "prismacloud_account_group" "existing_account_group_id" {
 # }
 
 ```
----------------------------------------------------
 
 ## **Example Usage 2**: Bulk AWS cloud accounts onboarding
 ### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 1' should be completed for each of the account and have IAM roles created.
@@ -181,7 +180,7 @@ resource "prismacloud_cloud_account_v2" "aws_account_bulk_onboarding_example" {
 
 ## Prerequisite
 
-Before onboarding the aws cloud account. `external_id` for account must be generated using `prismacloud_aws_cft_generator`. Otherwise, you will encounter `error 412 : external_id_empty_or_not_generated`. Refer **[AWS CFT generator Readme](/docs/data-sources/aws_cft_generator_external_id.md)** for more details.
+Before onboarding the aws cloud account. `external_id` for account must be generated using `prismacloud_aws_cft_generator`. Otherwise, you will encounter `error 412 : external_id_empty_or_not_generated`. Refer **[AWS CFT generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/aws_cft_generator_external_id)** for more details.
 
 ## Argument Reference
 
@@ -223,7 +222,7 @@ The type of cloud account to add.
 
 #### FEATURES
 
-* `name` - Feature name. Refer **[Supported features readme](/docs/data-sources/cloud_account_supported_features.md)** for more details.
+* `name` - Feature name. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
 * `state` - Feature state. Whether the feature to `enabled` or `disabled`.
 
 

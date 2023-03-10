@@ -7,7 +7,7 @@ page_title: "Prisma Cloud: prismacloud_org_cloud_account_v2"
 Manage a cloud organization on the Prisma Cloud platform.
 
 ## **Example Usage 1**: AWS cloud Organization onboarding
-### `Step 1`: Fetch the supported features. Refer **[Supported features readme](/docs/data-sources/cloud_account_supported_features.md)** for more details.
+### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
 ```hcl
 data "prismacloud_account_supported_features" "prismacloud_supported_features_organization" {
     cloud_type = "aws"
@@ -20,7 +20,7 @@ output "features_supported_organization" {
 }
 ```
 
-### `Step 2`: Fetch the AWS CFT s3 presigned url based on required features. Refer **[AWS CFT generator Readme](/docs/data-sources/aws_cft_generator_external_id.md)** for more details.
+### `Step 2`: Fetch the AWS CFT s3 presigned url based on required features. Refer **[AWS CFT generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/aws_cft_generator_external_id)** for more details.
 ```hcl
 data "prismacloud_aws_cft_generator" "prismacloud_organization_cft" {
     account_type = "organization"
@@ -45,8 +45,8 @@ resource "aws_cloudformation_stack" "prismacloud_iam_role_stack_org" {
   name = "PrismaCloudOrgApp" // change if needed
   capabilities = ["CAPABILITY_NAMED_IAM"]
   parameters = {
-    OrganizationalUnitIds = "<OrganizationalUnitIds>" 
-    # PrismaCloudRoleName = "<change-if-needed" // [Optional] A Default PrismaCloudRoleName will be present in CFT
+    OrganizationalUnitIds = "OrganizationalUnitIds" 
+    # PrismaCloudRoleName = "change-if-needed" // [Optional] A Default PrismaCloudRoleName will be present in CFT
   }
   template_url = data.prismacloud_aws_cft_generator.prismacloud_organization_cft.s3_presigned_cft_url
 }
@@ -95,8 +95,9 @@ data "prismacloud_account_group" "existing_account_group_id_org" {
 # }
 
 ```
-#### **Consolidated code snippet for all the above steps**
----------------------------------------------------
+
+### Consolidated code snippet for all the above steps
+
 ```
 data "prismacloud_account_supported_features" "prismacloud_supported_features_organization" {
     cloud_type = "aws"
@@ -114,7 +115,7 @@ resource "aws_cloudformation_stack" "prismacloud_iam_role_stack_org" {
   capabilities = ["CAPABILITY_NAMED_IAM"]
   parameters = {
     OrganizationalUnitIds = "<OrganizationalUnitIds>" // 
-    # PrismaCloudRoleName = "<change-if-needed" // [Optional] A Default PrismaCloudRoleName will be present in CFT
+    # PrismaCloudRoleName = "<change-if-needed>" // [Optional] A Default PrismaCloudRoleName will be present in CFT
   }
   template_url = data.prismacloud_aws_cft_generator.prismacloud_organization_cft.s3_presigned_cft_url
 }
@@ -158,10 +159,10 @@ data "prismacloud_account_group" "existing_account_group_id_org" {
 # }
 
 ```
----------------------------------------------------
+
 
 ## **Example Usage 2**: For Bulk AWS cloud Organization accounts onboarding
----------------------------------------------------
+
 ### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 1' should be completed for each of the Organization and have IAM roles created.
 
 /*
@@ -194,10 +195,10 @@ resource "prismacloud_org_cloud_account_v2" "aws_account_bulk_onboarding_example
     }
 }
 ```
----------------------------------------------------
+
 
 ### prismacloud_org_cloud_account_v2 resource block example for AWS Cloud Organization with hierarchy_selection
----------------------------------------------------
+
 ```
 resource "prismacloud_org_cloud_account_v2" "aws_organization_onboarding_example_with_hierarchy_selection" {
     disable_on_destroy = true
@@ -229,7 +230,6 @@ resource "prismacloud_org_cloud_account_v2" "aws_organization_onboarding_example
     }
 }
 ```
----------------------------------------------------
 
 ## Prerequisite
 
@@ -277,7 +277,7 @@ The type of cloud account to add.
 
 #### FEATURES
 
-* `name` - Feature name. Refer **[Supported features readme](/docs/data-sources/cloud_account_supported_features.md)** for more details.
+* `name` - Feature name. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
 * `state` - Feature state. Whether the feature to `enabled` or `disabled`.
 
 #### Hierarchy Selection

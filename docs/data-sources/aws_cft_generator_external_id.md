@@ -36,8 +36,8 @@ The following are the params that this data source supports:
 
 * `account_type` - (Required) AWS account type. `account` or `organization`.
 * `account_id` - (Required) AWS account ID.
-* `aws_partition` - *Applicable only for Prisma Government Stack(**app.gov.prismacloud.io**) and given if the Cloud account Global Deployment option is enabled.<br />* - **us-east-1** -  AWS Commercial/Global account.<br /> - **us-gov-west-1** - AWS GovCloud account.
-* `features` - (Optional) List of features. If features key/field is not passed, then the default features will be applicable.
+* `aws_partition` - *Applicable only for Prisma Government Stack (**app.gov.prismacloud.io**) and given if the Cloud account Global Deployment option is enabled.<br />* - **us-east-1** -  AWS Commercial/Global account.<br /> - **us-gov-west-1** - AWS GovCloud account.
+* `features` - (Optional) List of features. If features key/field is not passed, then the default features will be applicable. Refer : **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
 
 ## Attribute Reference
 
