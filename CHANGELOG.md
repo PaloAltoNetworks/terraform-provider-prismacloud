@@ -1,3 +1,17 @@
+## 1.3.0 (March 10, 2023)
+
+* The following new data sources and resources are added related to AWS account onbaording with Security Capabilities and Permissions and to generate External ID in the IAM Role.
+
+  * data 'prismacloud_aws_cft_generator'
+  * data 'prismacloud_account_supported_features'
+  * data 'prismacloud_cloud_account_v2'
+  * data 'prismacloud_org_cloud_account_v2'
+  * resource 'prismacloud_cloud_account_v2'
+  * resource 'prismacloud_org_cloud_account_v2'
+* Added support for WIF credentials for gcp org account
+* Support for updating saved_search query
+
+  
 ## 1.2.11 (Dec 23, 2022)
 
 * Added support for 'Critical' and 'Informational' severity for policy
