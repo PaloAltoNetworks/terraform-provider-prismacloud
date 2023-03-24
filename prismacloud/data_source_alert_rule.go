@@ -40,6 +40,7 @@ func dataSourceAlertRule() *schema.Resource {
 				Type:        schema.TypeBool,
 				Computed:    true,
 				Description: "Enabled",
+				ForceNew:    true,
 			},
 			"scan_all": {
 				Type:        schema.TypeBool,
@@ -208,6 +209,7 @@ func dataSourceAlertRule() *schema.Resource {
 							Type:        schema.TypeBool,
 							Computed:    true,
 							Description: "Scan enabled",
+							ForceNew:    true,
 						},
 						"recipients": {
 							Type:        schema.TypeSet,
