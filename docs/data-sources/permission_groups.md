@@ -1,0 +1,46 @@
+---
+page_title: "Prisma Cloud: prismacloud_permission_groups"
+---
+
+# prismacloud_permission_groups
+
+Retrieve a list of permission groups.
+
+## Example Usage
+
+```hcl
+data "prismacloud_permission_groups" "example" {}
+```
+
+## Attribute Reference
+
+* `total` - (int) Total number of permission groups.
+* `listing` - List of permission groups returned, as defined [below](#listing).
+
+### Listing
+
+Each permission group has the following attributes:
+
+* `id` - Permission group id
+* `name` - Name of the permission group.
+* `description` - Description.
+* `permission_group_type` - Permission group type.
+* `last_modified_by` - Last modified by.
+* `last_modified_ts` - (int) Last modified timestamp.
+* `associated_roles` - List of associated user roles which cannot exist in the system without the permission group.
+* `accept_account_groups` - (bool) Accept account groups.
+* `accept_resource_lists` - (bool) Accept resource lists.
+* `accept_code_repositories` - (bool) Accept code repositories.
+* `custom` - (bool) Boolean value signifying whether this is a custom (i.e. user-defined) permission group.
+* `features` - Collection of permitted features associated with the role, as defined [below](#features).
+
+#### Features
+
+* `feature_name` - Prisma Cloud Feature Name.
+* `operations` - A mapping of operations and a boolean value representing whether the privilege to perform the operation needs to be granted, as defined [below](#operations).
+
+##### Operations
+* `create`- (bool) - Create operation.
+* `read`- (bool) - Read operation.
+* `update`- (bool) - Update operation.
+* `delete`- (bool) - Delete operation.
