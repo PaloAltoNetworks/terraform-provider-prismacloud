@@ -19,7 +19,7 @@ data "prismacloud_org_cloud_account_v2" "example" {
 
 The following are the params that this data source supports.  At least one of the cloud account name and the account ID must be specified.  If one is left blank, it is determined at run time.
 
-* `cloud_type` - (Required) The cloud type.  Valid value is `aws`.
+* `cloud_type` - (Required) The cloud type.  Valid value is `aws` or `azure`.
 * `name` - (Optional, computed) Cloud account name; computed if this is not supplied.
 * `account_id` - (Optional, computed) Account ID; computed if this is not supplied.
 
@@ -29,6 +29,7 @@ The cloud type given above determines which of the attributes are populated:
 
 * `disable_on_destroy` - (bool) To disable cloud account instead of deleting when calling Terraform destroy.
 * `aws` - AWS account type spec, defined [below](#aws).
+* `azure` - Azure account type spec, defined [below](#azure).
 
 ### AWS
 
@@ -52,12 +53,40 @@ The cloud type given above determines which of the attributes are populated:
 * `protection_mode` - Protection mode of account.
 * `hierarchy_selection` - List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
 
+### Azure
+
+* `account_id` - Azure tenant account ID.
+* `enabled` - (bool) Whether the account is enabled.
+* `group_ids` - List of account IDs to which you are assigning this account.
+* `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `client_id` - Application ID registered with Active Directory.
+* `key` - Application ID key.
+* `monitor_flow_logs` - (bool) Automatically ingest flow logs.
+* `tenant_id` - Active Directory ID associated with Azure.
+* `service_principal_id` - Unique ID of the service principal object associated with the Prisma Cloud application that you create.
+* `account_type` - Account type - tenant.
+* `protection_mode` - Protection mode of account.
+* `default_account_group_id` - Account group id to which you are assigning this account.
+* `root_sync_enabled` - (bool) Whether the azure tenant root sync is enabled.
+* `hierarchy_selection` - List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
+* `features` - Features applicable for azure account, defined [below](#features).
+* `environment_type` - `azure` or `azure_gov` for azure tenant account.
+* `is_azure_tenant_enabled` - (bool) Whether the azure tenant is enabled.
+* `is_azure_tenant_root_sync_enabled` - (bool) Whether the azure tenant root sync is enabled.
+* `parent_id` - Parent id.
+* `customer_name` - Prisma customer name.
+* `created_epoch_millis` - Account created epoch time.
+* `last_modified_by` - Last modified by.
+* `last_modified_epoch_millis` - Last modified at epoch millis.
+* `deleted` - Whether the account is deleted or not.
+* `template_url` - Template URL.
+
 #### Hierarchy Selection
 
-* `resource_id` - Resource ID. For  ACCOUNT, OU or ROOT. Example : `root`.
-* `display_name` - Display name for ACCOUNT, OU or ROOT. Example : `Root`.
-* `node_type` - Node type - ORG, OU, ACCOUNT.
-* `selection_type` - Selection type - ALL, INCLUDE or EXCLUDE.
+* `resource_id` - Resource ID.
+* `display_name` - Display name.
+* `node_type` - Valid values : TENANT.
+* `selection_type` - Selection type. Valid values: INCLUDE to include the specified resource to onboard, EXCLUDE to exclude the specified resource and onboard the rest, ALL to onboard all resources in the organization..
 
 #### FEATURES
 

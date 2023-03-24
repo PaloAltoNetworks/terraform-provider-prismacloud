@@ -235,12 +235,126 @@ resource "prismacloud_org_cloud_account_v2" "aws_organization_onboarding_example
 
 Before onboarding the aws cloud account `external_id` for account must be generated using `prismacloud_aws_cft_generator`. Otherwise, you will encounter `error 412 : external_id_empty_or_not_generated`. Refer **[AWS CFT generator Readme](/docs/data-sources/aws_cft_generator_external_id.md)** for more details.
 
+## **Example Usage 3**: Azure cloud Tenant onboarding
+
+### Onboard the Azure cloud Tenant onto prisma cloud platform
+
+```hcl
+# Azure Tenant account type.
+
+resource "prismacloud_org_cloud_account_v2" "example1" {
+  azure {
+    client_id = "<client-id>"
+    account_type = "tenant"
+    enabled     = false
+    name        = "test azure account456"   // should be unique for each account
+    group_ids = [
+      data.prismacloud_account_group.existing_account_group_id_org.group_id,// To use existing Account Group
+      // prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    ]
+    environment_type    = "azure" //default:azure
+    key                = "<secret-key>"
+    monitor_flow_logs    = false  //true for tenant management, false for tenant
+    service_principal_id = "<service-principal-id>"
+    tenant_id           = "<tenant-id>"
+  }
+}
+
+// Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id_org" {
+    name = "Default Account Group" // Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" // Account group name to be creatd
+# }
+
+```
+
+
+## **Example Usage 4**: For Bulk Azure cloud Tenant accounts onboarding
+
+/*
+You can also create cloud accounts from a CSV file using native Terraform
+HCL and looping.  Assume you have a CSV file of AWS accounts that looks like this (with
+"||" separating account group IDs from each other):
+
+groupIds,name,clientId,key,tenantId,servicePrincipalId
+Default Account Group ID||Azure Account Group ID,123456789,6543256,0xJ8Q~,456189,86e43yuhbjc
+Default Account Group ID||Azure Account Group ID,213456789,5541253,0yJ9Q,356780,78e43yuhbbn
+Default Account Group ID||Azure Account Group ID,321466019,4543250,1xJ8Q~,256783,65e43iuhbjc
+
+Here's how you would do this (Terraform 0.12 code):
+*/
+```
+locals {
+    instances = csvdecode(file("azure.csv"))
+}
+// Now specify the cloud account resource with a loop like so:
+
+resource "prismacloud_org_cloud_account_v2" "azure_account_bulk_onboarding_example" {
+    for_each = { for inst in local.instances : inst.name => inst }
+    
+    azure {
+        group_ids = split("||", each.value.groupIDs)
+        name = each.value.name
+        client_id=each.value.clientId
+        key=each.value.key
+        tenant_id=each.value.tenantId
+        service_principal_id=each.value.servicePrincipalId 
+    }
+}
+```
+
+
+### prismacloud_org_cloud_account_v2 resource block example for Azure Cloud Tenant with hierarchy_selection
+
+```
+resource "prismacloud_org_cloud_account_v2" "azure_tenant_onboarding_example" {
+  azure {
+    client_id = "<client-id>"
+    account_type = "tenant"
+    enabled     = false
+    name        = "test azure account"  // should be unique for each account
+    group_ids = [
+      data.prismacloud_account_group.existing_account_group_id_org.group_id,// To use existing Account Group
+      // prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    ]
+    environment_type       = "azure"  //default:azure
+    key                   = "<secret-key>"
+    monitor_flow_logs       = true  //true for tenant management, false for tenant
+    service_principal_id    = "<service-principal-id>"
+    tenant_id              = "<tenant-id>"
+    default_account_group_id = data.prismacloud_account_group.existing_account_group_id_org.group_id// To use existing Account Group, can be given with tenant management
+    root_sync_enabled       = true      //Can be given with tenant management
+    hierarchy_selection {     //Can be given with tenant management
+      display_name   = "Tenant Root Group"
+      node_type      = "TENANT"
+      resource_id    = "f597bfbe-067c-4622-aaf7-b88bc8f6fa41"
+      selection_type = "ALL"
+    }
+
+    features {      //Can be given with tenant management
+      name  = "Agentless Scanning" // To enable 'Agentless Scanning' feature if required.
+      state = "enabled"
+    }
+    features {
+      name  = "Remediation" // To enable Remediation also known as Monitor and Protect
+      state = "disabled"
+    }
+
+  }
+}
+```
+
 ## Argument Reference
 
 The type of cloud account to add.
 
 * `disable_on_destroy` - (Optional, bool) To disable cloud account instead of deleting when calling Terraform destroy (default: `false`).
 * `aws` - AWS account type spec, defined [below](#aws).
+* `azure` - Azure account type spec, defined [below](#azure).
 
 ### AWS
 
@@ -252,6 +366,22 @@ The type of cloud account to add.
 * `role_arn` - (Required) Unique identifier for an AWS resource (ARN).
 * `account_type` - (Optional) Defaults to `account` if not specified. Valid values : `account` and `organization`.
 * `features` - (Optional, List) Features list
+
+### Azure
+* `enabled` - (Optional, bool) Whether the account is enabled (default: `true`).
+* `group_ids` - (Required) List of account IDs to which you are assigning this account.
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `client_id` - (Required) Application ID registered with Active Directory.
+* `key` - (Required) Application ID key.
+* `monitor_flow_logs` - (Optional, bool) Automatically ingest flow logs.
+* `tenant_id` - (Required) Active Directory ID associated with Azure.
+* `service_principal_id` - (Required) Unique ID of the service principal object associated with the Prisma Cloud application that you create.
+* `account_type` - (Optional) Defaults to "account" if not specified. Valid values: `account` or `tenant`.
+* `hierarchy_selection` - (Optional) List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
+* `default_account_group_id` - (Optional, String) *Applicable only for accountType: **tenant**.* This is the Default Account Group ID for the Azure tenant and its member accounts.
+* `features` - (Optional, List) Features list.
+* `root_sync_enabled` - (Optional, bool) Azure tenant has children. Must be set to true when azure tenant is onboarded with children.
+* `environment_type` - (Optional) Defaults to "azure".Valid values are `azure` or `azure_gov` for azure tenant account.
 
 ## Attribute Reference
 
@@ -274,6 +404,29 @@ The type of cloud account to add.
 * `last_modified_epoch_millis` - Last modified at epoch millis.
 * `parent_id` - Parent id.
 * `protection_mode` - Protection mode of account.
+* `environment_type` - `azure`,`azure_gov` or `azure_china` for azure subscription account.
+* `is_azure_tenant_enabled` - (bool) Whether or not the azure tenant is enabled.
+* `is_azure_tenant_root_sync_enabled` - (bool) Whether or not the azure tenant root sync is enabled
+* `parent_id` - Parent id.
+* `customer_name` - Prisma customer name.
+* `created_epoch_millis` - Account created epoch time.
+* `last_modified_by` - Last modified by.
+* `last_modified_epoch_millis` - Last modified at epoch millis.
+* `deleted` - Whether the account is deleted or not.
+* `template_url` - Template URL.
+
+### Azure
+* `account_id` - Azure account ID ( Must be nil for tenant ).
+* `protection_mode` - Protection mode of account.
+* `is_azure_tenant_enabled` - (bool) Whether the azure tenant is enabled.
+* `is_azure_tenant_root_sync_enabled` - (bool) Whether the azure tenant root sync is enabled
+* `parent_id` - Parent id.
+* `customer_name` - Prisma customer name.
+* `created_epoch_millis` - Account created epoch time.
+* `last_modified_by` - Last modified by.
+* `last_modified_epoch_millis` - Last modified at epoch millis.
+* `deleted` - Whether the account is deleted or not.
+* `template_url` - Template URL.
 
 #### FEATURES
 
@@ -282,9 +435,9 @@ The type of cloud account to add.
 
 #### Hierarchy Selection
 
-* `resource_id` - Resource ID. For  ACCOUNT, OU or ROOT. Example : `root`.
-* `display_name` - Display name for ACCOUNT, OU or ROOT. Example : `Root`.
-* `node_type` - Node type - ORG, OU, ACCOUNT.
+* `resource_id` - Resource ID.
+* `display_name` - Display name.
+* `node_type` - Valid values : "SUBSCRIPTION" , "TENANT" or "MANAGEMENT_GROUP".
 * `selection_type` - Selection type - ALL, INCLUDE or EXCLUDE.
 
 ## Import
@@ -292,5 +445,5 @@ The type of cloud account to add.
 Resources can be imported using the cloud type and the ID:
 
 ```
-$ terraform import prismacloud_cloud_account_v2.aws_example aws:accountIdHere
+$ terraform import prismacloud_cloud_account_v2.example accountIdHere
 ```

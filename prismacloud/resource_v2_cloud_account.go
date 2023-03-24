@@ -1,15 +1,15 @@
 package prismacloud
 
 import (
+	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	pc "github.com/paloaltonetworks/prisma-cloud-go"
+	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2"
-	"golang.org/x/net/context"
 	"log"
 	"strings"
 	"time"
-
-	pc "github.com/paloaltonetworks/prisma-cloud-go"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -46,6 +46,9 @@ func resourceV2CloudAccount() *schema.Resource {
 				Optional:    true,
 				Description: "AWS account type",
 				MaxItems:    1,
+				ConflictsWith: []string{
+					accountv2.TypeAzure,
+				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"account_id": {
@@ -189,6 +192,179 @@ func resourceV2CloudAccount() *schema.Resource {
 					},
 				},
 			},
+			//Azure
+			account.TypeAzure: {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "Azure account type",
+				MaxItems:    1,
+				ConflictsWith: []string{
+					account.TypeAws,
+				},
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Azure account ID",
+						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Whether or not the account is enabled",
+							Default:     true,
+						},
+						"group_ids": {
+							Type:        schema.TypeSet,
+							Required:    true,
+							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name to be used for the account on the Prisma Cloud platform (must be unique)",
+						},
+						"client_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Application ID registered with Active Directory",
+						},
+						"key": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Application ID key",
+							Sensitive:   true,
+						},
+						"monitor_flow_logs": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Automatically ingest flow logs",
+						},
+						"tenant_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Active Directory ID associated with Azure",
+						},
+						"service_principal_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Unique ID of the service principle object associated with the Prisma Cloud application that you create",
+						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "account",
+							Description: "Account type - tenant or account",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"account",
+									"tenant",
+								},
+								false,
+							),
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"cloud_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+
+						"features": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "Features applicable for azure account",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Feature name",
+									},
+									"state": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Feature state, one of enabled and disabled",
+										ValidateFunc: validation.StringInSlice(
+											[]string{
+												"enabled",
+												"disabled",
+											},
+											false,
+										),
+									},
+								},
+							},
+						},
+						"environment_type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Environment type",
+							Default:     "azure",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"azure",
+									"azure_gov",
+									"azure_china",
+								},
+								false,
+							),
+						},
+						"is_azure_tenant_enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the azure tenant is enabled",
+						},
+						"is_azure_tenant_root_sync_enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the azure tenant root sync is enabled",
+						},
+						"parent_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"customer_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"created_epoch_millis": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "",
+						},
+						"last_modified_epoch_millis": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "",
+						},
+						"last_modified_by": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"deleted": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "",
+						},
+						"template_url": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -213,10 +389,36 @@ func parseV2CloudAccount(d *schema.ResourceData) (string, string, string, interf
 			})
 		}
 		return accountv2.TypeAws, x["name"].(string), x["account_id"].(string), ans
+	} else if x := ResourceDataInterfaceMap(d, account.TypeAzure); len(x) != 0 {
+		ans := accountv2.Azure{
+			EnvironmentType:    x["environment_type"].(string),
+			ClientId:           x["client_id"].(string),
+			Key:                x["key"].(string),
+			MonitorFlowLogs:    x["monitor_flow_logs"].(bool),
+			TenantId:           x["tenant_id"].(string),
+			ServicePrincipalId: x["service_principal_id"].(string),
+			GroupIds:           SetToStringSlice(x["group_ids"].(*schema.Set)),
+		}
+		account := accountv2.CloudAccountResp{
+			AccountId:   x["account_id"].(string),
+			AccountType: x["account_type"].(string),
+			Enabled:     x["enabled"].(bool),
+			Name:        x["name"].(string),
+		}
+		ans.CloudAccountResp = account
+		features := x["features"].(*schema.Set).List()
+		ans.Features = make([]accountv2.Features, 0, len(features))
+		for _, featuresi := range features {
+			ftr := featuresi.(map[string]interface{})
+			ans.Features = append(ans.Features, accountv2.Features{
+				Name:  ftr["name"].(string),
+				State: ftr["state"].(string),
+			})
+		}
+		return accountv2.TypeAzure, x["name"].(string), x["account_id"].(string), ans
 	}
 	return "", "", "", nil
 }
-
 func saveV2CloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 	var val map[string]interface{}
 
@@ -233,7 +435,7 @@ func saveV2CloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"parent_id":                    v.CloudAccountResp.ParentId,
 			"deleted":                      v.CloudAccountResp.Deleted,
 			"protection_mode":              v.CloudAccountResp.ProtectionMode,
-			"deployment_type":              v.CloudAccountResp.DeploymentType,
+			"deployment_type":              v.DeploymentType,
 			"customer_name":                v.CloudAccountResp.CustomerName,
 			"created_epoch_millis":         v.CloudAccountResp.CreatedEpochMillis,
 			"last_modified_epoch_millis":   v.CloudAccountResp.LastModifiedEpochMillis,
@@ -244,11 +446,53 @@ func saveV2CloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"eventbridge_rule_name_prefix": v.EventbridgeRuleNamePrefix,
 		}
 
-		if len(v.CloudAccountResp.Features) == 0 {
+		if len(v.Features) == 0 {
 			val["features"] = nil
 		} else {
-			ftrList := make([]interface{}, 0, len(v.CloudAccountResp.Features))
-			for _, fti := range v.CloudAccountResp.Features {
+			ftrList := make([]interface{}, 0, len(v.Features))
+			for _, fti := range v.Features {
+				ftrList = append(ftrList, map[string]interface{}{
+					"name":  fti.Name,
+					"state": fti.State,
+				})
+			}
+			val["features"] = ftrList
+		}
+	case accountv2.AzureV2:
+		x := ResourceDataInterfaceMap(d, accountv2.TypeAzure)
+		var key string
+		if x["key"] == nil {
+			key = v.Key
+		} else {
+			key = x["key"].(string)
+		}
+		val = map[string]interface{}{
+			"account_id":                 v.CloudAccountResp.AccountId,
+			"enabled":                    v.CloudAccountResp.Enabled,
+			"group_ids":                  v.GroupIds,
+			"name":                       v.CloudAccountResp.Name,
+			"account_type":               v.CloudAccountResp.AccountType,
+			"cloud_type":                 v.CloudAccountResp.CloudType,
+			"environment_type":           v.EnvironmentType,
+			"client_id":                  v.ClientId,
+			"key":                        key,
+			"monitor_flow_logs":          v.MonitorFlowLogs,
+			"tenant_id":                  v.TenantId,
+			"service_principal_id":       v.ServicePrincipalId,
+			"parent_id":                  v.CloudAccountResp.ParentId,
+			"deleted":                    v.CloudAccountResp.Deleted,
+			"customer_name":              v.CloudAccountResp.CustomerName,
+			"created_epoch_millis":       v.CloudAccountResp.CreatedEpochMillis,
+			"last_modified_epoch_millis": v.CloudAccountResp.LastModifiedEpochMillis,
+			"last_modified_by":           v.CloudAccountResp.LastModifiedBy,
+			"template_url":               v.TemplateUrl,
+			"protection_mode":            v.CloudAccountResp.ProtectionMode,
+		}
+		if len(v.Features) == 0 {
+			val["features"] = nil
+		} else {
+			ftrList := make([]interface{}, 0, len(v.Features))
+			for _, fti := range v.Features {
 				ftrList = append(ftrList, map[string]interface{}{
 					"name":  fti.Name,
 					"state": fti.State,
@@ -257,7 +501,8 @@ func saveV2CloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			val["features"] = ftrList
 		}
 	}
-	for _, key := range []string{accountv2.TypeAws} {
+
+	for _, key := range []string{accountv2.TypeAws, accountv2.TypeAzure} {
 		if key != dest {
 			d.Set(key, nil)
 			continue
@@ -268,7 +513,6 @@ func saveV2CloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 		}
 	}
 }
-
 func createV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	cloudType, _, accId, obj := parseV2CloudAccount(d)
@@ -328,7 +572,8 @@ func deleteV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta inte
 	disable := d.Get("disable_on_destroy").(bool)
 
 	if disable {
-		if cloudType == accountv2.TypeAws {
+		switch cloudType {
+		case accountv2.TypeAws:
 			cloudAccount, _ := accountv2.Get(client, cloudType, id)
 			cloudAccountAws := cloudAccount.(accountv2.AwsV2)
 			cloudAccountAws.CloudAccountResp.Enabled = false
@@ -336,6 +581,16 @@ func deleteV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta inte
 				return diag.FromErr(err)
 			}
 			return nil
+
+		case accountv2.TypeAzure:
+			cloudAccount, _ := accountv2.Get(client, cloudType, id)
+			cloudAccountAzure := cloudAccount.(accountv2.AzureV2)
+			cloudAccountAzure.CloudAccountResp.Enabled = false
+			if err := accountv2.DisableCloudAccount(client, cloudAccountAzure.CloudAccountResp.AccountId); err != nil {
+				return diag.FromErr(err)
+			}
+			return nil
+
 		}
 	}
 

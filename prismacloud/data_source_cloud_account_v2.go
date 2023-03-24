@@ -1,12 +1,11 @@
 package prismacloud
 
 import (
+	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2"
-	"golang.org/x/net/context"
-
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceV2CloudAccount() *schema.Resource {
@@ -164,6 +163,150 @@ func dataSourceV2CloudAccount() *schema.Resource {
 					},
 				},
 			},
+
+			//Azure type.
+			accountv2.TypeAzure: {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "AWS account type",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Azure account ID",
+						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the account is enabled",
+						},
+						"group_ids": {
+							Type:        schema.TypeSet,
+							Computed:    true,
+							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Name to be used for the account on the Prisma Cloud platform (must be unique)",
+						},
+						"client_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Application ID registered with Active Directory",
+						},
+						"key": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Application ID key",
+							Sensitive:   true,
+						},
+						"monitor_flow_logs": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Automatically ingest flow logs",
+						},
+						"tenant_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Active Directory ID associated with Azure",
+						},
+						"service_principal_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Unique ID of the service principle object associated with the Prisma Cloud application that you create",
+						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Account type - account",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"features": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "Features applicable for azure account",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Feature name",
+									},
+									"state": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Feature state, one of enabled and disabled",
+									},
+								},
+							},
+						},
+						"environment_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Environment type",
+						},
+						"cloud_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"is_azure_tenant_enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the azure tenant is enabled",
+						},
+						"is_azure_tenant_root_sync_enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the azure tenant root sync is enabled",
+						},
+						"parent_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"customer_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"created_epoch_millis": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "",
+						},
+						"last_modified_epoch_millis": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "",
+						},
+						"last_modified_by": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"deleted": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "",
+						},
+						"template_url": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -178,7 +321,6 @@ func dataSourceV2CloudAccountRead(ctx context.Context, d *schema.ResourceData, m
 	cloudType := d.Get("cloud_type").(string)
 	id := d.Get("account_id").(string)
 	name := d.Get("name").(string)
-
 	if id == "" {
 		id, err = accountv2.Identify(client, cloudType, name)
 		if err != nil {
@@ -189,7 +331,6 @@ func dataSourceV2CloudAccountRead(ctx context.Context, d *schema.ResourceData, m
 			return diag.FromErr(err)
 		}
 	}
-
 	obj, err = accountv2.Get(client, cloudType, id)
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
@@ -198,10 +339,11 @@ func dataSourceV2CloudAccountRead(ctx context.Context, d *schema.ResourceData, m
 		}
 		return diag.FromErr(err)
 	}
-
 	if name == "" {
 		switch v := obj.(type) {
 		case accountv2.AwsV2:
+			name = v.Name
+		case accountv2.AzureV2:
 			name = v.Name
 		}
 	}
