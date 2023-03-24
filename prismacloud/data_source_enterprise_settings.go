@@ -48,6 +48,21 @@ func dataSourceEnterpriseSettings() *schema.Resource {
 				Computed:    true,
 				Description: "Alarms enabled",
 			},
+			"named_users_access_keys_expiry_notifications_enabled": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Named users access keys expiry notifications enabled",
+			},
+			"service_users_access_keys_expiry_notifications_enabled": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Service users access keys expiry notifications enabled",
+			},
+			"notification_threshold_access_keys_expiry": {
+				Type:        schema.TypeInt,
+				Computed:    true,
+				Description: "Notification threshold access keys expiry",
+			},
 		},
 	}
 }
