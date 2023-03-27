@@ -56,7 +56,7 @@ resource "prismacloud_user_role" "example" {
 
 * `name` - (Required) Name of the role.
 * `description` - (Optional) Description.
-* `role_type` - (Required) User role type.  Valid values are `System Admin`, `Account Group Admin`, `Account Group Read Only`, `Cloud Provisioning Admin`, `Account and Cloud Provisioning Admin`, or `Build and Deploy Security`.
+* `role_type` - (Required) User Role Type. Default ( Valid values are `System Admin`, `Account Group Admin`, `Account Group Read Only`, `Cloud Provisioning Admin`, `Account and Cloud Provisioning Admin`, `Build and Deploy Security` ) or Custom Permission Group Name.
 * `account_group_ids` - (Optional) List of accessible account group IDs. (Can't be set if `role_type` is `System Admin` or `Build and Deploy Security`)
 * `resource_list_ids` - (Optional) List of resource list IDs.
 * `code_repository_ids` - (Optional) List of code repository IDs.
