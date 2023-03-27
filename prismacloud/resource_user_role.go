@@ -9,7 +9,6 @@ import (
 	"github.com/paloaltonetworks/prisma-cloud-go/user/role"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceUserRole() *schema.Resource {
@@ -43,19 +42,19 @@ func resourceUserRole() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "User role type",
-				ValidateFunc: validation.StringInSlice(
-					[]string{
-						role.TypeSystemAdmin,
-						role.TypeAccountGroupAdmin,
-						role.TypeAccountGroupReadOnly,
-						role.TypeCloudProvisioningAdmin,
-						role.TypeAccountAndCloudProvisioningAdmin,
-						role.TypeBuildAndDeploySecurity,
-						role.TypeDeveloper,
-						role.TypeNetSecOps,
-					},
-					false,
-				),
+				//ValidateFunc: validation.StringInSlice(
+				//	[]string{
+				//		role.TypeSystemAdmin,
+				//		role.TypeAccountGroupAdmin,
+				//		role.TypeAccountGroupReadOnly,
+				//		role.TypeCloudProvisioningAdmin,
+				//		role.TypeAccountAndCloudProvisioningAdmin,
+				//		role.TypeBuildAndDeploySecurity,
+				//		role.TypeDeveloper,
+				//		role.TypeNetSecOps,
+				//	},
+				//	false,
+				//),
 			},
 			"last_modified_by": {
 				Type:        schema.TypeString,
