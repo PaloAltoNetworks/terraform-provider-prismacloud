@@ -201,7 +201,7 @@ func readAccountGroup(ctx context.Context, d *schema.ResourceData, meta interfac
 
 	obj, err := group.Get(client, id)
 	if err != nil {
-		if err == pc.ObjectNotFoundError {
+		if err == pc.AccountGroupNotFoundError {
 			d.SetId("")
 			return nil
 		}
