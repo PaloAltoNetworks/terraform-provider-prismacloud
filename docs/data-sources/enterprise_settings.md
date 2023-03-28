@@ -21,3 +21,7 @@ data "prismacloud_enterprise_settings" "example" {}
 * `default_policies_enabled` - (Map of bools) Default policies enabled.
 * `apply_default_policies_enabled` - (bool) Apply default policies enabled.
 * `alarm_enabled` - (bool) Alarms enabled. Alarms are Prisma Cloud Platform health notifications which are generated to notify users of system level issues/errors.
+* `named_users_access_keys_expiry_notifications_enabled` - (bool) Named users access keys expiry notifications enabled.
+* `service_users_access_keys_expiry_notifications_enabled` - (bool) Service users access keys expiry notifications enabled.
+* `notification_threshold_access_keys_expiry` - (int) Notification threshold access keys expiry.
+

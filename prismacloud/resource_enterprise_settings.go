@@ -62,6 +62,21 @@ func resourceEnterpriseSettings() *schema.Resource {
 				Description: "Alarms enabled",
 				Default:     true,
 			},
+			"named_users_access_keys_expiry_notifications_enabled": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Named users access keys expiry notifications enabled",
+			},
+			"service_users_access_keys_expiry_notifications_enabled": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Service users access keys expiry notifications enabled",
+			},
+			"notification_threshold_access_keys_expiry": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Notification threshold access keys expiry",
+			},
 		},
 	}
 }
@@ -74,13 +89,16 @@ func parseEnterpriseSettings(d *schema.ResourceData) enterprise.Config {
 	}
 
 	return enterprise.Config{
-		AccessKeyMaxValidity:          d.Get("access_key_max_validity").(int),
-		SessionTimeout:                d.Get("session_timeout").(int),
-		UserAttributionInNotification: d.Get("user_attribution_in_notification").(bool),
-		RequireAlertDismissalNote:     d.Get("require_alert_dismissal_note").(bool),
-		DefaultPoliciesEnabled:        dpe,
-		ApplyDefaultPoliciesEnabled:   d.Get("apply_default_policies_enabled").(bool),
-		AlarmEnabled:                  d.Get("alarm_enabled").(bool),
+		AccessKeyMaxValidity:                             d.Get("access_key_max_validity").(int),
+		SessionTimeout:                                   d.Get("session_timeout").(int),
+		UserAttributionInNotification:                    d.Get("user_attribution_in_notification").(bool),
+		RequireAlertDismissalNote:                        d.Get("require_alert_dismissal_note").(bool),
+		DefaultPoliciesEnabled:                           dpe,
+		ApplyDefaultPoliciesEnabled:                      d.Get("apply_default_policies_enabled").(bool),
+		AlarmEnabled:                                     d.Get("alarm_enabled").(bool),
+		NamedUsersAccessKeysExpiryNotificationsEnabled:   d.Get("named_users_access_keys_expiry_notifications_enabled").(bool),
+		ServiceUsersAccessKeysExpiryNotificationsEnabled: d.Get("service_users_access_keys_expiry_notifications_enabled").(bool),
+		NotificationThresholdAccessKeysExpiry:            d.Get("notification_threshold_access_keys_expiry").(int),
 	}
 }
 
@@ -96,6 +114,9 @@ func saveEnterpriseSettings(d *schema.ResourceData, conf enterprise.Config) {
 	}
 	d.Set("apply_default_policies_enabled", conf.ApplyDefaultPoliciesEnabled)
 	d.Set("alarm_enabled", conf.AlarmEnabled)
+	d.Set("named_users_access_keys_expiry_notifications_enabled", conf.NamedUsersAccessKeysExpiryNotificationsEnabled)
+	d.Set("service_users_access_keys_expiry_notifications_enabled", conf.ServiceUsersAccessKeysExpiryNotificationsEnabled)
+	d.Set("notification_threshold_access_keys_expiry", conf.NotificationThresholdAccessKeysExpiry)
 }
 
 func createUpdateEnterpriseSettings(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
