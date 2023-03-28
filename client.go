@@ -309,7 +309,7 @@ func (c *Client) communicate(method string, suffix []string, query, data interfa
 	c.logSendReceive(LogReceive, resp.StatusCode, []byte(body))
 
 	switch resp.StatusCode {
-	case http.StatusOK, http.StatusNoContent:
+	case http.StatusOK, http.StatusNoContent, http.StatusCreated:
 		// Alert rule deletion returns StatusNoContent
 	case http.StatusUnauthorized:
 		if !c.DisableReconnect && allowRetry {
