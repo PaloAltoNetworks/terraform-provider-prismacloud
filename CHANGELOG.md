@@ -1,3 +1,17 @@
+## 1.3.2 (March 28, 2023)
+
+* Enterprise settings bug resolution
+* Prismacloud resources state update when deleted outside of terraform fixed for account_group, alert_rule and compliance_standard_requirement
+
+NEW DATA SOURCES:
+
+* `prismacloud_permission_group` / `prismacloud_permission_groups`
+
+NEW RESOURCES: 
+
+* `prismacloud_permission_group`
+
+
 ## 1.3.1 (March 10, 2023)
 
 * Documentation fix
