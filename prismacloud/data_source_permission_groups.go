@@ -48,69 +48,6 @@ func dataSourcePermissionGroups() *schema.Resource {
 							Computed:    true,
 							Description: "Last modified timestamp",
 						},
-						"associated_roles": {
-							Type:        schema.TypeList,
-							Computed:    true,
-							Description: "Associated permission roles",
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"role_id": {
-										Type:        schema.TypeString,
-										Computed:    true,
-										Description: "The role ID",
-									},
-									"name": {
-										Type:        schema.TypeString,
-										Computed:    true,
-										Description: "Role name",
-									},
-								},
-							},
-						},
-						"features": {
-							Type:        schema.TypeList,
-							Computed:    true,
-							Description: "Features",
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"feature_name": {
-										Type:        schema.TypeString,
-										Computed:    true,
-										Description: "Feature name",
-									},
-									"operations": {
-										Type:        schema.TypeList,
-										Computed:    true,
-										Description: "Operations",
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-												//A mapping of operations and a boolean value representing whether the privilege to perform the operation needs to be granted.
-												"create": {
-													Type:        schema.TypeBool,
-													Computed:    true,
-													Description: "Create operation",
-												},
-												"read": {
-													Type:        schema.TypeBool,
-													Computed:    true,
-													Description: "Read operation",
-												},
-												"update": {
-													Type:        schema.TypeBool,
-													Computed:    true,
-													Description: "Update operation",
-												},
-												"delete": {
-													Type:        schema.TypeBool,
-													Computed:    true,
-													Description: "Delete operation",
-												},
-											},
-										},
-									},
-								},
-							},
-						},
 						"accept_account_groups": {
 							Type:        schema.TypeBool,
 							Computed:    true,
@@ -152,17 +89,6 @@ func dataSourcePermissionGroupsRead(ctx context.Context, d *schema.ResourceData,
 	}
 	ans := make([]interface{}, 0, len(items))
 	for _, v := range items {
-		aroles := map[string]interface{}{
-			"role_id": v.AssociatedRoles.RoleId,
-			"name":    v.AssociatedRoles.Name,
-		}
-		feat := make([]interface{}, 0, len(v.Features))
-		for _, fe := range v.Features {
-			feat = append(feat, map[string]interface{}{
-				"feature_name": fe.FeatureName,
-				"operations":   map[string]bool{"create": fe.Operations.CREATE, "read": fe.Operations.READ, "update": fe.Operations.UPDATE, "delete": fe.Operations.DELETE},
-			})
-		}
 		ans = append(ans, map[string]interface{}{
 			"name":                     v.Name,
 			"description":              v.Description,
@@ -174,8 +100,8 @@ func dataSourcePermissionGroupsRead(ctx context.Context, d *schema.ResourceData,
 			"accept_code_repositories": v.AcceptCodeRepositories,
 			"id":                       v.Id,
 			"custom":                   v.Custom,
-			"associated_roles":         []interface{}{aroles},
 		})
+
 	}
 	d.SetId("permission groups")
 	d.Set("total", len(items))

@@ -40,9 +40,9 @@ You must specify at least one of the following:
 * `operations` - A mapping of operations and a boolean value representing whether the privilege to perform the operation needs to be granted, as defined [below](#operations).
 
 #### Operations
-* `create`- (bool) - Create operation.
-* `read`- (bool) - Read operation.
-* `update`- (bool) - Update operation.
-* `delete`- (bool) - Delete operation.
+* `create`- (bool) Create operation.
+* `read`- (bool) Read operation.
+* `update`- (bool) Update operation.
+* `delete`- (bool) Delete operation.
 
 
