@@ -9,6 +9,7 @@ import (
 var InvalidCredentialsError = errors.New("invalid credentials")
 var ObjectNotFoundError = errors.New("object not found")
 var AlreadyExistsError = errors.New("object already exists")
+var InvalidPermissionGroupIdError = errors.New("invalid_permission_group_id") //permission group
 
 type PrismaCloudErrorList struct {
 	Errors     []PrismaCloudError
@@ -34,7 +35,9 @@ func (e PrismaCloudErrorList) Error() string {
 
 func (e PrismaCloudErrorList) GenericError() error {
 	for i := range e.Errors {
-		if e.Errors[i].ObjectNotFound() {
+		if e.Errors[i].InvalidPermissionGroupIdError() {
+			return InvalidPermissionGroupIdError
+		} else if e.Errors[i].ObjectNotFound() {
 			return ObjectNotFoundError
 		} else if e.Errors[i].AlreadyExists() {
 			return AlreadyExistsError
@@ -58,11 +61,20 @@ func (e PrismaCloudError) ObjectNotFound() bool {
 
 	return false
 }
-
+func (e PrismaCloudError) InvalidPermissionGroupIdError() bool {
+	return strings.HasSuffix(e.Message, "invalid_permission_group_id")
+}
 func (e PrismaCloudError) AlreadyExists() bool {
 	return strings.HasSuffix(e.Message, "_already_exists")
 }
 
 func (e PrismaCloudError) Error() string {
 	return fmt.Sprintf("Error(msg:%s severity:%s subject:%v)", e.Message, e.Severity, e.Subject)
+}
+
+func (e PrismaCloudError) InternalError() bool {
+	return strings.HasSuffix(e.Message, "internal_error")
+}
+func (e PrismaCloudError) AccountGroupNotFoundError() bool {
+	return strings.HasSuffix(e.Message, "account_group_not_found")
 }
