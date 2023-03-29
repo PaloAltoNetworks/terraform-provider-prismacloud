@@ -4,7 +4,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/mitchellh/mapstructure"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/permission_group"
 	"golang.org/x/net/context"
@@ -56,26 +55,15 @@ func resourcePermissionGroup() *schema.Resource {
 				Description: "Last modified timestamp",
 			},
 			"associated_roles": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeMap,
 				Computed:    true,
 				Description: "Associated permission roles",
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"role_id": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: "The role ID",
-						},
-						"name": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: "Role name",
-						},
-					},
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
 				},
 			},
 			"features": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Required:    true,
 				Description: "Features",
 				Elem: &schema.Resource{
@@ -87,29 +75,32 @@ func resourcePermissionGroup() *schema.Resource {
 						},
 						"operations": {
 							Type:        schema.TypeList,
-							Required:    true,
 							Description: "Operations",
+							Required:    true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
-									//A mapping of operations and a boolean value representing whether the privilege to perform the operation needs to be granted.
 									"create": {
 										Type:        schema.TypeBool,
 										Optional:    true,
+										Default:     false,
 										Description: "Create operation",
 									},
 									"read": {
 										Type:        schema.TypeBool,
 										Optional:    true,
+										Default:     false,
 										Description: "Read operation",
 									},
 									"update": {
 										Type:        schema.TypeBool,
 										Optional:    true,
+										Default:     false,
 										Description: "Update operation",
 									},
 									"delete": {
 										Type:        schema.TypeBool,
 										Optional:    true,
+										Default:     false,
 										Description: "Delete operation",
 									},
 								},
@@ -133,7 +124,7 @@ func resourcePermissionGroup() *schema.Resource {
 				Optional:    true,
 				Description: "Accept code repositories",
 			},
-			"custom": { //Boolean value signifying whether this is a custom (i.e. user-defined) permission group. Is set to true if the attribute value of permissionGroupType is set to CUSTOM
+			"custom": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Description: "Custom",
@@ -153,19 +144,23 @@ func parsePermissionGroup(d *schema.ResourceData) permission_group.PermissionGro
 		Description: d.Get("description").(string),
 	}
 
-	cld := d.Get("features").([]interface{})
+	ftrl := d.Get("features").(*schema.Set).List()
+	ans.Features = make([]permission_group.Features, 0, len(ftrl))
 
-	ans.Features = make([]permission_group.Features, 0, len(cld))
-	for _, fe := range cld {
-		cl := fe.(map[string]interface{})
-		var md permission_group.Operations
-		err := mapstructure.Decode(cl["operations"].([]interface{})[0], &md)
-		if err != nil {
-			panic(err)
-		}
+	for _, features := range ftrl {
+		ft := features.(map[string]interface{})
+		operations := permission_group.Operations{}
+
+		ops := ft["operations"].([]interface{})
+		op := ops[0].(map[string]interface{})
+
+		operations.READ = op["read"].(bool)
+		operations.CREATE = op["create"].(bool)
+		operations.DELETE = op["delete"].(bool)
+		operations.UPDATE = op["update"].(bool)
 		ans.Features = append(ans.Features, permission_group.Features{
-			FeatureName: cl["feature_name"].(string),
-			Operations:  md,
+			FeatureName: ft["feature_name"].(string),
+			Operations:  operations,
 		})
 	}
 
@@ -181,17 +176,32 @@ func savePermissionGroup(d *schema.ResourceData, obj permission_group.Permission
 	d.Set("permission_group_type", obj.Type)
 	d.Set("accept_account_groups", obj.AcceptAccountGroups)
 	d.Set("accept_resource_lists", obj.AcceptResourceLists)
-	d.Set("associated_roles", obj.AssociatedRoles)
 	d.Set("accept_code_repositories", obj.AcceptCodeRepositories)
 	d.Set("custom", obj.Custom)
 
-	feat := make([]interface{}, 0, len(obj.Features))
+	feat := make([]map[string]interface{}, 0, len(obj.Features))
 	for _, fe := range obj.Features {
+		ops := make([]map[string]interface{}, 1)
+		ops[0] = map[string]interface{}{
+			"create": fe.Operations.CREATE,
+			"read":   fe.Operations.READ,
+			"update": fe.Operations.UPDATE,
+			"delete": fe.Operations.DELETE,
+		}
 		feat = append(feat, map[string]interface{}{
 			"feature_name": fe.FeatureName,
-			"operations":   map[string]bool{"create": fe.Operations.CREATE, "read": fe.Operations.READ, "update": fe.Operations.UPDATE, "delete": fe.Operations.DELETE},
+			"operations":   ops,
 		})
 	}
+	d.Set("features", feat)
+
+	ar := make(map[string]interface{})
+	asrole := obj.AssociatedRoles
+	for key, val := range asrole {
+		ar[key] = val
+	}
+	d.Set("associated_roles", ar)
+
 }
 func createPermissionGroup(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)

@@ -51,22 +51,11 @@ func dataSourcePermissionGroup() *schema.Resource {
 				Description: "Last modified timestamp",
 			},
 			"associated_roles": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeMap,
 				Computed:    true,
 				Description: "Associated permission roles",
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"role_id": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: "The role ID",
-						},
-						"name": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: "Role name",
-						},
-					},
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
 				},
 			},
 			"features": {
