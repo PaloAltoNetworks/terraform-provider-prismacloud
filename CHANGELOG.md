@@ -1,3 +1,8 @@
+## 1.3.3 (March 29, 2023)
+
+* terraform provider bug fix for `prismacloud_permission_group`
+
+
 ## 1.3.2 (March 28, 2023)
 
 * Enterprise settings bug resolution
