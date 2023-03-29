@@ -2,8 +2,8 @@ package permission_group
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
-
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 )
@@ -39,7 +39,6 @@ func List(c pc.PrismaCloudClient) ([]PermissionGroup, error) {
 	return ans, nil
 }
 
-
 // Get returns all information about an user role using its ID.
 func Get(c pc.PrismaCloudClient, id string) (PermissionGroup, error) {
 	c.Log(pc.LogAction, "(get) %s id:%s", singular, id)
@@ -49,7 +48,12 @@ func Get(c pc.PrismaCloudClient, id string) (PermissionGroup, error) {
 	path := make([]string, 0, len(Suffix)+1)
 	path = append(path, Suffix...)
 	path = append(path, id)
-	if _, err := c.Communicate("GET", path, nil, nil, &ans); err != nil {
+
+	var query url.Values
+
+	query = url.Values{}
+	query.Add("includeAssociatedRoles", "true")
+	if _, err := c.Communicate("GET", path, query, nil, &ans); err != nil {
 		return ans, err
 	}
 
