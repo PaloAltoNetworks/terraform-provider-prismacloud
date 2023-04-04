@@ -117,6 +117,7 @@ func Provider() *schema.Provider {
 			"prismacloud_enterprise_settings":                      dataSourceEnterpriseSettings(),
 			"prismacloud_aws_cft_generator":                        dataSourceExternalId(),
 			"prismacloud_account_supported_features":               dataSourceCloudAccountSupportedFeatures(),
+			"prismacloud_azure_template":                           dataSourceAzureTemplate(),
 			"prismacloud_integration":                              dataSourceIntegration(),
 			"prismacloud_integrations":                             dataSourceIntegrations(),
 			"prismacloud_permission_group":                         dataSourcePermissionGroup(),
