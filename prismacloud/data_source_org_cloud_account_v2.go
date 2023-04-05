@@ -407,6 +407,7 @@ func dataSourceOrgV2CloudAccountRead(ctx context.Context, d *schema.ResourceData
 	cloudType := d.Get("cloud_type").(string)
 	id := d.Get("account_id").(string)
 	name := d.Get("name").(string)
+
 	if id == "" {
 		id, err = org.Identify(client, cloudType, name)
 		if err != nil {

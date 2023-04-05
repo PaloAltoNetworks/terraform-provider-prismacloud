@@ -19,7 +19,7 @@ data "prismacloud_cloud_account_v2" "example" {
 
 The following are the params that this data source supports.  At least one of the cloud account name and the account ID must be specified.  If one is left blank, it is determined at run time.
 
-* `cloud_type` - (Required) The cloud type.  Valid value is `aws`.
+* `cloud_type` - (Required) The cloud type. Valid value is `aws` or `azure`.
 * `name` - (Optional, computed) Cloud account name; computed if this is not supplied.
 * `account_id` - (Optional, computed) Account ID; computed if this is not supplied.
 
@@ -29,6 +29,7 @@ The cloud type given above determines which of the attributes are populated:
 
 * `disable_on_destroy` - (bool) To disable cloud account instead of deleting when calling Terraform destroy.
 * `aws` - AWS account type spec, defined [below](#aws).
+* `azure` - Azure account type spec, defined [below](#azure).
 
 ### AWS
 
@@ -48,6 +49,32 @@ The cloud type given above determines which of the attributes are populated:
 * `last_modified_epoch_millis` - Last modified at epoch millis.
 * `parent_id` - Parent id.
 * `protection_mode` - Protection mode of account.
+
+### Azure
+
+* `account_id` - Azure account ID.
+* `client_id` - Application ID registered with Active Directory.
+* `enabled` - (bool) Whether the account is enabled.
+* `group_ids` - List of account IDs to which you are assigning this account.
+* `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `key` - Application ID key.
+* `monitor_flow_logs` - (bool) Automatically ingest flow logs.
+* `tenant_id` - Active Directory ID associated with Azure.
+* `service_principal_id` - Unique ID of the service principal object associated with the Prisma Cloud application that
+  you create.
+* `account_type` - `account` for azure subscription account.
+* `protection_mode` - Protection mode of account.
+* `features` - Features applicable for azure account, defined [below](#features).
+* `environment_type` - `azure`,`azure_gov` or `azure_china` for azure subscription account.
+* `parent_id` - Parent id.
+* `customer_name` - Prisma customer name.
+* `created_epoch_millis` - Account created epoch time.
+* `last_modified_by` - Last modified by.
+* `last_modified_epoch_millis` - Last modified at epoch millis.
+* `deleted` - (bool) Whether the account is deleted or not.
+* `template_url` - Template URL.
+* `deployment_type` - `az` for azure account.
+* `deployment_type_description` - Deployment type description. Valid values: `Commercial` or `Government`.
 
 #### FEATURES
 

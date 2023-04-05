@@ -28,7 +28,7 @@ func dataSourceAzureTemplate() *schema.Resource {
 			},
 			"subscription_id": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: "Azure subscription ID",
 			},
 			"features": {
@@ -52,7 +52,7 @@ func dataSourceAzureTemplate() *schema.Resource {
 			"deployment_type": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Environment type",
+				Description: "Deployment type",
 				Default:     "azure",
 				ValidateFunc: validation.StringInSlice(
 					[]string{
