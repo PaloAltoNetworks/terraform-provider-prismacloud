@@ -134,6 +134,8 @@ func Provider() *schema.Provider {
 			"prismacloud_user_roles":                               dataSourceUserRoles(),
 			"prismacloud_user_profile":                             dataSourceUserProfile(),
 			"prismacloud_user_profiles":                            dataSourceUserProfiles(),
+			"prismacloud_notification_template":                    dataSourceNotificationTemplate(),
+			"prismacloud_notification_templates":                   dataSourceNotificationTemplates(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -159,6 +161,7 @@ func Provider() *schema.Provider {
 			"prismacloud_user_profile":                            resourceUserProfile(),
 			"prismacloud_org_cloud_account":                       resourceOrgCloudAccount(),
 			"prismacloud_org_cloud_account_v2":                    resourceOrgV2CloudAccount(),
+			"prismacloud_notification_template":                   resourceNotificationTemplate(),
 		},
 
 		ConfigureFunc: providerConfigure,
