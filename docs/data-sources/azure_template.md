@@ -4,30 +4,45 @@ page_title: "Prisma Cloud: prismacloud_azure_template"
 
 # prismacloud_azure_template
 
-Retrieve information about () for azure account.
+Retrieve information about azure template for azure account.
 
-## Example Usage
+## Example Usage for Azure Subscription
 
 ```hcl
 data "prismacloud_azure_template" "example" {
+  file_name       = "<file-name>" //filename along with path should be specified
+  account_type    = "account"
+  subscription_id = "<subscription-id>"
+  tenant_id       = "<tenant_id>"
+}
+```
+
+## Example Usage for Azure Active Directory
+
+```hcl
+data "prismacloud_azure_template" "example" {
+  file_name    = "<file-name>"  //filename along with path should be specified
   account_type = "tenant"
   tenant_id    = "<tenant-id>"
 }
 ```
 
-## Example usage to output s3_presigned_cft_url for update account and organization scenario
+## Example Usage for Azure Tenant
 
 ```hcl
-output "s3_presigned_cft_url" {
-  value = data.prismacloud_aws_cft_generator.example.s3_presigned_cft_url
+data "prismacloud_azure_template" "example" {
+  file_name         = "<file-name>" //filename along with path should be specified
+  account_type      = "tenant"
+  tenant_id         = "<tenant-id>"
+  root_sync_enabled = true
 }
 ```
 
-## Example usage to output external_id
+## Example usage to output azure_template
 
 ```hcl
-output "external_id" {
-  value = data.prismacloud_aws_cft_generator.example.external_id
+output "azure_template" {
+  value = data.prismacloud_azure_template.example.azure_template
 }
 ```
 
@@ -46,5 +61,4 @@ The following are the params that this data source supports:
   *[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)
   ** for more details.
 
-## Attribute Reference
 

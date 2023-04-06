@@ -9,6 +9,7 @@ Manage a cloud organization on the Prisma Cloud platform.
 ## **Example Usage 1**: AWS cloud Organization onboarding
 
 ### `Step 1`: Fetch the supported features. Refer *
+
 *[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)
 ** for more details.
 
@@ -26,6 +27,7 @@ output "features_supported_organization" {
 ```
 
 ### `Step 2`: Fetch the AWS CFT s3 presigned url based on required features. Refer *
+
 *[AWS CFT generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/aws_cft_generator_external_id)
 ** for more details.
 
@@ -290,27 +292,7 @@ data "prismacloud_azure_template" "prismacloud_tenant_azure_template" {
 }
 ```
 
-### `Step 3`: Create the IAM Role AWS CloudFormation Stack using S3 presigned cft url from above step2
-
-To create the IAM role using terraform, the aws official terraform aws_cloudformation_stack resource can be used.
-Refer https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudformation_stack for more details
-
-Example:
-
-```
-resource "aws_cloudformation_stack" "prismacloud_iam_role_stack" {
-  name = "PrismaCloudApp" // change if needed
-  capabilities = ["CAPABILITY_NAMED_IAM"]
-#   parameters { // optional
-#     PrismaCloudRoleName="<change-if-needed>" 
-#   }
-  template_url = data.prismacloud_aws_cft_generator.prismacloud_account_cft.s3_presigned_cft_url
-}
-
-output "iam_role" {
-    value = aws_cloudformation_stack.prismacloud_iam_role_stack.outputs.PrismaCloudRoleARN
-}
-```
+### `Step 3`: Execute the generated terraform file <terraform-file>.tf.json in the above step in the Azure Portal to create app registration and roles. Copy the details from the script output
 
 ### `Step 4`: Onboard the Azure cloud Active Directory Tenant onto prisma cloud platform
 
@@ -322,7 +304,7 @@ resource "prismacloud_org_cloud_account_v2" "example1" {
     client_id    = "<client-id>"
     account_type = "tenant"
     enabled      = true
-    name         = "test azure account456"   // should be unique for each account
+    name         = "test azure account"   // should be unique for each account
     group_ids    = [
       data.prismacloud_account_group.existing_account_group_id_org.group_id, // To use existing Account Group
       // prismacloud_account_group.new_account_group.group_id, // To create new Account group
@@ -365,26 +347,12 @@ data "prismacloud_azure_template" "prismacloud_tenant_azure_template" {
   features        = data.prismacloud_account_supported_features.prismacloud_supported_features_tenant.supported_features
 }
 
-resource "aws_cloudformation_stack" "prismacloud_iam_role_stack_org" {
-  name = "PrismaCloudOrgApp" // change if needed
-  capabilities = ["CAPABILITY_NAMED_IAM"]
-  parameters = {
-    OrganizationalUnitIds = "<OrganizationalUnitIds>" // 
-    # PrismaCloudRoleName = "<change-if-needed>" // [Optional] A Default PrismaCloudRoleName will be present in CFT
-  }
-  template_url = data.prismacloud_aws_cft_generator.prismacloud_organization_cft.s3_presigned_cft_url
-}
-
-output "iam_role_org" {
-    value = aws_cloudformation_stack.prismacloud_iam_role_stack_org.outputs.PrismaCloudRoleARN
-}
-
 resource "prismacloud_org_cloud_account_v2" "example1" {
   azure {
     client_id    = "<client-id>"
     account_type = "tenant"
     enabled      = true
-    name         = "test azure account456"   // should be unique for each account
+    name         = "test azure account"   // should be unique for each account
     group_ids    = [
       data.prismacloud_account_group.existing_account_group_id_org.group_id, // To use existing Account Group
       // prismacloud_account_group.new_account_group.group_id, // To create new Account group
@@ -410,6 +378,8 @@ data "prismacloud_account_group" "existing_account_group_id_org" {
 ```
 
 ## **Example Usage 4**: For Bulk Azure cloud Active Directory Tenant accounts onboarding
+
+### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 3' should be completed for each of the Tenant.
 
 /*
 You can also create cloud accounts from a CSV file using native Terraform
@@ -476,6 +446,14 @@ resource "prismacloud_org_cloud_account_v2" "example1" {
   }
 }
 ```
+
+## Prerequisite
+
+Before onboarding the azure cloud account. `azure_template` for account must be generated
+using `prismacloud_azure_template`.
+Refer *
+*[Azure template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/azure_template)
+** for more details.
 
 ## Argument Reference
 

@@ -243,27 +243,7 @@ data "prismacloud_azure_template" "prismacloud_azure_template" {
 }
 ```
 
-### `Step 3`: Create the IAM Role AWS CloudFormation Stack using S3 presigned cft url from above step2
-
-To create the IAM role using terraform, the aws official terraform aws_cloudformation_stack resource can be used.
-Refer https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudformation_stack for more details
-
-Example:
-
-```
-resource "aws_cloudformation_stack" "prismacloud_iam_role_stack" {
-  name = "PrismaCloudApp" // change if needed
-  capabilities = ["CAPABILITY_NAMED_IAM"]
-#   parameters { // optional
-#     PrismaCloudRoleName="<change-if-needed>" 
-#   }
-  template_url = data.prismacloud_aws_cft_generator.prismacloud_account_cft.s3_presigned_cft_url
-}
-
-output "iam_role" {
-    value = aws_cloudformation_stack.prismacloud_iam_role_stack.outputs.PrismaCloudRoleARN
-}
-```
+### `Step 3`: Execute the generated terraform file <terraform-file>.tf.json in the above step in the Azure Portal to create app registration and roles. Copy the details from the script output
 
 ### `Step 4`: Onboard the cloud account onto prisma cloud platform
 
@@ -327,15 +307,6 @@ data "prismacloud_azure_template" "prismacloud_azure_template" {
   features        = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features
 }
 
-resource "aws_cloudformation_stack" "prismacloud_iam_role_stack" {
-  name = "PrismaCloudApp" // change if needed
-  capabilities = ["CAPABILITY_NAMED_IAM"]
-#   parameters { // optional
-#     PrismaCloudRoleName="<change-if-needed>" 
-#   }
-  template_url = data.prismacloud_aws_cft_generator.prismacloud_account_cft.s3_presigned_cft_url
-}
-
 resource "prismacloud_cloud_account_v2" "azure_account_onboarding_example" {
   disable_on_destroy = true
   azure {
@@ -376,15 +347,9 @@ data "prismacloud_account_group" "existing_account_group_id" {
 
 ```
 
-## Prerequisite
-
-Before onboarding the azure cloud account. `external_id` for account must be generated
-using `prismacloud_azure_template`. Otherwise, you will encounter `error 412 : external_id_empty_or_not_generated`.
-Refer *
-*[Azure template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/azure_template)
-** for more details.
-
 ## **Example Usage 4**: Bulk Azure cloud accounts onboarding
+
+### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 3' should be completed for each of the account.
 
 /*
 You can also create cloud accounts from a CSV file using native Terraform
@@ -419,6 +384,14 @@ resource "prismacloud_cloud_account_v2" "azure_account_bulk_onboarding_example" 
     }
 }
 ```
+
+## Prerequisite
+
+Before onboarding the azure cloud account. `azure_template` for account must be generated
+using `prismacloud_azure_template`.
+Refer *
+*[Azure template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/azure_template)
+** for more details.
 
 ## Argument Reference
 
