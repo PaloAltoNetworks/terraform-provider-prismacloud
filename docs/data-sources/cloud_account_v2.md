@@ -60,12 +60,11 @@ The cloud type given above determines which of the attributes are populated:
 * `key` - Application ID key.
 * `monitor_flow_logs` - (bool) Automatically ingest flow logs.
 * `tenant_id` - Active Directory ID associated with Azure.
-* `service_principal_id` - Unique ID of the service principal object associated with the Prisma Cloud application that
-  you create.
+* `service_principal_id` - Unique ID of the service principal object associated with the Prisma Cloud application that you create.
 * `account_type` - `account` for azure subscription account.
 * `protection_mode` - Protection mode of account.
 * `features` - Features applicable for azure account, defined [below](#features).
-* `environment_type` - `azure`,`azure_gov` or `azure_china` for azure subscription account.
+* `environment_type` - Environment type.
 * `parent_id` - Parent id.
 * `customer_name` - Prisma customer name.
 * `created_epoch_millis` - Account created epoch time.
@@ -74,7 +73,7 @@ The cloud type given above determines which of the attributes are populated:
 * `deleted` - (bool) Whether the account is deleted or not.
 * `template_url` - Template URL.
 * `deployment_type` - `az` for azure account.
-* `deployment_type_description` - Deployment type description. Valid values: `Commercial` or `Government`.
+* `deployment_type_description` - Deployment type description. 
 
 #### FEATURES
 

@@ -10,7 +10,7 @@ Retrieve information about azure template for azure account.
 
 ```hcl
 data "prismacloud_azure_template" "example" {
-  file_name       = "<file-name>" //filename along with path should be specified
+  file_name       = "<file-name>" //Provide filename along with path to store azure template
   account_type    = "account"
   subscription_id = "<subscription-id>"
   tenant_id       = "<tenant_id>"
@@ -21,7 +21,7 @@ data "prismacloud_azure_template" "example" {
 
 ```hcl
 data "prismacloud_azure_template" "example" {
-  file_name    = "<file-name>"  //filename along with path should be specified
+  file_name    = "<file-name>"  //Provide filename along with path to store azure template
   account_type = "tenant"
   tenant_id    = "<tenant-id>"
 }
@@ -31,18 +31,10 @@ data "prismacloud_azure_template" "example" {
 
 ```hcl
 data "prismacloud_azure_template" "example" {
-  file_name         = "<file-name>" //filename along with path should be specified
+  file_name         = "<file-name>" //Provide filename along with path to store azure template
   account_type      = "tenant"
   tenant_id         = "<tenant-id>"
   root_sync_enabled = true
-}
-```
-
-## Example usage to output azure_template
-
-```hcl
-output "azure_template" {
-  value = data.prismacloud_azure_template.example.azure_template
 }
 ```
 
@@ -50,15 +42,12 @@ output "azure_template" {
 
 The following are the params that this data source supports:
 
-* `account_type` - (Required) Azure account type. `account` or `tenant`.
+* `account_type` - (Required) Azure account type.
 * `tenant_id` - (Required) Azure tenant ID.
-* `file_name` - (Required) File name to store azure template (complete path should be specified).
+* `file_name` - (Required) File name to store azure template (Provide filename along with path to store azure template).
 * `subscription_id` - (Optional) Azure subscription ID.
-* `root_sync_enabled` - (Optional) Azure tenant has children. Must be set to true `account_type` is `tenant`.
-* `deployment_type` - (Optional) `azure` or `azure_gov` for azure account.
-* `features` - (Optional) List of features. If features key/field is not passed, then the default features will be
-  applicable. Refer : *
-  *[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)
-  ** for more details.
+* `root_sync_enabled` - (Optional) Azure tenant has children. Must be set to true if `account_type` is `tenant`.
+* `deployment_type` - (Optional) Deployment type.
+* `features` - (Optional) List of features. If features key/field is not passed, then the default features will be applicable. Refer : **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features) ** for more details.
 
 

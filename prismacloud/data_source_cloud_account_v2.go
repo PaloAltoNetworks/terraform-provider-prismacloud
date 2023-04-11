@@ -119,7 +119,7 @@ func dataSourceV2CloudAccount() *schema.Resource {
 						"deployment_type": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: "Deployment type",
+							Description: "",
 						},
 						"customer_name": {
 							Type:        schema.TypeString,

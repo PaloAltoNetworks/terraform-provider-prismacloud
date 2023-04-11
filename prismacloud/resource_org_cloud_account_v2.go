@@ -2,7 +2,6 @@ package prismacloud
 
 import (
 	"context"
-	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"log"
@@ -719,7 +718,7 @@ func readOrgV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta int
 func updateOrgV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	_, _, _, obj := parseOrgV2CloudAccount(d)
-	fmt.Printf("%#v", obj)
+
 	if err := org.Update(client, obj); err != nil {
 		return diag.FromErr(err)
 	}
