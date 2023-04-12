@@ -61,7 +61,7 @@ The cloud type given above determines which of the attributes are populated:
 * `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `client_id` - Application ID registered with Active Directory.
 * `key` - Application ID key.
-* `monitor_flow_logs` - (bool) Automatically ingest flow logs.
+* `monitor_flow_logs` - (bool) Automatically ingest flow logs. Must be set to false when azure tenant is onboarded without children i.e., for `Active Directory Tenant`.
 * `tenant_id` - Active Directory ID associated with Azure.
 * `service_principal_id` - Unique ID of the service principal object associated with the Prisma Cloud application that you create.
 * `account_type` - `tenant` for azure account.

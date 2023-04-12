@@ -625,7 +625,7 @@ func saveOrgV2CloudAccount(d *schema.ResourceData, dest string, obj interface{})
 			"deployment_type":             v.CloudAccountAzureResp.DeploymentType,
 			"deployment_type_description": v.CloudAccountAzureResp.DeploymentTypeDescription,
 			"member_sync_enabled":         v.MemberSyncEnabled,
-			"root_sync_enabled":           x["root_sync_enabled"].(bool),
+			"root_sync_enabled":           v.MemberSyncEnabled,
 		}
 		if len(v.HierarchySelection) == 0 {
 			val["hierarchy_selection"] = nil
