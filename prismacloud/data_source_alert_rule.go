@@ -186,6 +186,23 @@ func dataSourceAlertRule() *schema.Resource {
 								},
 							},
 						},
+						"resource_list": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "Model for holding the lists resource list ids by resource list type",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"compute_access_group_ids": {
+										Type:        schema.TypeList,
+										Computed:    true,
+										Description: "List of compute access group ids",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
