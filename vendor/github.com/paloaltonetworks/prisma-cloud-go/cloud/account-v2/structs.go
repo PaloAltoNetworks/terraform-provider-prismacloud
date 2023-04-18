@@ -80,3 +80,66 @@ type CloudAccount struct {
 	ProtectionMode string   `json:"protectionMode"`
 	AccountType    string   `json:"accountType"`
 }
+
+//Azurev2
+
+type CloudAccountAzureResp struct {
+	AccountId                 string      `json:"accountId"`
+	Name                      string      `json:"name"`
+	CloudType                 string      `json:"cloudType"`
+	Enabled                   bool        `json:"enabled"`
+	ParentId                  string      `json:"parentId"`
+	AccountType               string      `json:"accountType"`
+	Deleted                   bool        `json:"deleted"`
+	ProtectionMode            string      `json:"protectionMode"`
+	DeploymentType            string      `json:"deploymentType"`
+	CustomerName              string      `json:"customerName"`
+	CreatedEpochMillis        int         `json:"createdEpochMillis"`
+	LastModifiedEpochMillis   int         `json:"lastModifiedEpochMillis"`
+	LastModifiedBy            string      `json:"lastModifiedBy"`
+	Features                  []Features1 `json:"features"`
+	DeploymentTypeDescription string      `json:"deploymentTypeDescription"`
+}
+type AzureAccountResponse struct {
+	CloudAccountAzureResp CloudAccountAzureResp `json:"cloudAccount"`
+	TenantId              string                `json:"tenantId"`
+	ServicePrincipalId    string                `json:"servicePrincipalId"`
+	ClientId              string                `json:"clientId"`
+	TemplateUrl           string                `json:"templateUrl"`
+	Key                   string                `json:"key"`
+	GroupIds              []string              `json:"groupIds"`
+	MonitorFlowLogs       bool                  `json:"monitorFlowLogs"`
+	EnvironmentType       string                `json:"environmentType"`
+}
+type AzureV2 struct {
+	CloudAccountAzureResp CloudAccountAzureResp `json:"cloudAccount"`
+	ClientId              string                `json:"clientId"`
+	EnvironmentType       string                `json:"environmentType"`
+	Key                   string                `json:"key"`
+	MonitorFlowLogs       bool                  `json:"monitorFlowLogs"`
+	ServicePrincipalId    string                `json:"servicePrincipalId"`
+	GroupIds              []string              `json:"groupIds"`
+	TemplateUrl           string                `json:"templateUrl"`
+	TenantId              string                `json:"tenantId"`
+	DeploymentType        string                `json:"deploymentType"`
+}
+
+type Azure struct {
+	CloudAccountAzure  CloudAccountAzure `json:"cloudAccount"`
+	ClientId           string            `json:"clientId"`
+	Key                string            `json:"key"`
+	MonitorFlowLogs    bool              `json:"monitorFlowLogs"`
+	TenantId           string            `json:"tenantId"`
+	ServicePrincipalId string            `json:"servicePrincipalId"`
+	EnvironmentType    string            `json:"environmentType"`
+	Features           []Features        `json:"features"`
+	Enabled            bool              `json:"enabled"`
+}
+
+type CloudAccountAzure struct {
+	AccountId   string   `json:"accountId"`
+	Enabled     bool     `json:"enabled"`
+	Name        string   `json:"name"`
+	AccountType string   `json:"accountType"`
+	GroupIds    []string `json:"groupIds"`
+}

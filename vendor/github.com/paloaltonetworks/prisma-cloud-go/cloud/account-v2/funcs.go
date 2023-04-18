@@ -12,11 +12,22 @@ func List(c pc.PrismaCloudClient) ([]AccountResponse, error) {
 	c.Log(pc.LogAction, "(get) list of %s", plural)
 
 	var ans []AccountResponse
-	if _, err := c.Communicate("GET", ListSuffix, nil, nil, &ans); err != nil {
+	if _, err := c.Communicate("GET", ListSuffixAws, nil, nil, &ans); err != nil {
 		return nil, err
 	}
 
 	return ans, nil
+}
+
+func ListAzure(c pc.PrismaCloudClient) ([]AzureAccountResponse, error) {
+	c.Log(pc.LogAction, "(get) list of %s", plural)
+
+	var ansaz []AzureAccountResponse
+	if _, err := c.Communicate("GET", ListSuffixAzure, nil, nil, &ansaz); err != nil {
+		return nil, err
+	}
+
+	return ansaz, nil
 }
 
 // Names returns the name listing for cloud accounts.
@@ -36,15 +47,30 @@ func Names(c pc.PrismaCloudClient) ([]NameTypeId, error) {
 // Identify returns the ID for the given cloud type and name.
 func Identify(c pc.PrismaCloudClient, cloudType, name string) (string, error) {
 	c.Log(pc.LogAction, "(get) id for %s type:%s name:%s", singular, cloudType, name)
+	if cloudType == "aws" {
+		ans, err := List(c)
+		if err != nil {
+			return "", err
+		}
 
-	ans, err := List(c)
-	if err != nil {
-		return "", err
+		for _, o := range ans {
+			if strings.EqualFold(o.CloudAccountResp.CloudType, cloudType) && o.CloudAccountResp.Name == name {
+				return o.CloudAccountResp.AccountId, nil
+			}
+
+		}
 	}
+	if strings.EqualFold("azure", cloudType) {
+		ansaz, err := ListAzure(c)
+		if err != nil {
+			return "", err
+		}
 
-	for _, o := range ans {
-		if strings.EqualFold(o.CloudAccountResp.CloudType, cloudType) && o.CloudAccountResp.Name == name {
-			return o.CloudAccountResp.AccountId, nil
+		for _, o := range ansaz {
+			if strings.EqualFold(o.CloudAccountAzureResp.CloudType, cloudType) && o.CloudAccountAzureResp.Name == name {
+				return o.CloudAccountAzureResp.AccountId, nil
+			}
+
 		}
 	}
 
@@ -52,26 +78,35 @@ func Identify(c pc.PrismaCloudClient, cloudType, name string) (string, error) {
 }
 
 func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
+	var cloud string
+	cloud = cloudType
+	cloud = cloud + "Accounts"
 	c.Log(pc.LogAction, "(get) %s type:%s id:%s", singular, cloudType, id)
 
 	path := make([]string, 0, len(ListSuffix)+1)
 	path = append(path, ListSuffix...)
-	path = append(path, id)
+	path = append(path, cloud, id)
 
 	var ans interface{}
 
-	if cloudType == TypeAws {
+	switch cloudType {
+	case TypeAws:
 		ans = &AwsV2{}
-	} else {
+	case TypeAzure:
+		ans = &AzureV2{}
+	default:
 		return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
 	}
-
 	_, err := c.Communicate("GET", path, nil, nil, ans)
 
-	if cloudType == TypeAws {
+	switch cloudType {
+	case TypeAws:
 		return *ans.(*AwsV2), err
+	case TypeAzure:
+		return *ans.(*AzureV2), err
 	}
 	return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
+
 }
 
 // Create onboards a new cloud account onto the Prisma Cloud platform.
@@ -113,9 +148,10 @@ func DisableCloudAccount(c pc.PrismaCloudClient, accountId string) error {
 
 func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) error {
 	var (
-		logMsg strings.Builder
-		id     string
-		method string
+		logMsg    strings.Builder
+		id        string
+		method    string
+		cloudType string
 	)
 
 	logMsg.Grow(30)
@@ -134,7 +170,12 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 		return fmt.Errorf("Cloud account specified")
 	case Aws:
 		logMsg.WriteString("aws")
+		cloudType = TypeAws
 		id = v.AccountId
+	case Azure:
+		logMsg.WriteString("azure")
+		cloudType = TypeAzure
+		id = v.CloudAccountAzure.AccountId
 	default:
 		return fmt.Errorf("invalid account type %v", v)
 	}
@@ -149,9 +190,13 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 
 	path := make([]string, 0, len(Suffix)+1)
 	path = append(path, Suffix...)
+	cloudType = cloudType + "_account"
+	path = append(path, cloudType)
 	if exists {
 		path = append(path, id)
 	}
+
 	_, err := c.Communicate(method, path, nil, account, nil)
 	return err
+
 }

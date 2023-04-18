@@ -107,3 +107,75 @@ type Features1 struct {
 	Name  string `json:"featureName"`
 	State string `json:"featureState"`
 }
+
+//AZUREORG
+
+type CloudAccountAzureResp struct {
+	AccountId                 string      `json:"accountId"`
+	Name                      string      `json:"name"`
+	CloudType                 string      `json:"cloudType"`
+	Enabled                   bool        `json:"enabled"`
+	ParentId                  string      `json:"parentId"`
+	AccountType               string      `json:"accountType"`
+	Deleted                   bool        `json:"deleted"`
+	ProtectionMode            string      `json:"protectionMode"`
+	CustomerName              string      `json:"customerName"`
+	CreatedEpochMillis        int         `json:"createdEpochMillis"`
+	LastModifiedEpochMillis   int         `json:"lastModifiedEpochMillis"`
+	LastModifiedBy            string      `json:"lastModifiedBy"`
+	Features                  []Features1 `json:"features"`
+	DeploymentType            string      `json:"deploymentType"`
+	DeploymentTypeDescription string      `json:"deploymentTypeDescription"`
+}
+type AzureAccountResponse struct {
+	CloudAccountAzureResp CloudAccountAzureResp `json:"cloudAccount"`
+	TenantId              string                `json:"tenantId"`
+	ServicePrincipalId    string                `json:"servicePrincipalId"`
+	ClientId              string                `json:"clientId"`
+	TemplateUrl           string                `json:"templateUrl"`
+	HierarchySelection    []HierarchySelection  `json:"hierarchySelection"`
+	DefaultAccountGroupId string                `json:"defaultAccountGroupId"`
+	Key                   string                `json:"key"`
+	GroupIds              []string              `json:"groupIds"`
+	MonitorFlowLogs       bool                  `json:"monitorFlowLogs"`
+	EnvironmentType       string                `json:"environmentType"`
+	MemberSyncEnabled     bool                  `json:"memberSyncEnabled"`
+}
+type AzureOrgV2 struct {
+	CloudAccountAzureResp CloudAccountAzureResp `json:"cloudAccount"`
+	ClientId              string                `json:"clientId"`
+	EnvironmentType       string                `json:"environmentType"`
+	Key                   string                `json:"key"`
+	MonitorFlowLogs       bool                  `json:"monitorFlowLogs"`
+	ServicePrincipalId    string                `json:"servicePrincipalId"`
+	TemplateUrl           string                `json:"templateUrl"`
+	HierarchySelection    []HierarchySelection  `json:"hierarchySelection"`
+	DefaultAccountGroupId string                `json:"defaultAccountGroupId"`
+	RootSyncEnabled       bool                  `json:"rootSyncEnabled"`
+	GroupIds              []string              `json:"groupIds"`
+	MemberSyncEnabled     bool                  `json:"memberSyncEnabled"`
+	TenantId              string                `json:"tenantId"`
+}
+
+type AzureOrg struct {
+	OrgAccountAzure       OrgAccountAzure      `json:"cloudAccount"`
+	Enabled               bool                 `json:"enabled"`
+	ClientId              string               `json:"clientId"`
+	HierarchySelection    []HierarchySelection `json:"hierarchySelection"`
+	DefaultAccountGroupId string               `json:"defaultAccountGroupId"`
+	Key                   string               `json:"key"`
+	MonitorFlowLogs       bool                 `json:"monitorFlowLogs"`
+	TenantId              string               `json:"tenantId"`
+	ServicePrincipalId    string               `json:"servicePrincipalId"`
+	Features              []Features           `json:"features"`
+	RootSyncEnabled       bool                 `json:"rootSyncEnabled"`
+}
+
+type OrgAccountAzure struct {
+	AccountId      string   `json:"accountId"`
+	Enabled        bool     `json:"enabled"`
+	GroupIds       []string `json:"groupIds"`
+	Name           string   `json:"name"`
+	ProtectionMode string   `json:"protectionMode"`
+	AccountType    string   `json:"accountType"`
+}

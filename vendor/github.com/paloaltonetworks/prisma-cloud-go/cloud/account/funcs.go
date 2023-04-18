@@ -180,6 +180,7 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 		path = append(path, id)
 	}
 
+	//method, path, queryparams, request, responseObj,
 	_, err := c.Communicate(method, path, nil, account, nil)
 	return err
 }

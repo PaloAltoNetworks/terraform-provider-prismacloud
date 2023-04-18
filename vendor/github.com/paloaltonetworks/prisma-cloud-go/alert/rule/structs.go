@@ -27,15 +27,20 @@ type Rule struct {
 }
 
 type Target struct {
-	AccountGroups    []string `json:"accountGroups"`
-	ExcludedAccounts []string `json:"excludedAccounts,omitempty"`
-	Regions          []string `json:"regions,omitempty"`
-	Tags             []Tag    `json:"tags,omitempty"`
+	AccountGroups    []string     `json:"accountGroups"`
+	ExcludedAccounts []string     `json:"excludedAccounts,omitempty"`
+	Regions          []string     `json:"regions,omitempty"`
+	Tags             []Tag        `json:"tags,omitempty"`
+	ResourceList     ResourceList `json:"includedResourceLists"`
 }
 
 type Tag struct {
 	Key    string   `json:"key"`
 	Values []string `json:"values"`
+}
+
+type ResourceList struct {
+	IncludedResourceLists []string `json:"computeAccessGroupIds"`
 }
 
 type NotificationConfig struct {
