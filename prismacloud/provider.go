@@ -135,6 +135,8 @@ func Provider() *schema.Provider {
 			"prismacloud_user_roles":                               dataSourceUserRoles(),
 			"prismacloud_user_profile":                             dataSourceUserProfile(),
 			"prismacloud_user_profiles":                            dataSourceUserProfiles(),
+			"prismacloud_trusted_login_ip":                         dataSourceTrustedLoginIp(),
+			"prismacloud_trusted_login_ips":                        dataSourceTrustedLoginIps(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -160,6 +162,7 @@ func Provider() *schema.Provider {
 			"prismacloud_user_profile":                            resourceUserProfile(),
 			"prismacloud_org_cloud_account":                       resourceOrgCloudAccount(),
 			"prismacloud_org_cloud_account_v2":                    resourceOrgV2CloudAccount(),
+			"prismacloud_trusted_login_ip":                        resourceTrustedLoginIp(),
 		},
 
 		ConfigureFunc: providerConfigure,
