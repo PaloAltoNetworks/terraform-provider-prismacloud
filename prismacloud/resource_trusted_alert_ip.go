@@ -2,12 +2,11 @@ package prismacloud
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/trusted-alert-ip"
 	"golang.org/x/net/context"
 	"log"
-
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceTrustedAlertIp() *schema.Resource {
@@ -51,6 +50,7 @@ func resourceTrustedAlertIp() *schema.Resource {
 						"uuid": {
 							Type:        schema.TypeString,
 							Computed:    true,
+							Optional:    true,
 							Description: "UUID",
 						},
 						"created_on": {
@@ -115,18 +115,25 @@ func createTrustedAlertIp(ctx context.Context, d *schema.ResourceData, meta inte
 	client := meta.(*pc.Client)
 	obj := parseTrustedAlertIp(d, "")
 
-	if _, err := trustedalertip.Create(client, obj); err != nil {
-		return diag.FromErr(err)
+	var id string
+	var id1 string
+	id1, _ = trustedalertip.Identify(client, obj.Name)
+	if id1 == "" {
+		if _, err := trustedalertip.Create(client, obj); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	PollApiUntilSuccess(func() error {
-		_, err := trustedalertip.Identify(client, obj.Name)
+		id2, err := trustedalertip.Identify(client, obj.Name)
+		id = id2
 		return err
 	})
-
-	id, err := trustedalertip.Identify(client, obj.Name)
-	if err != nil {
-		return diag.FromErr(err)
+	for _, o := range obj.CIDRS {
+		_, err := trustedalertip.CreateCIDR(client, o, id)
+		if err == pc.OverlappingCIDRError { //change here
+			log.Printf("OverlappingCIDRError : %s", id)
+		}
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -144,7 +151,7 @@ func readTrustedAlertIp(ctx context.Context, d *schema.ResourceData, meta interf
 
 	obj, err := trustedalertip.Get(client, id)
 	if err != nil {
-		if err == pc.AccountGroupNotFoundError { //changehere
+		if err == pc.ObjectNotFoundError {
 			d.SetId("")
 			return nil
 		}
@@ -157,13 +164,56 @@ func readTrustedAlertIp(ctx context.Context, d *schema.ResourceData, meta interf
 }
 
 func updateTrustedAlertIp(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	obj := trustedalertip.TrustedAlertIP{
+		UUID:      d.Get("uuid").(string),
+		Name:      d.Get("name").(string),
+		CidrCount: d.Get("cidr_count").(int),
+	}
+	cidrs := d.Get("cidrs").(*schema.Set).List()
+	obj.CIDRS = make([]trustedalertip.CIDRS, 0, len(cidrs))
+	for _, tlex := range cidrs {
+		tle := tlex.(map[string]interface{})
+		obj.CIDRS = append(obj.CIDRS, trustedalertip.CIDRS{
+			CIDR:        tle["cidr"].(string),
+			UUID:        tle["uuid"].(string),
+			Description: tle["description"].(string),
+			CreatedOn:   tle["created_on"].(int),
+		})
+	}
 	client := meta.(*pc.Client)
-	obj := parseTrustedAlertIp(d, d.Id())
 
-	if _, err := trustedalertip.Update(client, obj); err != nil {
-		return diag.FromErr(err)
+	var id string
+	var id1 string
+	id1, _ = trustedalertip.Identify(client, obj.Name)
+	if id1 == "" {
+		if _, err := trustedalertip.Create(client, obj); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	PollApiUntilSuccess(func() error {
+		id2, err := trustedalertip.Identify(client, obj.Name)
+		id = id2
+		return err
+	})
+
+	listing, _ := trustedalertip.Get(client, id)
+	get_api_all_ips := listing.CIDRS
+	var ips_to_delete = Intersection(get_api_all_ips, obj.CIDRS)
+
+	for _, ip_uuid := range ips_to_delete {
+		if _, err := trustedalertip.DeleteCIDRFromTrustedAlertIp(client, id, ip_uuid); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
+	for _, o := range obj.CIDRS {
+		_, err := trustedalertip.CreateCIDR(client, o, id)
+		if err == pc.OverlappingCIDRError {
+			if _, err := trustedalertip.UpdateCIDR(client, o, id, o.UUID); err != nil {
+				return diag.FromErr(err)
+			}
+		}
+	}
 	return readTrustedAlertIp(ctx, d, meta)
 }
 
@@ -171,12 +221,31 @@ func deleteTrustedAlertIp(ctx context.Context, d *schema.ResourceData, meta inte
 	client := meta.(*pc.Client)
 	id := d.Id()
 
-	if err := trustedalertip.Delete(client, id); err != nil {
-		if err != pc.ObjectNotFoundError {
-			return diag.FromErr(err)
+	obj := parseTrustedAlertIp(d, d.Id())
+
+	for _, o := range obj.CIDRS {
+		if err := trustedalertip.Delete(client, id, o.UUID); err != nil {
+			if err != pc.ObjectNotFoundError {
+				return diag.FromErr(err)
+			}
 		}
 	}
 
 	d.SetId("")
 	return nil
+}
+
+func Intersection(a, b []trustedalertip.CIDRS) (c []string) {
+	m := make(map[string]bool)
+
+	for _, item := range b {
+		m[item.UUID] = true
+	}
+
+	for _, item := range a {
+		if _, ok := m[item.UUID]; !ok {
+			c = append(c, item.UUID)
+		}
+	}
+	return c
 }

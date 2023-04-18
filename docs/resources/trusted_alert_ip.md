@@ -11,34 +11,29 @@ Manage an trusted alert ip.
 ```hcl
 resource "prismacloud_trusted_alert_ip" "example" {
     name = "My new group"
-    description = "Made by Terraform"
-    account_ids = [
-    prismacloud_cloud_account1,
-    ]
+    cidrs {
+        cidr = "1.1.1.1"
+        description = "ip address description"
+    }
 }
 ```
 
 ## Argument Reference
 
-One of the following must be specified:
-
 * `name` - Name of the trusted alert ip.
-* `cidrs` - CIDRs, as defined [below](#CIDRs).
-
-
+* `cidrs` - CIDRs, as defined [below](#CIDR).
 
 ## Attribute Reference
 
 * `uuid` - UUID.
 * `cidr_count` - CIDR count.
 
+### CIDR
 
-### CIDRs
-
-* `cidr` - (int) Last modified timestamp.
+* `cidr` - (string) Ip address.
 * `description` - Description.
-* `uuid` - UUID.
-* `created_on` - Created_on.
+* `uuid` - UUID for cidr.
+* `created_on` - (int) Created on.
 
 ## Import
 

@@ -4,7 +4,7 @@ page_title: "Prisma Cloud: prismacloud_trusted_alert_ips"
 
 # prismacloud_trusted_alert_ips
 
-Retrieves trusted alert ips information
+Retrieves a list of trusted alert ips.
 
 ## Example Usage
 
@@ -14,17 +14,23 @@ data "prismacloud_trusted_alert_ips" "example" {
 }
 ```
 
-### Attribute Reference
+## Attribute Reference
+
+* `total` - (int) Total number of trusted alert ips.
+* `listing` - List of trusted alert ips returned, as defined [below](#listing).
+
+### Listing
+
+Each trusted alert ip has the following attributes:
 
 * `name` - Name of the trusted alert ip.
 * `uuid` - UUID.
-* `cidrs` - CIDRs, as defined [below](#CIDRs).
+* `cidrs` - List of CIDRs, as defined [below](#CIDR).
 * `cidr_count` - CIDR count.
 
+### CIDR
 
-### CIDRs
-
-* `cidr` - (int) Last modified timestamp.
+* `cidr` - (string) Ip address.
 * `description` - Description.
-* `uuid` - List of cloud account IDs.
-* `created_on` - List of child account group IDs.
+* `uuid` - UUID for cidr.
+* `created_on` - (int) Created on.
