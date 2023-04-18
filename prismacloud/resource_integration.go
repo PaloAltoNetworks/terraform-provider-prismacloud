@@ -676,21 +676,13 @@ func createIntegration(ctx context.Context, d *schema.ResourceData, meta interfa
 		return diag.FromErr(err)
 	}
 
-	PollApiUntilSuccess(func() error {
-		_, err := integration.Identify(client, o.Name, prismaIdRequired)
-		return err
-	})
-
-	id, err := integration.Identify(client, o.Name, prismaIdRequired)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	var id string
 
 	PollApiUntilSuccess(func() error {
-		_, err := integration.Get(client, id, prismaIdRequired)
+		id1, err := integration.Identify(client, o.Name, prismaIdRequired)
+		id = id1
 		return err
 	})
-
 	d.SetId(id)
 	return readIntegration(ctx, d, meta)
 }
