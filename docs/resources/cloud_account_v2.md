@@ -357,6 +357,297 @@ resource "prismacloud_cloud_account_v2" "azure_account_bulk_onboarding_example" 
 
 Before onboarding the azure cloud account. `azure_template` for account must be generated using `prismacloud_azure_template`. Refer **[Azure template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/azure_template)** for more details.
 
+## **Example Usage 5**: Gcp cloud account onboarding
+
+### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
+
+```hcl
+data "prismacloud_account_supported_features" "prismacloud_supported_features" {
+  cloud_type      = "gcp"
+  account_type    = "<account-type>"   //"account" or "masterServiceAccount"
+}
+```
+
+```hcl
+output "features_supported" {
+  value = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features
+}
+```
+
+### `Step 2`: Fetch the Gcp template based on required features. Refer **[Gcp template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/gcp_template)** for more details.
+
+```hcl
+data "prismacloud_gcp_template" "prismacloud_gcp_template" {
+  name = "test account"
+  account_type = "<account-type>"   //"account" or "masterServiceAccount"
+  project_id = "<project_id>"
+  authentication_type = "service_account"
+  file_name = "<file-name>" //Provide filename along with path to store gcp template
+  features = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features
+}
+```
+
+### `Step 3`: Execute the generated terraform file <terraform-file>.tf.json in the above step in the Gcp Portal to create app registration and roles. Copy the details from the script output
+
+### `Step 4`: Onboard the cloud account onto prisma cloud platform
+
+```hcl
+# Single Gcp account type.
+resource "prismacloud_cloud_account_v2" "gcp_account_onboarding_example" {
+  disable_on_destroy = true
+  gcp {
+    account_id = "<account-id>"
+    account_type = "<account-type>"   //"account" or "masterServiceAccount"
+    enabled = true
+    name = "Google Cloud Account" //Should be unique for each account
+    group_ids    = [  //Should be given for gcp project account
+      data.prismacloud_account_group.existing_account_group_id.group_id, //To use existing Account Group
+      //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    ]
+    compression_enabled = false
+    credentials = file("gcp_credentials_v2.json") //File containing credentials
+    features {
+      name = "Agentless Scanning" //To enable 'Agentless Scanning' feature if required.
+      state = "enabled"
+    }
+    features {
+      name = "Remediation"  //To enable Remediation also known as Monitor and Protect
+      state = "disabled"
+    }
+    default_account_group_id    =   //Should be given for gcp master service account
+      data.prismacloud_account_group.existing_account_group_id.group_id //To use existing Account Group
+      //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+  }
+}
+// Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id" {
+  name = "Default Account Group"
+  // Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" // Account group name to be created
+# }
+
+```
+
+### **Consolidated code snippet for all the above steps**
+
+```
+data "prismacloud_account_supported_features" "prismacloud_supported_features" {
+  cloud_type      = "gcp"
+  account_type    = "<account-type>"   //"account" or "masterServiceAccount"
+}
+
+data "prismacloud_gcp_template" "prismacloud_gcp_template" {
+  name = "test account"
+  account_type = "<account-type>"   //"account" or "masterServiceAccount"
+  project_id = "<project_id>"
+  authentication_type = "service_account"
+  file_name = "<file-name>" //Provide filename along with path to store gcp template
+  features = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features
+}
+
+resource "prismacloud_cloud_account_v2" "gcp_account_onboarding_example" {
+  disable_on_destroy = true
+  gcp {
+    account_id = "<account-id>"
+    account_type = "<account-type>"   //"account" or "masterServiceAccount"
+    enabled = true
+    name = "Google Cloud Account" //Should be unique for each account
+    group_ids    = [  //Should be given for gcp project account
+      data.prismacloud_account_group.existing_account_group_id.group_id, //To use existing Account Group
+      //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    ]
+    compression_enabled = false
+    credentials = file("gcp_credentials_v2.json") //File containing credentials
+    features {
+      name = "Agentless Scanning" //To enable 'Agentless Scanning' feature if required.
+      state = "enabled"
+    }
+    features {
+      name = "Remediation"  //To enable Remediation also known as Monitor and Protect
+      state = "disabled"
+    }
+    default_account_group_id    =   //Should be given for gcp master service account
+      data.prismacloud_account_group.existing_account_group_id.group_id //To use existing Account Group
+      //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+  }
+}
+// Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id" {
+  name = "Default Account Group"
+  // Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" // Account group name to be created
+# }
+
+```
+
+## **Example Usage 6**: Bulk Gcp cloud accounts onboarding
+
+### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 5' should be completed for each of the account.
+
+/*
+You can also create cloud accounts from a CSV file using native Terraform
+HCL and looping. Assume you have a CSV file of Gcp accounts that looks like this (with
+"||" separating account group IDs from each other):
+
+accountId,groupIDs,name,credentials
+123456789,Default Account Group ID||Gcp Account Group ID,Google Cloud Account,gcp_credentials_v2.json
+213456789,Default Account Group ID||Gcp Account Group ID,Google Cloud Account1,gcp_credentials1_v2.json
+321466019,Default Account Group ID||Gcp Account Group ID,Google Cloud Account2,gcp_credentials2_v2.json
+
+*/
+
+```
+locals {
+    instances = csvdecode(file("gcp.csv"))
+}
+// Now specify the cloud account resource with a loop like so:
+
+resource "prismacloud_cloud_account_v2" "gcp_account_bulk_onboarding_example" {
+    for_each = { for inst in local.instances : inst.name => inst }
+    
+    gcp {
+        account_id = each.value.accountId
+        group_ids = split("||", each.value.groupIDs)
+        name = each.value.name
+        credentials=each.value.credentials
+    }
+}
+```
+
+## Prerequisite
+
+Before onboarding the gcp cloud account. `gcp_template` for account must be generated using `prismacloud_gcp_template`. Refer **[Gcp template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/gcp_template)** for more details.
+
+## **Example Usage 7**: IBM cloud account onboarding
+
+### `Step 1`: Fetch the IBM template. Refer **[IBM template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/ibm_template)** for more details.
+
+```hcl
+data "prismacloud_ibm_template" "prismacloud_ibm_template" {
+  file_name       = "<file-name>" //Provide filename along with path to store ibm template
+  account_type    = "account"
+}
+```
+
+### `Step 2`: Execute the generated terraform file <terraform-file>.tf.json in the above step in the IBM Portal to create app registration and roles. Copy the details from the script output
+
+### `Step 3`: Onboard the cloud account onto prisma cloud platform
+
+```hcl
+# IBM account type.
+resource "prismacloud_cloud_account_v2" "ibm_account_onboarding_example" {
+  disable_on_destroy = true
+  ibm {
+    account_id   = "<account-id>"
+    account_type = "account"
+    group_ids    = [
+      data.prismacloud_account_group.existing_account_group_id.group_id, //To use existing Account Group
+      //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    ]
+    enabled      = false
+    name         = "test IBM account" //Should be unique for each account
+    api_key      = "<api-key>"
+    svc_id_iam_id = "<svc-id-iam-id>"
+  }
+}
+
+// Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id" {
+  name = "Default Account Group"
+  // Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" // Account group name to be created
+# }
+
+```
+
+### **Consolidated code snippet for all the above steps**
+
+```
+data "prismacloud_ibm_template" "prismacloud_ibm_template" {
+  file_name       = "<file-name>" //Provide filename along with path to store gcp template
+  account_type    = "account"
+}
+
+resource "prismacloud_cloud_account_v2" "ibm_account_onboarding_example" {
+  disable_on_destroy = true
+  ibm {
+    account_id   = "<account-id>"
+    account_type = "account"
+    group_ids    = [
+      data.prismacloud_account_group.existing_account_group_id.group_id, //To use existing Account Group
+      //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    ]
+    enabled      = false
+    name         = "test IBM account" //Should be unique for each account
+    api_key      = "<api-key>"
+    svc_id_iam_id = "<svc-id-iam-id>"
+  }
+}
+
+// Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id" {
+  name = "Default Account Group"
+  // Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" // Account group name to be created
+# }
+
+```
+
+## **Example Usage 8**: Bulk IBM cloud accounts onboarding
+
+### `Prerequisite Step`: Steps 1, 2 mentioned in 'Example Usage 7' should be completed for each of the account.
+
+/*
+You can also create cloud accounts from a CSV file using native Terraform
+HCL and looping. Assume you have a CSV file of IBM accounts that looks like this (with
+"||" separating account group IDs from each other):
+
+accountId,apiKey,groupIds,name,svcIdIamId
+123456789,0xJ8Q~,Default Account Group ID||IBM Account Group ID,123456789,86e439878
+213456789,0yJ9Q,Default Account Group ID||IBM Account Group ID,213456789,5541253
+321466019,1xJ8Q~,Default Account Group ID||IBM Account Group ID,321466019,4543250
+
+*/
+
+```
+locals {
+    instances = csvdecode(file("ibm.csv"))
+}
+// Now specify the cloud account resource with a loop like so:
+
+resource "prismacloud_cloud_account_v2" "ibm_account_bulk_onboarding_example" {
+    for_each = { for inst in local.instances : inst.name => inst }
+    
+    ibm {
+        account_id = each.value.accountId
+        api_key=each.value.apiKey
+        group_ids = split("||", each.value.groupIDs)
+        name = each.value.name
+        svc_id_iam_id=each.value.svcIdIamId
+    }
+}
+```
+
+## Prerequisite
+
+Before onboarding the IBM cloud account. `ibm_template` for account must be generated using `prismacloud_ibm_template`. Refer **[IBM template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/ibm_template)** for more details.
+
 ## Argument Reference
 
 The type of cloud account to add.
@@ -364,6 +655,8 @@ The type of cloud account to add.
 * `disable_on_destroy` - (Optional, bool) To disable cloud account instead of deleting when calling Terraform destroy (default: `false`).
 * `aws` - AWS account type spec, defined [below](#aws).
 * `azure` - Azure account type spec, defined [below](#azure).
+* `gcp` - Gcp account type spec, defined [below](#gcp).
+* `ibm` - IBM account type spec, defined [below](#ibm).
 
 ### AWS
 
@@ -389,6 +682,33 @@ The type of cloud account to add.
 * `account_type` - (Optional) Defaults to `account` if not specified. Valid values: `account` or `tenant`.
 * `features` - (Optional, List) Features applicable for azure account, defined [below](#features).
 * `environment_type` - (Optional) Defaults to `azure`.Valid values are `azure`,`azure_gov` or `azure_china` for azure subscription account.
+
+### Gcp
+
+* `account_id` - (Required) Gcp account ID.
+* `account_type` - (Optional) Defaults to `account` if not specified. Valid values: `account`, `masterServiceAccount` or `organization`.
+* `enabled` - (Optional, bool) Whether the account is enabled (default: `true`).
+* `group_ids` - (Optional) List of account IDs to which you are assigning this account. *Applicable only for accountType: **account**.*
+* `default_account_group_id` - (Optional) *Applicable only for accountType: **masterServiceAccount**.* This is the Default Account Group ID for the Gcp masterServiceAccount.
+* `compression_enabled` - (Optional, bool) Enable or disable compressed network flow log generation. Default value: `false`.
+* `credentials` - (Required) Content of the JSON credentials file.
+* `data_flow_enabled_project` - (Optional) Project ID where the Dataflow API is enabled. Required if `compressionEnabled` is set to `true` and if the `accountType` is `organization`. Optional if the `accountType` is `account` or `masterServiceAccount`.
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `flow_log_storage_bucket` - (Optional) Cloud Storage Bucket name that is used store the flow logs.
+* `project_id` - (Optional) Gcp Project ID.
+* `authentication_type` - (Optional) Authentication type. Valid value: `service_account`.
+* `account_group_creation_mode` - (Optional) Cloud account group creation mode. Defaults to `MANUAL` if not specified. Valid values: `MANUAL`, `AUTO` or `RECURSIVE`.
+* `features` - (Optional, List) Features applicable for gcp account, defined [below](#features).
+
+### IBM
+
+* `account_id` - (Required) IBM account ID.
+* `account_type` - (Optional) Defaults to `account` if not specified. Valid values: `account`.
+* `api_key` - (Required) IBM service API key.
+* `enabled` - (Optional, bool) Whether the account is enabled (default: `true`).
+* `group_ids` - (Required) List of account IDs to which you are assigning this account.
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `svc_id_iam_id` - (Required) IBM service ID.
 
 ## Attribute Reference
 
@@ -435,6 +755,57 @@ The type of cloud account to add.
 * `template_url` - Template URL.
 * `deployment_type` - `az` for azure account.
 * `deployment_type_description` - Deployment type description. Valid values: `Commercial` or `Government`.
+
+### Gcp
+
+* `account_id` - Gcp account ID.
+* `account_type` - `account` for gcp project account and `masterServiceAccount` for gcp master service account.
+* `enabled` - (bool) Whether the account is enabled.
+* `group_ids` - List of account IDs to which you are assigning this account.
+* `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `compression_enabled` - (bool) Enable or disable compressed network flow log generation.
+* `credentials` - Content of the JSON credentials file.
+* `data_flow_enabled_project` - Project ID where the Dataflow API is enabled .
+* `features` - Features applicable for gcp account, defined [below](#features).
+* `flow_log_storage_bucket` - Cloud Storage Bucket name that is used store the flow logs.
+* `protection_mode` - Protection mode of account.
+* `parent_id` - Parent ID.
+* `customer_name` - Prisma customer name.
+* `created_epoch_millis` - Account created epoch time.
+* `last_modified_by` - Last modified by.
+* `last_modified_epoch_millis` - Last modified at epoch millis.
+* `deleted` - (bool) Whether the account is deleted or not.
+* `storage_scan_enabled` - (bool) Whether the storage scan is enabled.
+* `added_on_ts` - Added on time stamp.
+* `deployment_type` - `gcp` for gcp account.
+* `deployment_type_description` - Deployment type description.
+* `project_id` - Gcp Project ID.
+* `service_account_email` - Service account email of gcp account.
+* `authentication_type` - Authentication type of gcp account.
+* `account_group_creation_mode` - Account group creation mode.
+* `default_account_group_id` - Account group id to which you are assigning this account. Must be provided for gcp `masterServiceAccount`.
+
+### IBM
+
+* `account_id` - IBM account ID.
+* `account_type` - `account` for IBM account.
+* `api_key` - IBM service API key.
+* `enabled` - (bool) Whether the account is enabled.
+* `group_ids` - List of account IDs to which you are assigning this account.
+* `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `svc_id_iam_id` - IBM service ID.
+* `added_on_ts` - Added on time stamp.
+* `created_epoch_millis` - Account created epoch time.
+* `customer_name` - Prisma customer name.
+* `deleted` - (bool) Whether the account is deleted or not.
+* `deployment_type` - `ibm` for IBM account.
+* `deployment_type_description` - Deployment type description.
+* `features` - Features applicable for IBM account, defined [below](#features).
+* `last_modified_epoch_millis` - Last modified at epoch millis.
+* `last_modified_by` - Last modified by.
+* `parent_id` - Parent id.
+* `protection_mode` - Protection mode of account.
+* `storage_scan_enabled` - (bool) Whether the storage scan is enabled.
 
 #### FEATURES
 
