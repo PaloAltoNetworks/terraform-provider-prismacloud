@@ -104,7 +104,7 @@ The cloud type given above determines which of the attributes are populated:
 * `service_account_email` - Service account email of gcp account.
 * `authentication_type` - Authentication type of gcp account.
 * `account_group_creation_mode` - Account group creation mode.
-* `default_account_group_id` - Account group id to which you are assigning this account. Must be provided for gcp `masterServiceAccount`.
+* `default_account_group_id` - Account group id to which you are assigning this account.
 
 ### IBM
 
