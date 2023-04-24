@@ -686,8 +686,8 @@ The type of cloud account to add.
 ### Gcp
 
 * `account_id` - (Required) Gcp account ID.
-* `account_type` - (Optional) Defaults to `account` if not specified. Valid values: `account`, `masterServiceAccount` or `organization`.
-* `enabled` - (Optional, bool) Whether the account is enabled (default: `true`).
+* `account_type` - (Required) Defaults to `account` if not specified. Valid values: `account`, `masterServiceAccount` or `organization`.
+* `enabled` - (Optional, bool) Whether the account is enabled (default: `false`).
 * `group_ids` - (Optional) List of account IDs to which you are assigning this account. *Applicable only for accountType: **account**.*
 * `default_account_group_id` - (Optional) *Applicable only for accountType: **masterServiceAccount**.* This is the Default Account Group ID for the Gcp masterServiceAccount.
 * `compression_enabled` - (Optional, bool) Enable or disable compressed network flow log generation. Default value: `false`.

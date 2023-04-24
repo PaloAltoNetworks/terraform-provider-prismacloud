@@ -391,7 +391,7 @@ func resourceV2CloudAccount() *schema.Resource {
 						},
 						"account_type": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Required:    true,
 							Default:     "account",
 							Description: "Account type - account, masterServiceAccount or organization",
 							ValidateFunc: validation.StringInSlice(
@@ -407,7 +407,7 @@ func resourceV2CloudAccount() *schema.Resource {
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Description: "Whether or not the account is enabled",
-							Default:     true,
+							Default:     false,
 						},
 						"group_ids": {
 							Type:        schema.TypeSet,
@@ -430,6 +430,7 @@ func resourceV2CloudAccount() *schema.Resource {
 						"compression_enabled": {
 							Type:        schema.TypeBool,
 							Optional:    true,
+							Default:     false,
 							Description: "Enable or disable compressed network flow log generation. Default value: `false`",
 						},
 						"credentials": {

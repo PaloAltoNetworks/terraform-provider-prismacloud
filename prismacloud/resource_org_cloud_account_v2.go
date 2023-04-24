@@ -475,7 +475,7 @@ func resourceOrgV2CloudAccount() *schema.Resource {
 						},
 						"account_type": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Required:    true,
 							Description: "Account type - organization or account",
 							Default:     "organization",
 							ValidateFunc: validation.StringInSlice(
@@ -490,7 +490,7 @@ func resourceOrgV2CloudAccount() *schema.Resource {
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Description: "Whether or not the account is enabled",
-							Default:     true,
+							Default:     false,
 						},
 						"name": {
 							Type:        schema.TypeString,
@@ -500,6 +500,7 @@ func resourceOrgV2CloudAccount() *schema.Resource {
 						"compression_enabled": {
 							Type:        schema.TypeBool,
 							Optional:    true,
+							Default:     false,
 							Description: "Enable or disable compressed network flow log generation. Default value: `false`",
 						},
 						"credentials": {
@@ -688,7 +689,7 @@ func resourceOrgV2CloudAccount() *schema.Resource {
 						},
 						"organization_name": {
 							Type:        schema.TypeString,
-							Computed:    true,
+							Optional:    true,
 							Description: "GCP organization name",
 						},
 						"default_account_group_id": {

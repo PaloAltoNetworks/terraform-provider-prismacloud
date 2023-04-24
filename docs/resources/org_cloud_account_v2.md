@@ -656,8 +656,8 @@ The type of cloud account to add.
 ### Gcp
 
 * `account_id` - (Required) Gcp organization account ID.
-* `account_type` - (Optional) Defaults to `account` if not specified. Valid values: `account`, `masterServiceAccount` or `organization`.
-* `enabled` - (Optional, bool) Whether the account is enabled (default: `true`).
+* `account_type` - (Required) Defaults to `account` if not specified. Valid values: `account`, `masterServiceAccount` or `organization`.
+* `enabled` - (Optional, bool) Whether the account is enabled (default: `false`).
 * `group_ids` - (Optional) List of account IDs to which you are assigning this tenant account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `compression_enabled` - (Optional, bool) Enable or disable compressed network flow log generation. Default value: `false`.
@@ -669,6 +669,7 @@ The type of cloud account to add.
 * `account_group_creation_mode` - (Optional) Cloud account group creation mode. Defaults to `MANUAL` if not specified. Valid values: `MANUAL`, `AUTO` or `RECURSIVE`.
 * `hierarchy_selection` - (Optional) List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
 * `default_account_group_id` - (Required) This is the Default Account Group ID for the Gcp organization and its member accounts.
+* `organization_name` - (Optional) Gcp organization name.
 
 ## Attribute Reference
 
