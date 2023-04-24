@@ -29,7 +29,7 @@ func dataSourceGcpTemplate() *schema.Resource {
 			},
 			"authentication_type": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				Description: "Authentication type",
 				Default:     "service_account",
 				ValidateFunc: validation.StringInSlice(
@@ -67,6 +67,11 @@ func dataSourceGcpTemplate() *schema.Resource {
 				Required:    true,
 				Description: "File name to store gcp template",
 			},
+			"flow_log_storage_bucket": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Cloud Storage Bucket name that is used store the flow logs",
+			},
 		},
 	}
 }
@@ -74,13 +79,14 @@ func dataSourceGcpTemplateRead(ctx context.Context, d *schema.ResourceData, meta
 	client := meta.(*pc.Client)
 
 	req := gcpTemplate.GcpTemplateReq{
-		AccountType:        d.Get("account_type").(string),
-		ProjectId:          d.Get("project_id").(string),
-		OrgId:              d.Get("org_id").(string),
-		FileName:           d.Get("file_name").(string),
-		Name:               d.Get("name").(string),
-		AuthenticationType: d.Get("authentication_type").(string),
-		Features:           SetToStringSlice(d.Get("features").(*schema.Set)),
+		AccountType:          d.Get("account_type").(string),
+		ProjectId:            d.Get("project_id").(string),
+		OrgId:                d.Get("org_id").(string),
+		FileName:             d.Get("file_name").(string),
+		Name:                 d.Get("name").(string),
+		AuthenticationType:   d.Get("authentication_type").(string),
+		FlowLogStorageBucket: d.Get("flow_log_storage_bucket").(string),
+		Features:             SetToStringSlice(d.Get("features").(*schema.Set)),
 	}
 
 	err := gcpTemplate.GetGcpTemplate(client, req)
@@ -95,6 +101,7 @@ func dataSourceGcpTemplateRead(ctx context.Context, d *schema.ResourceData, meta
 	d.Set("org_id", d.Get("org_id").(string))
 	d.Set("name", d.Get("name").(string))
 	d.Set("file_name", d.Get("file_name").(string))
+	d.Set("flow_log_storage_bucket", d.Get("flow_log_storage_bucket").(string))
 	d.Set("features", SetToStringSlice(d.Get("features").(*schema.Set)))
 
 	return nil

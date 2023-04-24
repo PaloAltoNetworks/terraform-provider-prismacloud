@@ -48,10 +48,11 @@ The following are the params that this data source supports:
 
 * `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `account_type` - (Required) Gcp account type.
-* `authentication_type` - (Optional) Authentication type of gcp account.
+* `authentication_type` - (Required) Authentication type of gcp account.
 * `project_id` - (Optional) Gcp Project ID. Must be provided for account type `account` and `masterServiceAccount`.
 * `org_id` - (Optional) Gcp organization ID. Must be provided for account type `organization`.
 * `file_name` - (Required) File name to store gcp template (Provide filename along with path to store gcp template).
+* `flow_log_storage_bucket` - (Optional) Cloud Storage Bucket name that is used store the flow logs.
 * `features` - (Optional) List of features. If features key/field is not passed, then the default features will be applicable. Refer : **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features) ** for more details.
 
 
