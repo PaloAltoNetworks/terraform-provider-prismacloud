@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account"
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2"
 	"golang.org/x/net/context"
 	"log"
@@ -392,7 +391,6 @@ func resourceV2CloudAccount() *schema.Resource {
 						"account_type": {
 							Type:        schema.TypeString,
 							Required:    true,
-							Default:     "account",
 							Description: "Account type - account, masterServiceAccount or organization",
 							ValidateFunc: validation.StringInSlice(
 								[]string{
@@ -719,7 +717,7 @@ func resourceV2CloudAccount() *schema.Resource {
 func gcpv2CredentialsMatch(k, old, new string, d *schema.ResourceData) bool {
 	var (
 		err       error
-		prev, cur account.GcpCredentials
+		prev, cur accountv2.GcpCredentials
 	)
 
 	if err = json.Unmarshal([]byte(old), &prev); err != nil {

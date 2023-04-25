@@ -31,7 +31,6 @@ func dataSourceGcpTemplate() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Authentication type",
-				Default:     "service_account",
 				ValidateFunc: validation.StringInSlice(
 					[]string{
 						"service_account",

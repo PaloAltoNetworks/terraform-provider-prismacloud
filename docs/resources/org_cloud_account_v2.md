@@ -656,7 +656,7 @@ The type of cloud account to add.
 ### Gcp
 
 * `account_id` - (Required) Gcp organization account ID.
-* `account_type` - (Required) Defaults to `account` if not specified. Valid values: `account`, `masterServiceAccount` or `organization`.
+* `account_type` - (Required) Account type. Valid values: `account`, `masterServiceAccount` or `organization`.
 * `enabled` - (Optional, bool) Whether the account is enabled (default: `false`).
 * `group_ids` - (Optional) List of account IDs to which you are assigning this tenant account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
