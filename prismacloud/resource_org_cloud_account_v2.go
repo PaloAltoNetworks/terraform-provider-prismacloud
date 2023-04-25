@@ -617,15 +617,8 @@ func resourceOrgV2CloudAccount() *schema.Resource {
 						},
 						"authentication_type": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Authentication type",
-							Default:     "service_account",
-							ValidateFunc: validation.StringInSlice(
-								[]string{
-									"service_account",
-								},
-								false,
-							),
 						},
 						"account_group_creation_mode": {
 							Type:        schema.TypeString,
@@ -698,7 +691,7 @@ func resourceOrgV2CloudAccount() *schema.Resource {
 						},
 						"group_ids": {
 							Type:        schema.TypeSet,
-							Optional:    true,
+							Computed:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,

@@ -547,29 +547,13 @@ func resourceV2CloudAccount() *schema.Resource {
 						},
 						"authentication_type": {
 							Type:        schema.TypeString,
-							Optional:    true,
+							Computed:    true,
 							Description: "Authentication type",
-							Default:     "service_account",
-							ValidateFunc: validation.StringInSlice(
-								[]string{
-									"service_account",
-								},
-								false,
-							),
 						},
 						"account_group_creation_mode": {
 							Type:        schema.TypeString,
-							Optional:    true,
-							Default:     "MANUAL",
+							Computed:    true,
 							Description: "Cloud account group creation mode. Valid values - MANUAL, AUTO or RECURSIVE",
-							ValidateFunc: validation.StringInSlice(
-								[]string{
-									"MANUAL",
-									"AUTO",
-									"RECURSIVE",
-								},
-								false,
-							),
 						},
 					},
 				},
@@ -802,6 +786,7 @@ func parseV2CloudAccount(d *schema.ResourceData) (string, string, string, interf
 			AccountType: x["account_type"].(string),
 			Enabled:     x["enabled"].(bool),
 			Name:        x["name"].(string),
+			ProjectId:   x["project_id"].(string),
 			GroupIds:    SetToStringSlice(x["group_ids"].(*schema.Set)),
 		}
 		ans.CloudAccountGcp = account

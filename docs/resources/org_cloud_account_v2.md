@@ -459,7 +459,7 @@ data "prismacloud_gcp_template" "prismacloud_gcp_template" {
 
 ```hcl
 # Gcp organization account type.
-resource "prismacloud_org_cloud_account_v2" "example1" {
+resource "prismacloud_org_cloud_account_v2" "example" {
   disable_on_destroy=true
   gcp {
     account_id          = "<account-id>"
@@ -511,7 +511,7 @@ data "prismacloud_gcp_template" "prismacloud_gcp_template" {
   features = data.prismacloud_account_supported_features.prismacloud_supported_features_organization.supported_features
 }
 
-resource "prismacloud_org_cloud_account_v2" "example1" {
+resource "prismacloud_org_cloud_account_v2" "example" {
   disable_on_destroy=true
   gcp {
     account_id          = "<account-id>"
@@ -656,16 +656,14 @@ The type of cloud account to add.
 ### Gcp
 
 * `account_id` - (Required) Gcp organization account ID.
-* `account_type` - (Required) Account type. Valid values: `account`, `masterServiceAccount` or `organization`.
+* `account_type` - (Required) Account type. Valid value: `organization`.
 * `enabled` - (Optional, bool) Whether the account is enabled (default: `false`).
-* `group_ids` - (Optional) List of account IDs to which you are assigning this tenant account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `compression_enabled` - (Optional, bool) Enable or disable compressed network flow log generation. Default value: `false`.
 * `credentials` - (Required) Content of the JSON credentials file.
 * `data_flow_enabled_project` - (Optional) Project ID where the Dataflow API is enabled. Required if `compressionEnabled` is set to `true` and if the `accountType` is `organization`. Optional if the `accountType` is `account` or `masterServiceAccount`.
 * `flow_log_storage_bucket` - (Optional) Cloud Storage Bucket name that is used store the flow logs.
 * `features` - (Optional, List) Features applicable for gcp organization account, defined [below](#features).
-* `authentication_type` - (Optional) Authentication type. Valid value: `service_account`.
 * `account_group_creation_mode` - (Optional) Cloud account group creation mode. Defaults to `MANUAL` if not specified. Valid values: `MANUAL`, `AUTO` or `RECURSIVE`.
 * `hierarchy_selection` - (Optional) List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
 * `default_account_group_id` - (Required) This is the Default Account Group ID for the Gcp organization and its member accounts.

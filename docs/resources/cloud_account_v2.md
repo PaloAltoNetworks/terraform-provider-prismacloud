@@ -686,7 +686,7 @@ The type of cloud account to add.
 ### Gcp
 
 * `account_id` - (Required) Gcp account ID.
-* `account_type` - (Required) Account type. Valid values: `account`, `masterServiceAccount` or `organization`.
+* `account_type` - (Required) Account type. Valid values: `account` or `masterServiceAccount`.
 * `enabled` - (Optional, bool) Whether the account is enabled (default: `false`).
 * `group_ids` - (Optional) List of account IDs to which you are assigning this account. *Applicable only for accountType: **account**.*
 * `default_account_group_id` - (Optional) *Applicable only for accountType: **masterServiceAccount**.* This is the Default Account Group ID for the Gcp masterServiceAccount.
@@ -696,8 +696,6 @@ The type of cloud account to add.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `flow_log_storage_bucket` - (Optional) Cloud Storage Bucket name that is used store the flow logs.
 * `project_id` - (Optional) Gcp Project ID.
-* `authentication_type` - (Optional) Authentication type. Valid value: `service_account`.
-* `account_group_creation_mode` - (Optional) Cloud account group creation mode. Defaults to `MANUAL` if not specified. Valid values: `MANUAL`, `AUTO` or `RECURSIVE`.
 * `features` - (Optional, List) Features applicable for gcp account, defined [below](#features).
 
 ### IBM
