@@ -1,8 +1,25 @@
+## 1.3.5 (April 26, 2023)
+
+* Enterprise settings audit log support.
+* The following new data sources are added, mainly related to GCP and IBM Cloud account onboarding with Security Capabilities and Permissions and to generate terraform template for GCP and IBM.
+
+  * data 'prismacloud_gcp_template' - For GCP terraform template generation.
+  * data 'prismacloud_ibm_template' - For IBM terraform template generation.
+ 
+NEW DATA SOURCES:
+
+* `prismacloud_trusted_alert_ip` / `prismacloud_trusted_alert_ips`
+
+NEW RESOURCES: 
+
+* `prismacloud_trusted_alert_ip`
+
+
 ## 1.3.4 (April 18, 2023)
 
 * Alert Rule Policy Filter for Compute Access Group IDs.
 * Bug fix for integration rate limit issue.
-* The following new data sources are added, mainly related to AZURE Cloud account onboarding with Security Capabilities and Permissions and to generate External ID and the terraform template for azure.
+* The following new data sources are added, mainly related to AZURE Cloud account onboarding with Security Capabilities and Permissions and to generate terraform template for azure.
 
   * data 'prismacloud_azure_template' - For AZURE terraform template generation.
  
