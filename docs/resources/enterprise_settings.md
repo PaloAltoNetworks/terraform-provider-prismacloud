@@ -32,3 +32,5 @@ resource "prismacloud_enterprise_settings" "example" {
 * `named_users_access_keys_expiry_notifications_enabled` - (bool) Named users access keys expiry notifications enabled.
 * `service_users_access_keys_expiry_notifications_enabled` - (bool) Service users access keys expiry notifications enabled.
 * `notification_threshold_access_keys_expiry` - (int) Notification threshold access keys expiry.
+* `audit_log_siem_intgr_ids` - List of integration ids.
+* `audit_logs_enabled` - (bool) Enable audit logs.
