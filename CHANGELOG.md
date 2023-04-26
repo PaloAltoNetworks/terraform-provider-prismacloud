@@ -1,3 +1,10 @@
+## 1.3.6 (April 26, 2023)
+
+NEW RESOURCES: 
+
+* `prismacloud_trusted_login_ip_status`
+
+
 ## 1.3.5 (April 26, 2023)
 
 * Enterprise settings audit log support.
