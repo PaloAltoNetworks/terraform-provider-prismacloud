@@ -32,6 +32,19 @@ func Get(c pc.PrismaCloudClient, id string) (LoginIpAllow, error) {
 	return ans, err
 }
 
+// GetLoginIpStatus returns status information of Login ip status
+func GetLoginIpStatus(c pc.PrismaCloudClient) (LoginIpAllowStatus, error) {
+
+	var ans LoginIpAllowStatus
+	path := make([]string, 0, len(Suffix)+1)
+	path = append(path, Suffix...)
+	path = append(path, statusSuffix...)
+
+	c.Log(pc.LogAction, "(get) ip allow list status path: %s", path)
+	_, err := c.Communicate("GET", path, nil, nil, &ans)
+	return ans, err
+}
+
 // Identify returns the ID for the given Login-Ip-Allow.
 func Identify(c pc.PrismaCloudClient, name string) (string, error) {
 	c.Log(pc.LogAction, "(get) id for %s: %s api: %s", singular, name, Suffix)
@@ -103,5 +116,29 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, loginIpAllow LoginIpAllow
 	}
 
 	_, err := c.Communicate(method, path, nil, loginIpAllow, nil)
+	return err
+}
+
+func LoginIpStatusUpdate(c pc.PrismaCloudClient, loginIpAllowStatus LoginIpAllowStatus) error {
+	var (
+		logMsg strings.Builder
+		method string
+	)
+
+	logMsg.Grow(30)
+	logMsg.WriteString("(")
+
+	logMsg.WriteString("update status")
+	method = "PATCH"
+
+	logMsg.WriteString(") ")
+
+	c.Log(pc.LogAction, "trusted login ip", logMsg.String())
+
+	path := make([]string, 0, len(Suffix)+1)
+	path = append(path, Suffix...)
+	path = append(path, statusSuffix...)
+
+	_, err := c.Communicate(method, path, nil, loginIpAllowStatus, nil)
 	return err
 }

@@ -244,7 +244,7 @@ github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 ## explicit
 github.com/oklog/run
-# github.com/paloaltonetworks/prisma-cloud-go v0.6.5
+# github.com/paloaltonetworks/prisma-cloud-go v0.6.6
 ## explicit; go 1.13
 github.com/paloaltonetworks/prisma-cloud-go
 github.com/paloaltonetworks/prisma-cloud-go/alert
@@ -255,6 +255,8 @@ github.com/paloaltonetworks/prisma-cloud-go/cloud/account
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/azureTemplate
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/externalid
+github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/gcpTemplate
+github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/ibmTemplate
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/org
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/supportedFeatures
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account/group
@@ -273,6 +275,7 @@ github.com/paloaltonetworks/prisma-cloud-go/rql/history
 github.com/paloaltonetworks/prisma-cloud-go/rql/search
 github.com/paloaltonetworks/prisma-cloud-go/settings/enterprise
 github.com/paloaltonetworks/prisma-cloud-go/timerange
+github.com/paloaltonetworks/prisma-cloud-go/trusted-alert-ip
 github.com/paloaltonetworks/prisma-cloud-go/user/profile
 github.com/paloaltonetworks/prisma-cloud-go/user/role
 # github.com/ulikunitz/xz v0.5.10

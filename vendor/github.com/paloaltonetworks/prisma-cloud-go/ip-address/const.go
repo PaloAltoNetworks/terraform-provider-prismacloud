@@ -6,3 +6,5 @@ const (
 )
 
 var Suffix = []string{"ip_allow_list_login"}
+
+var statusSuffix = []string{"status"}
