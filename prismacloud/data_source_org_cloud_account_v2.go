@@ -24,6 +24,7 @@ func dataSourceOrgV2CloudAccount() *schema.Resource {
 					[]string{
 						org.TypeAwsOrg,
 						org.TypeAzureOrg,
+						org.TypeGcpOrg,
 					},
 					false,
 				),
@@ -393,6 +394,203 @@ func dataSourceOrgV2CloudAccount() *schema.Resource {
 					},
 				},
 			},
+			//GCP
+			org.TypeGcpOrg: {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "AWS account type",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "GCP project ID",
+						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Account type - organization or account",
+						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the account is enabled",
+						},
+						"group_ids": {
+							Type:        schema.TypeSet,
+							Computed:    true,
+							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Name to be used for the account on the Prisma Cloud platform (must be unique)",
+						},
+						"compression_enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Enable or disable compressed network flow log generation",
+						},
+						"credentials": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Content of the JSON credentials file",
+							Sensitive:   true,
+						},
+						"dataflow_enabled_project": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Project ID where the Dataflow API is enabled",
+						},
+						"features": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "Gcp account features",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"name": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Feature name",
+									},
+									"state": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Feature state",
+									},
+								},
+							},
+						},
+						"flow_log_storage_bucket": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Cloud Storage Bucket name that is used store the flow logs",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"cloud_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"parent_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"customer_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"created_epoch_millis": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "",
+						},
+						"last_modified_epoch_millis": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "",
+						},
+						"last_modified_by": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"deleted": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "",
+						},
+						"storage_scan_enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "",
+						},
+						"added_on_ts": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "",
+						},
+						"deployment_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"deployment_type_description": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"project_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "GCP project ID",
+						},
+						"service_account_email": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"authentication_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "",
+						},
+						"account_group_creation_mode": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Cloud account group creation mode - manual, auto or recursive",
+						},
+						"hierarchy_selection": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "List of hierarchy selection. Each item has resource id, display name, node type and selection type",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"resource_id": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Resource ID. For folders, format is folders/{folder ID}. For projects, format is {project number}. For orgs, format is organizations/{org ID}",
+									},
+									"display_name": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Display name for folder, project, or organization",
+									},
+									"node_type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Node type - folder, project, org",
+									},
+									"selection_type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Selection type - INCLUDE, EXCLUDE, ALL",
+									},
+								},
+							},
+						},
+						"default_account_group_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Account group id to which you are assigning this account",
+						},
+						"organization_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "GCP organization name",
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -435,6 +633,8 @@ func dataSourceOrgV2CloudAccountRead(ctx context.Context, d *schema.ResourceData
 			name = v.Name
 		case org.AzureOrgV2:
 			name = v.CloudAccountAzureResp.Name
+		case org.GcpOrgV2:
+			name = v.CloudAccountGcpResp.Name
 		}
 	}
 

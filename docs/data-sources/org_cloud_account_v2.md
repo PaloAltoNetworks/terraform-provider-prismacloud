@@ -19,8 +19,8 @@ data "prismacloud_org_cloud_account_v2" "example" {
 
 The following are the params that this data source supports.  At least one of the cloud account name and the account ID must be specified.  If one is left blank, it is determined at run time.
 
-* `cloud_type` - (Required) The cloud type.  Valid value is `aws` or `azure`.
-* `name` - (Optional, computed) Cloud account name; computed if this is not supplied.
+* `cloud_type` - (Required) The cloud type.  Valid value is `aws`, `azure` or `gcp`.
+* `name` - (Optional, computed) Cloud account name; computed if this is not supplied. Applicable only for `aws`, `azure` and `ibm`.
 * `account_id` - (Optional, computed) Account ID; computed if this is not supplied.
 
 ## Attribute Reference
@@ -30,6 +30,7 @@ The cloud type given above determines which of the attributes are populated:
 * `disable_on_destroy` - (bool) To disable cloud account instead of deleting when calling Terraform destroy.
 * `aws` - AWS account type spec, defined [below](#aws).
 * `azure` - Azure account type spec, defined [below](#azure).
+* `gcp` - Gcp account type spec, defined [below](#gcp).
 
 ### AWS
 
@@ -82,11 +83,42 @@ The cloud type given above determines which of the attributes are populated:
 * `deployment_type_description` - Deployment type description.
 * `member_sync_enabled` - (bool) Azure tenant has children. Must be set to true when azure tenant is onboarded with children i.e., for `Tenant`.
 
+### Gcp
+
+* `account_id` - Gcp account ID.
+* `account_type` - `organization` for gcp organization account.
+* `enabled` - (bool) Whether the account is enabled.
+* `group_ids` - List of account IDs to which you are assigning this account.
+* `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `compression_enabled` - (bool) Enable or disable compressed network flow log generation.
+* `credentials` - Content of the JSON credentials file.
+* `data_flow_enabled_project` - Project ID where the Dataflow API is enabled.
+* `features` - Features applicable for gcp account, defined [below](#features).
+* `flow_log_storage_bucket` - Cloud Storage Bucket name that is used store the flow logs.
+* `protection_mode` - Protection mode of account.
+* `parent_id` - Parent ID.
+* `customer_name` - Prisma customer name.
+* `created_epoch_millis` - Account created epoch time.
+* `last_modified_by` - Last modified by.
+* `last_modified_epoch_millis` - Last modified at epoch millis.
+* `deleted` - (bool) Whether the account is deleted or not.
+* `storage_scan_enabled` - (bool) Whether the storage scan is enabled.
+* `added_on_ts` - Added on time stamp.
+* `deployment_type` - `gcp` for gcp account.
+* `deployment_type_description` - Deployment type description.
+* `project_id` - Gcp Project ID.
+* `service_account_email` - Service account email of gcp account.
+* `authentication_type` - Authentication type of gcp account.
+* `account_group_creation_mode` - Account group creation mode.
+* `default_account_group_id` - Account group id to which you are assigning this account.
+* `hierarchy_selection` - List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
+* `organization_name` - Gcp organization name.
+
 #### Hierarchy Selection
 
-* `resource_id` - Resource ID. For ACCOUNT, OU, ROOT, TENANT or SUBSCRIPTION. Example : `root`.
-* `display_name` - Display name for ACCOUNT, OU, ROOT, TENANT or SUBSCRIPTION. Example : `Root`.
-* `node_type` - Node type - ORG, OU, ACCOUNT, SUBSCRIPTION, TENANT or MANAGEMENT_GROUP.
+* `resource_id` - Resource ID. For ACCOUNT, OU, ROOT, TENANT, SUBSCRIPTION, PROJECT, FOLDER or ORG. Example : `root`.
+* `display_name` - Display name for ACCOUNT, OU, ROOT, TENANT, SUBSCRIPTION, PROJECT, FOLDER or ORG. Example : `Root`.
+* `node_type` - Node type - ORG, OU, ACCOUNT, SUBSCRIPTION, TENANT, MANAGEMENT_GROUP, PROJECT, FOLDER or ORG.
 * `selection_type` - Selection type. Valid values: INCLUDE to include the specified resource to onboard, EXCLUDE to exclude the specified resource and onboard the rest, ALL to onboard all resources in the organization.
 
 #### FEATURES
