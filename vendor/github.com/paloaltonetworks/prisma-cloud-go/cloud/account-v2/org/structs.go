@@ -179,3 +179,93 @@ type OrgAccountAzure struct {
 	ProtectionMode string   `json:"protectionMode"`
 	AccountType    string   `json:"accountType"`
 }
+
+//GCPORG
+
+type CloudAccountGcpResp struct {
+	AccountId                 string      `json:"accountId"`
+	Name                      string      `json:"name"`
+	CloudType                 string      `json:"cloudType"`
+	Enabled                   bool        `json:"enabled"`
+	ParentId                  string      `json:"parentId"`
+	AccountType               string      `json:"accountType"`
+	Deleted                   bool        `json:"deleted"`
+	ProtectionMode            string      `json:"protectionMode"`
+	CustomerName              string      `json:"customerName"`
+	CreatedEpochMillis        int         `json:"createdEpochMillis"`
+	LastModifiedEpochMillis   int         `json:"lastModifiedEpochMillis"`
+	LastModifiedBy            string      `json:"lastModifiedBy"`
+	AddedOnTs                 int         `json:"addedOnTs"`
+	DeploymentType            string      `json:"deploymentType"`
+	DeploymentTypeDescription string      `json:"deploymentTypeDescription"`
+	Features                  []Features1 `json:"features"`
+	StorageScanEnabled        bool        `json:"storageScanEnabled"`
+}
+type GcpAccountResponse struct {
+	AccountId                 string `json:"accountId"`
+	Name                      string `json:"name"`
+	CloudType                 string `json:"cloudType"`
+	Enabled                   bool   `json:"enabled"`
+	ParentId                  string `json:"parentId"`
+	AccountType               string `json:"accountType"`
+	Deleted                   bool   `json:"deleted"`
+	ProtectionMode            string `json:"protectionMode"`
+	CustomerName              string `json:"customerName"`
+	CreatedEpochMillis        int    `json:"createdEpochMillis"`
+	LastModifiedEpochMillis   int    `json:"lastModifiedEpochMillis"`
+	LastModifiedBy            string `json:"lastModifiedBy"`
+	AddedOn                   int    `json:"addedOn"`
+	DeploymentType            string `json:"deploymentType"`
+	DeploymentTypeDescription string `json:"deploymentTypeDescription"`
+	StorageScanEnabled        bool   `json:"storageScanEnabled"`
+}
+
+type GcpOrgV2 struct {
+	CloudAccountGcpResp      CloudAccountGcpResp  `json:"cloudAccount"`
+	Credentials              GcpCredentials       `json:"credentials"`
+	CompressionEnabled       bool                 `json:"compressionEnabled"`
+	DataflowEnabledProject   string               `json:"dataflowEnabledProject"`
+	FlowLogStorageBucket     string               `json:"flowLogStorageBucket"`
+	ProjectId                string               `json:"projectId"`
+	ServiceAccountEmail      string               `json:"serviceAccountEmail"`
+	AuthenticationType       string               `json:"authenticationType"`
+	GroupIds                 []string             `json:"groupIds"`
+	AccountGroupCreationMode string               `json:"accountGroupCreationMode"`
+	HierarchySelection       []HierarchySelection `json:"hierarchySelection"`
+	DefaultAccountGroupId    string               `json:"defaultAccountGroupId"`
+	OrganizationName         string               `json:"organizationName"`
+}
+
+type GcpOrg struct {
+	OrgAccountGcp            OrgAccountGcp        `json:"cloudAccount"`
+	CompressionEnabled       bool                 `json:"compressionEnabled"`
+	AccountGroupCreationMode string               `json:"accountGroupCreationMode"`
+	DataflowEnabledProject   string               `json:"dataflowEnabledProject"`
+	FlowLogStorageBucket     string               `json:"flowLogStorageBucket"`
+	Credentials              GcpCredentials       `json:"credentials"`
+	Features                 []Features           `json:"features"`
+	HierarchySelection       []HierarchySelection `json:"hierarchySelection"`
+	DefaultAccountGroupId    string               `json:"defaultAccountGroupId"`
+	OrganizationName         string               `json:"organizationName"`
+}
+
+type OrgAccountGcp struct {
+	AccountId   string `json:"accountId"`
+	Enabled     bool   `json:"enabled"`
+	ProjectId   string `json:"projectId"`
+	Name        string `json:"name"`
+	AccountType string `json:"accountType"`
+}
+
+type GcpCredentials struct {
+	Type            string `json:"type"`
+	ProjectId       string `json:"project_id"`
+	PrivateKeyId    string `json:"private_key_id"`
+	PrivateKey      string `json:"private_key"`
+	ClientEmail     string `json:"client_email"`
+	ClientId        string `json:"client_id"`
+	AuthUri         string `json:"auth_uri"`
+	TokenUri        string `json:"token_uri"`
+	ProviderCertUrl string `json:"auth_provider_x509_cert_url"`
+	ClientCertUrl   string `json:"client_x509_cert_url"`
+}

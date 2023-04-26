@@ -15,7 +15,13 @@ var ListSuffixAws = []string{"v1", "cloudAccounts", "awsAccounts"}
 
 var ListSuffixAzure = []string{"v1", "cloudAccounts", "azureAccounts"}
 
+var ListSuffixGcp = []string{"cas", "v1", "cloud_account", "gcp"}
+
+var ListSuffixIbm = []string{"cas", "v1", "cloud_account", "ibm"}
+
 const (
 	TypeAws   = "aws"
 	TypeAzure = "azure"
+	TypeGcp   = "gcp"
+	TypeIbm   = "ibm"
 )

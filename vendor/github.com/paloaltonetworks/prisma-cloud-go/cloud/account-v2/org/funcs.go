@@ -30,6 +30,19 @@ func ListAzure(c pc.PrismaCloudClient) ([]AzureAccountResponse, error) {
 	return ansaz, nil
 }
 
+func ListGcp(c pc.PrismaCloudClient) ([]GcpAccountResponse, error) {
+	c.Log(pc.LogAction, "(get) list of %s", plural)
+
+	var ansgcp []GcpAccountResponse
+	path := make([]string, 0, len(ListSuffix)+1)
+	path = append(path, ListSuffix...)
+	path = append(path, "accounts?cloudTypes=gcp")
+	if _, err := c.Communicate("GET", path, nil, nil, &ansgcp); err != nil {
+		return nil, err
+	}
+	return ansgcp, nil
+}
+
 // Names returns the name listing for cloud accounts.
 func Names(c pc.PrismaCloudClient) ([]NameTypeId, error) {
 	c.Log(pc.LogAction, "(get) %s names", singular)
@@ -73,6 +86,19 @@ func Identify(c pc.PrismaCloudClient, cloudType, name string) (string, error) {
 
 		}
 	}
+	if strings.EqualFold("gcp", cloudType) {
+		ansgcp, err := ListGcp(c)
+		if err != nil {
+			return "", err
+		}
+
+		for _, o := range ansgcp {
+			if strings.EqualFold(o.CloudType, cloudType) && o.Name == name {
+				return o.AccountId, nil
+			}
+
+		}
+	}
 
 	return "", pc.ObjectNotFoundError
 }
@@ -83,27 +109,48 @@ func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
 	cloud = cloud + "Accounts"
 	c.Log(pc.LogAction, "(get) %s type:%s id:%s", singular, cloudType, id)
 
-	path := make([]string, 0, len(ListSuffix)+1)
-	path = append(path, ListSuffix...)
-	path = append(path, cloud, id)
+	if cloudType == "gcp" {
+		path := make([]string, 0, len(ListSuffixGcp)+1)
+		path = append(path, ListSuffixGcp...)
+		path = append(path, id)
 
-	var ans interface{}
+		var ans interface{}
 
-	switch cloudType {
-	case TypeAwsOrg:
-		ans = &AwsOrgV2{}
-	case TypeAzureOrg:
-		ans = &AzureOrgV2{}
-	default:
-		return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
-	}
-	_, err := c.Communicate("GET", path, nil, nil, ans)
+		switch cloudType {
+		case TypeGcpOrg:
+			ans = &GcpOrgV2{}
+		default:
+			return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
+		}
+		_, err := c.Communicate("GET", path, nil, nil, ans)
 
-	switch cloudType {
-	case TypeAwsOrg:
-		return *ans.(*AwsOrgV2), err
-	case TypeAzureOrg:
-		return *ans.(*AzureOrgV2), err
+		switch cloudType {
+		case TypeGcpOrg:
+			return *ans.(*GcpOrgV2), err
+		}
+	} else {
+		path := make([]string, 0, len(ListSuffix)+1)
+		path = append(path, ListSuffix...)
+		path = append(path, cloud, id)
+		var ans interface{}
+
+		switch cloudType {
+		case TypeAwsOrg:
+			ans = &AwsOrgV2{}
+		case TypeAzureOrg:
+			ans = &AzureOrgV2{}
+		default:
+			return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
+		}
+		_, err := c.Communicate("GET", path, nil, nil, ans)
+
+		switch cloudType {
+		case TypeAwsOrg:
+			return *ans.(*AwsOrgV2), err
+		case TypeAzureOrg:
+			return *ans.(*AzureOrgV2), err
+		}
+
 	}
 	return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
 }
@@ -175,6 +222,10 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 		logMsg.WriteString("azure")
 		cloudType = TypeAzureOrg
 		id = v.OrgAccountAzure.AccountId
+	case GcpOrg:
+		logMsg.WriteString("gcp")
+		cloudType = TypeGcpOrg
+		id = v.OrgAccountGcp.AccountId
 	default:
 		return fmt.Errorf("invalid account type %v", v)
 	}

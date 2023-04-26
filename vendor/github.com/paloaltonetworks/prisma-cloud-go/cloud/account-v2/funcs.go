@@ -30,6 +30,31 @@ func ListAzure(c pc.PrismaCloudClient) ([]AzureAccountResponse, error) {
 	return ansaz, nil
 }
 
+func ListGcp(c pc.PrismaCloudClient) ([]GcpAccountResponse, error) {
+	c.Log(pc.LogAction, "(get) list of %s", plural)
+
+	var ansgcp []GcpAccountResponse
+	if _, err := c.Communicate("GET", ListSuffixGcp, nil, nil, &ansgcp); err != nil {
+		return nil, err
+	}
+
+	return ansgcp, nil
+}
+
+func ListIbm(c pc.PrismaCloudClient) ([]IbmAccountResponse, error) {
+	c.Log(pc.LogAction, "(get) list of %s", plural)
+	path := make([]string, 0, len(ListSuffix)+1)
+	path = append(path, ListSuffix...)
+	path = append(path, "accounts?cloudTypes=ibm")
+
+	var ansib []IbmAccountResponse
+	if _, err := c.Communicate("GET", path, nil, nil, &ansib); err != nil {
+		return nil, err
+	}
+
+	return ansib, nil
+}
+
 // Names returns the name listing for cloud accounts.
 func Names(c pc.PrismaCloudClient) ([]NameTypeId, error) {
 	c.Log(pc.LogAction, "(get) %s names", singular)
@@ -73,6 +98,32 @@ func Identify(c pc.PrismaCloudClient, cloudType, name string) (string, error) {
 
 		}
 	}
+	if strings.EqualFold("gcp", cloudType) {
+		ansgcp, err := ListGcp(c)
+		if err != nil {
+			return "", err
+		}
+
+		for _, o := range ansgcp {
+			if strings.EqualFold(o.CloudType, cloudType) && o.Name == name {
+				return o.AccountId, nil
+			}
+
+		}
+	}
+	if strings.EqualFold("ibm", cloudType) {
+		ansib, err := ListIbm(c)
+		if err != nil {
+			return "", err
+		}
+
+		for _, o := range ansib {
+			if strings.EqualFold(o.CloudType, cloudType) && o.Name == name {
+				return o.AccountId, nil
+			}
+
+		}
+	}
 
 	return "", pc.ObjectNotFoundError
 }
@@ -83,27 +134,66 @@ func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
 	cloud = cloud + "Accounts"
 	c.Log(pc.LogAction, "(get) %s type:%s id:%s", singular, cloudType, id)
 
-	path := make([]string, 0, len(ListSuffix)+1)
-	path = append(path, ListSuffix...)
-	path = append(path, cloud, id)
+	if cloudType == "gcp" {
+		path := make([]string, 0, len(ListSuffixGcp)+1)
+		path = append(path, ListSuffixGcp...)
+		path = append(path, id)
+		var ans interface{}
 
-	var ans interface{}
+		switch cloudType {
+		case TypeGcp:
+			ans = &GcpV2{}
+		default:
+			return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
+		}
+		_, err := c.Communicate("GET", path, nil, nil, ans)
 
-	switch cloudType {
-	case TypeAws:
-		ans = &AwsV2{}
-	case TypeAzure:
-		ans = &AzureV2{}
-	default:
-		return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
-	}
-	_, err := c.Communicate("GET", path, nil, nil, ans)
+		switch cloudType {
+		case TypeGcp:
+			return *ans.(*GcpV2), err
+		}
+	} else if cloudType == "ibm" {
+		path := make([]string, 0, len(ListSuffixIbm)+1)
+		path = append(path, ListSuffixIbm...)
+		path = append(path, id)
 
-	switch cloudType {
-	case TypeAws:
-		return *ans.(*AwsV2), err
-	case TypeAzure:
-		return *ans.(*AzureV2), err
+		var ans interface{}
+
+		switch cloudType {
+		case TypeIbm:
+			ans = &IbmV2{}
+		default:
+			return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
+		}
+		_, err := c.Communicate("GET", path, nil, nil, ans)
+
+		switch cloudType {
+		case TypeIbm:
+			return *ans.(*IbmV2), err
+		}
+	} else {
+		path := make([]string, 0, len(ListSuffix)+1)
+		path = append(path, ListSuffix...)
+		path = append(path, cloud, id)
+		var ans interface{}
+
+		switch cloudType {
+		case TypeAws:
+			ans = &AwsV2{}
+		case TypeAzure:
+			ans = &AzureV2{}
+		default:
+			return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
+		}
+		_, err := c.Communicate("GET", path, nil, nil, ans)
+
+		switch cloudType {
+		case TypeAws:
+			return *ans.(*AwsV2), err
+		case TypeAzure:
+			return *ans.(*AzureV2), err
+		}
+
 	}
 	return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
 
@@ -176,6 +266,14 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 		logMsg.WriteString("azure")
 		cloudType = TypeAzure
 		id = v.CloudAccountAzure.AccountId
+	case Gcp:
+		logMsg.WriteString("gcp")
+		cloudType = TypeGcp
+		id = v.CloudAccountGcp.AccountId
+	case Ibm:
+		logMsg.WriteString("ibm")
+		cloudType = TypeIbm
+		id = v.AccountId
 	default:
 		return fmt.Errorf("invalid account type %v", v)
 	}
@@ -187,16 +285,28 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 	}
 
 	c.Log(pc.LogAction, logMsg.String())
+	if cloudType == "ibm" {
+		path := make([]string, 0, len(Suffix)+1)
+		path = append(path, Suffix...)
+		path = append(path, "cloud-type")
+		path = append(path, "ibm")
+		path = append(path, "account")
+		if exists {
+			path = append(path, id)
+		}
+		_, err := c.Communicate(method, path, nil, account, nil)
+		return err
+	} else {
+		path := make([]string, 0, len(Suffix)+1)
+		path = append(path, Suffix...)
+		cloudType = cloudType + "_account"
+		path = append(path, cloudType)
+		if exists {
+			path = append(path, id)
+		}
 
-	path := make([]string, 0, len(Suffix)+1)
-	path = append(path, Suffix...)
-	cloudType = cloudType + "_account"
-	path = append(path, cloudType)
-	if exists {
-		path = append(path, id)
+		_, err := c.Communicate(method, path, nil, account, nil)
+		return err
+
 	}
-
-	_, err := c.Communicate(method, path, nil, account, nil)
-	return err
-
 }
