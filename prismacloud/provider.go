@@ -168,6 +168,7 @@ func Provider() *schema.Provider {
 			"prismacloud_org_cloud_account_v2":                    resourceOrgV2CloudAccount(),
 			"prismacloud_trusted_alert_ip":                        resourceTrustedAlertIp(),
 			"prismacloud_trusted_login_ip":                        resourceTrustedLoginIp(),
+			"prismacloud_trusted_login_ip_status":                 resourceLoginIpStatus(),
 		},
 
 		ConfigureFunc: providerConfigure,
