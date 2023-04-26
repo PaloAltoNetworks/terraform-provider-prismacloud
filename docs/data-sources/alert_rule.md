@@ -50,11 +50,16 @@ You must specify at least one of the following:
 * `excluded_accounts` - List of excluded accounts
 * `regions` - List of regions
 * `tags` - List of TargetTag objects, as defined [below](#tags)
+* `resource_list` - Model for holding the resource list for compute access groups [below](#compute-access-group-ids)
 
 ### Tags
 
 * `key` - Resource tag target
 * `values` - List of values for resource tag key
+
+### Compute Access Group IDs
+
+* `compute_access_group_ids` - List of compute access group IDs.
 
 ### Notification Config
 

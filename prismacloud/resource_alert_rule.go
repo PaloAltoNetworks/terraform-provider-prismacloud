@@ -193,6 +193,23 @@ func resourceAlertRule() *schema.Resource {
 								},
 							},
 						},
+						"resource_list": {
+							Type:        schema.TypeList,
+							Optional:    true,
+							Description: "Model for holding the lists resource list ids by resource list type",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"compute_access_group_ids": {
+										Type:        schema.TypeList,
+										Optional:    true,
+										Description: "List of compute access group ids",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -372,6 +389,21 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 		}
 	}
 
+	var resourceList []rule.ResourceList
+	if rle := tgt["resource_list"]; rle != nil && len(rle.([]interface{})) > 0 {
+		rl := rle.([]interface{})
+		resourceList = make([]rule.ResourceList, 0, len(rl))
+		rmap := rl[0].(map[string]interface{})
+		resourceList = append(resourceList, rule.ResourceList{
+			IncludedResourceLists: ListToStringSlice(rmap["compute_access_group_ids"].([]interface{})),
+		})
+	}
+
+	var reslistEle rule.ResourceList
+	if len(resourceList) > 0 {
+		reslistEle = resourceList[0]
+	}
+
 	ans := rule.Rule{
 		PolicyScanConfigId: id,
 		Name:               d.Get("name").(string),
@@ -386,6 +418,7 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 			ExcludedAccounts: excludedAccounts,
 			Regions:          regions,
 			Tags:             tags,
+			ResourceList:     reslistEle,
 		},
 		AllowAutoRemediate:  d.Get("allow_auto_remediate").(bool),
 		DelayNotificationMs: d.Get("delay_notification_ms").(int),
@@ -490,6 +523,12 @@ func saveAlertRule(d *schema.ResourceData, o rule.Rule) {
 		}
 		tgt["tags"] = tl
 	}
+	rl := make([]interface{}, 0, 1)
+	rl = append(rl, map[string]interface{}{
+		"compute_access_group_ids": o.Target.ResourceList.IncludedResourceLists,
+	})
+	tgt["resource_list"] = rl
+
 	if err = d.Set("target", []interface{}{tgt}); err != nil {
 		log.Printf("[WARN] Error setting 'target' for %q: %s", d.Id(), err)
 	}

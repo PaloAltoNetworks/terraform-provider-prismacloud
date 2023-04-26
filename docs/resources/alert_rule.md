@@ -37,15 +37,21 @@ resource "prismacloud_alert_rule" "example" {
 
 There should be one and only one target block:
 
-* `account_groups` - (Required) List of account groups
+* `account_groups` - (Required for Account Groups) List of account groups
 * `excluded_accounts` - List of excluded accounts
 * `regions` - List of regions
 * `tags` - List of tag models, as defined [below](#tags)
+* `resource_list` - (Required for Compute Access Groups) Model for holding the resource list for compute access groups [below](#compute-access-group-ids)
 
 ### Tags
 
 * `key` - Resource tag target
 * `values` - List of values for resource tag key
+
+
+### Compute Access Group IDs
+
+* `compute_access_group_ids` - List of compute access group IDs.
 
 ### Notification Config
 

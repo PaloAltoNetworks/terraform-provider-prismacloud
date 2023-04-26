@@ -16,3 +16,6 @@
 
 # Ignore vim swap files
 *.swp
+
+#IntelliJ Files
+.idea

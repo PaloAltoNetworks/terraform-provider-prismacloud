@@ -244,7 +244,7 @@ github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 ## explicit
 github.com/oklog/run
-# github.com/paloaltonetworks/prisma-cloud-go v0.6.3
+# github.com/paloaltonetworks/prisma-cloud-go v0.6.5
 ## explicit; go 1.13
 github.com/paloaltonetworks/prisma-cloud-go
 github.com/paloaltonetworks/prisma-cloud-go/alert
@@ -253,6 +253,7 @@ github.com/paloaltonetworks/prisma-cloud-go/anomalySettings
 github.com/paloaltonetworks/prisma-cloud-go/anomalySettings/anomalyTrustedList
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2
+github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/azureTemplate
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/externalid
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/org
 github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/supportedFeatures
@@ -264,6 +265,7 @@ github.com/paloaltonetworks/prisma-cloud-go/compliance/standard/requirement/sect
 github.com/paloaltonetworks/prisma-cloud-go/data-security/datapattern
 github.com/paloaltonetworks/prisma-cloud-go/data-security/dataprofile
 github.com/paloaltonetworks/prisma-cloud-go/integration
+github.com/paloaltonetworks/prisma-cloud-go/ip-address
 github.com/paloaltonetworks/prisma-cloud-go/permission_group
 github.com/paloaltonetworks/prisma-cloud-go/policy
 github.com/paloaltonetworks/prisma-cloud-go/report

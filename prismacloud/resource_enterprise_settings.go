@@ -77,6 +77,19 @@ func resourceEnterpriseSettings() *schema.Resource {
 				Optional:    true,
 				Description: "Notification threshold access keys expiry",
 			},
+			"audit_log_siem_intgr_ids": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "List of audit log siem integration ids",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"audit_logs_enabled": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Audit Logs Enabled",
+			},
 		},
 	}
 }
@@ -99,6 +112,8 @@ func parseEnterpriseSettings(d *schema.ResourceData) enterprise.Config {
 		NamedUsersAccessKeysExpiryNotificationsEnabled:   d.Get("named_users_access_keys_expiry_notifications_enabled").(bool),
 		ServiceUsersAccessKeysExpiryNotificationsEnabled: d.Get("service_users_access_keys_expiry_notifications_enabled").(bool),
 		NotificationThresholdAccessKeysExpiry:            d.Get("notification_threshold_access_keys_expiry").(int),
+		AuditLogSiemIntgrIds:                             SetToStringSlice(d.Get("audit_log_siem_intgr_ids").(*schema.Set)),
+		AuditLogsEnabled:                                 d.Get("audit_logs_enabled").(bool),
 	}
 }
 
@@ -117,6 +132,8 @@ func saveEnterpriseSettings(d *schema.ResourceData, conf enterprise.Config) {
 	d.Set("named_users_access_keys_expiry_notifications_enabled", conf.NamedUsersAccessKeysExpiryNotificationsEnabled)
 	d.Set("service_users_access_keys_expiry_notifications_enabled", conf.ServiceUsersAccessKeysExpiryNotificationsEnabled)
 	d.Set("notification_threshold_access_keys_expiry", conf.NotificationThresholdAccessKeysExpiry)
+	d.Set("audit_log_siem_intgr_ids", conf.AuditLogSiemIntgrIds)
+	d.Set("audit_logs_enabled", conf.AuditLogsEnabled)
 }
 
 func createUpdateEnterpriseSettings(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

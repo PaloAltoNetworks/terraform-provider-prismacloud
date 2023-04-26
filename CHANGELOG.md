@@ -1,3 +1,21 @@
+## 1.3.4 (April 18, 2023)
+
+* Alert Rule Policy Filter for Compute Access Group IDs.
+* Bug fix for integration rate limit issue.
+* The following new data sources are added, mainly related to AZURE Cloud account onboarding with Security Capabilities and Permissions and to generate External ID and the terraform template for azure.
+
+  * data 'prismacloud_azure_template' - For AZURE terraform template generation.
+ 
+NEW DATA SOURCES:
+
+* `prismacloud_trusted_login_ip` / `prismacloud_trusted_login_ips`
+
+NEW RESOURCES: 
+
+* `prismacloud_trusted_login_ip`
+
+
+
 ## 1.3.3 (March 29, 2023)
 
 * terraform provider bug fix for `prismacloud_permission_group`

@@ -12,6 +12,7 @@ var AlreadyExistsError = errors.New("object already exists")
 var InvalidPermissionGroupIdError = errors.New("invalid_permission_group_id") //permission group
 var AccountGroupNotFoundError = errors.New("account_group_not_found")         //account_group_not_found
 var InternalError = errors.New("internal_error")                              //compliance standard requirement
+var OverlappingCIDRError = errors.New("overlapping_cidr")
 
 type PrismaCloudErrorList struct {
 	Errors     []PrismaCloudError
@@ -47,6 +48,8 @@ func (e PrismaCloudErrorList) GenericError() error {
 			return AlreadyExistsError
 		} else if e.Errors[i].InternalError() {
 			return InternalError
+		} else if e.Errors[i].OverlappingCIDRError() {
+			return OverlappingCIDRError
 		}
 	}
 
@@ -72,6 +75,10 @@ func (e PrismaCloudError) InvalidPermissionGroupIdError() bool {
 }
 func (e PrismaCloudError) AlreadyExists() bool {
 	return strings.HasSuffix(e.Message, "_already_exists")
+}
+
+func (e PrismaCloudError) OverlappingCIDRError() bool {
+	return strings.HasSuffix(e.Message, "overlapping_cidr")
 }
 
 func (e PrismaCloudError) Error() string {
