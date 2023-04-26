@@ -1,3 +1,8 @@
+## 1.3.7 (April 26, 2023)
+
+* Documentation for `prismacloud_trusted_login_ip_status`
+
+
 ## 1.3.6 (April 26, 2023)
 
 NEW RESOURCES: 
