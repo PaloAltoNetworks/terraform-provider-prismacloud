@@ -83,6 +83,55 @@ func resourceV2CloudAccount() *schema.Resource {
 							Required:    true,
 							Description: "Unique identifier for an AWS resource (ARN)",
 						},
+						"storage_scan_config": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "Storage scan config",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"scan_option": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Scan option",
+									},
+									"sns_topic_arn": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Scan topic arn",
+									},
+									"buckets": {
+										Type:        schema.TypeSet,
+										Description: "Buckets",
+										Required:    true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"backward": {
+													Type:        schema.TypeSet,
+													Optional:    true,
+													Description: "Backward",
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
+												},
+												"forward": {
+													Type:        schema.TypeSet,
+													Optional:    true,
+													Description: "Foward",
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"storage_vvid": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Storage VVID",
+						},
 						"account_type": {
 							Type:        schema.TypeString,
 							Optional:    true,
@@ -733,6 +782,7 @@ func parseV2CloudAccount(d *schema.ResourceData) (string, string, string, interf
 			Name:        x["name"].(string),
 			RoleArn:     x["role_arn"].(string),
 			AccountType: x["account_type"].(string),
+			StorageVVID: x["storage_vvid"].(string),
 		}
 		features := x["features"].(*schema.Set).List()
 		ans.Features = make([]accountv2.Features, 0, len(features))
@@ -741,6 +791,21 @@ func parseV2CloudAccount(d *schema.ResourceData) (string, string, string, interf
 			ans.Features = append(ans.Features, accountv2.Features{
 				Name:  ftr["name"].(string),
 				State: ftr["state"].(string),
+			})
+		}
+		//check
+		storageScanConfig := x["storage_scan_config"].(*schema.Set).List()
+		ans.StorageScanConfig = make([]accountv2.StorageScanConfig, 0, len(storageScanConfig))
+		for _, storageScanConfig := range storageScanConfig {
+			ssconfig := storageScanConfig.(map[string]interface{})
+			buckets := accountv2.Buckets{}
+
+			buckets.Backward = SetToStringSlice(x["backward"].(*schema.Set))
+			buckets.Forward = SetToStringSlice(x["forward"].(*schema.Set))
+			ans.StorageScanConfig = append(ans.StorageScanConfig, accountv2.StorageScanConfig{
+				ScanOption:  ssconfig["scan_option"].(string),
+				SnsTopicArn: ssconfig["sns_topic_arn"].(string),
+				Buckets:     buckets,
 			})
 		}
 		return accountv2.TypeAws, x["name"].(string), x["account_id"].(string), ans
@@ -839,6 +904,7 @@ func saveV2CloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"external_id":                  v.ExternalId,
 			"has_member_role":              v.HasMemberRole,
 			"template_url":                 v.TemplateUrl,
+			"storage_vvid":                 v.StorageVVID, //check once
 			"eventbridge_rule_name_prefix": v.EventbridgeRuleNamePrefix,
 		}
 
@@ -853,6 +919,25 @@ func saveV2CloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 				})
 			}
 			val["features"] = ftrList
+		}
+		//check
+		if len(v.StorageScanConfig) == 0 {
+			val["storage_scan_config"] = nil
+		} else {
+			ssc := make([]map[string]interface{}, 0, len(v.StorageScanConfig))
+			for _, ss := range v.StorageScanConfig {
+				buk := make([]map[string]interface{}, 1)
+				buk[0] = map[string]interface{}{
+					"backward": ss.Buckets.Backward,
+					"forward":  ss.Buckets.Forward,
+				}
+				ssc = append(ssc, map[string]interface{}{
+					"scan_option":   ss.ScanOption,
+					"sns_topic_arn": ss.SnsTopicArn,
+					"buckets":       buk,
+				})
+			}
+			val["storage_scan_config"] = ssc
 		}
 	case accountv2.AzureV2:
 		x := ResourceDataInterfaceMap(d, accountv2.TypeAzure)
