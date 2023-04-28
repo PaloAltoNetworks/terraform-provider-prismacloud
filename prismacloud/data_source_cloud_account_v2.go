@@ -72,6 +72,55 @@ func dataSourceV2CloudAccount() *schema.Resource {
 							Computed:    true,
 							Description: "Unique identifier for an AWS resource (ARN)",
 						},
+						"storage_scan_config": {
+							Type:        schema.TypeSet,
+							Computed:    true,
+							Description: "Storage scan config",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"scan_option": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Scan option",
+									},
+									"sns_topic_arn": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Scan topic arn",
+									},
+									"buckets": {
+										Type:        schema.TypeSet,
+										Description: "Buckets",
+										Computed:    true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"backward": {
+													Type:        schema.TypeSet,
+													Computed:    true,
+													Description: "Backward",
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
+												},
+												"forward": {
+													Type:        schema.TypeSet,
+													Computed:    true,
+													Description: "Foward",
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"storage_vvid": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Storage VVID",
+						},
 						"account_type": {
 							Type:        schema.TypeString,
 							Computed:    true,
