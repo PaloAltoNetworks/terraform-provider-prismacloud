@@ -83,6 +83,55 @@ func resourceV2CloudAccount() *schema.Resource {
 							Required:    true,
 							Description: "Unique identifier for an AWS resource (ARN)",
 						},
+						"storage_scan_config": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "Storage scan config",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"scan_option": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Scan option",
+									},
+									"sns_topic_arn": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "Scan topic arn",
+									},
+									"buckets": {
+										Type:        schema.TypeList,
+										Description: "Buckets",
+										Required:    true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"backward": {
+													Type:        schema.TypeSet,
+													Optional:    true,
+													Description: "Backward",
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
+												},
+												"forward": {
+													Type:        schema.TypeSet,
+													Optional:    true,
+													Description: "Forward",
+													Elem: &schema.Schema{
+														Type: schema.TypeString,
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"storage_uuid": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Storage UUID",
+						},
 						"account_type": {
 							Type:        schema.TypeString,
 							Optional:    true,
@@ -726,24 +775,57 @@ func gcpv2CredentialsMatch(k, old, new string, d *schema.ResourceData) bool {
 
 func parseV2CloudAccount(d *schema.ResourceData) (string, string, string, interface{}) {
 	if x := ResourceDataInterfaceMap(d, accountv2.TypeAws); len(x) != 0 {
-		ans := accountv2.Aws{
-			AccountId:   x["account_id"].(string),
-			Enabled:     x["enabled"].(bool),
-			GroupIds:    SetToStringSlice(x["group_ids"].(*schema.Set)),
-			Name:        x["name"].(string),
-			RoleArn:     x["role_arn"].(string),
-			AccountType: x["account_type"].(string),
+		storageScanConfig := x["storage_scan_config"].(*schema.Set).List()
+		if len(storageScanConfig) > 0 {
+			ans := accountv2.AwsStorageScan{
+				AccountId:   x["account_id"].(string),
+				Enabled:     x["enabled"].(bool),
+				GroupIds:    SetToStringSlice(x["group_ids"].(*schema.Set)),
+				Name:        x["name"].(string),
+				RoleArn:     x["role_arn"].(string),
+				AccountType: x["account_type"].(string),
+			}
+			features := x["features"].(*schema.Set).List()
+			ans.Features = make([]accountv2.Features, 0, len(features))
+			for _, featuresi := range features {
+				ftr := featuresi.(map[string]interface{})
+				ans.Features = append(ans.Features, accountv2.Features{
+					Name:  ftr["name"].(string),
+					State: ftr["state"].(string),
+				})
+			}
+			yy := storageScanConfig[0].(map[string]interface{})
+			ans.StorageUUID = x["storage_uuid"].(string)
+			ans.StorageScanConfig.SnsTopicArn = yy["sns_topic_arn"].(string)
+			ans.StorageScanConfig.ScanOption = yy["scan_option"].(string)
+			bucket := yy["buckets"].([]interface{})
+
+			if len(bucket) > 0 {
+				buc := bucket[0].(map[string]interface{})
+				ans.StorageScanConfig.Buckets.Forward = SetToStringSlice(buc["forward"].(*schema.Set))
+				ans.StorageScanConfig.Buckets.Backward = SetToStringSlice(buc["backward"].(*schema.Set))
+			}
+			return accountv2.TypeAws, x["name"].(string), x["account_id"].(string), ans
+		} else {
+			ans := accountv2.Aws{
+				AccountId:   x["account_id"].(string),
+				Enabled:     x["enabled"].(bool),
+				GroupIds:    SetToStringSlice(x["group_ids"].(*schema.Set)),
+				Name:        x["name"].(string),
+				RoleArn:     x["role_arn"].(string),
+				AccountType: x["account_type"].(string),
+			}
+			features := x["features"].(*schema.Set).List()
+			ans.Features = make([]accountv2.Features, 0, len(features))
+			for _, featuresi := range features {
+				ftr := featuresi.(map[string]interface{})
+				ans.Features = append(ans.Features, accountv2.Features{
+					Name:  ftr["name"].(string),
+					State: ftr["state"].(string),
+				})
+			}
+			return accountv2.TypeAws, x["name"].(string), x["account_id"].(string), ans
 		}
-		features := x["features"].(*schema.Set).List()
-		ans.Features = make([]accountv2.Features, 0, len(features))
-		for _, featuresi := range features {
-			ftr := featuresi.(map[string]interface{})
-			ans.Features = append(ans.Features, accountv2.Features{
-				Name:  ftr["name"].(string),
-				State: ftr["state"].(string),
-			})
-		}
-		return accountv2.TypeAws, x["name"].(string), x["account_id"].(string), ans
 	} else if x := ResourceDataInterfaceMap(d, accountv2.TypeAzure); len(x) != 0 {
 		ans := accountv2.Azure{
 			EnvironmentType:    x["environment_type"].(string),
@@ -840,6 +922,7 @@ func saveV2CloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			"has_member_role":              v.HasMemberRole,
 			"template_url":                 v.TemplateUrl,
 			"eventbridge_rule_name_prefix": v.EventbridgeRuleNamePrefix,
+			"storage_uuid":                 v.StorageUUID,
 		}
 
 		if len(v.CloudAccountResp.Features) == 0 {
@@ -854,6 +937,19 @@ func saveV2CloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			}
 			val["features"] = ftrList
 		}
+
+		buck := make([]interface{}, 0, 1)
+		buck = append(buck, map[string]interface{}{
+			"forward":  v.StorageScanConfig.Buckets.Forward,
+			"backward": v.StorageScanConfig.Buckets.Backward,
+		})
+		sscf := make([]interface{}, 0, 1)
+		sscf = append(sscf, map[string]interface{}{
+			"scan_option":   v.StorageScanConfig.ScanOption,
+			"sns_topic_arn": v.StorageScanConfig.SnsTopicArn,
+			"buckets":       buck,
+		})
+		val["storage_scan_config"] = sscf
 	case accountv2.AzureV2:
 		x := ResourceDataInterfaceMap(d, accountv2.TypeAzure)
 		var key string
