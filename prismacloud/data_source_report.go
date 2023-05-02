@@ -240,7 +240,7 @@ func dataSourceReportRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	d.SetId(id)
-	saveReport(d, obj)
+	saveReport(d, obj, meta)
 
 	return nil
 }

@@ -287,7 +287,7 @@ func parseReport(d *schema.ResourceData, id string) report.Report {
 	return ans
 }
 
-func saveReport(d *schema.ResourceData, obj report.Report) {
+func saveReport(d *schema.ResourceData, obj report.Report, meta interface{}) {
 	d.Set("report_id", obj.Id)
 	d.Set("name", obj.Name)
 	d.Set("report_type", obj.Type)
@@ -302,10 +302,14 @@ func saveReport(d *schema.ResourceData, obj report.Report) {
 	d.Set("last_scheduled", obj.LastScheduled)
 	d.Set("total_instance_count", obj.TotalInstanceCount)
 
-	trgt := ResourceDataInterfaceMap(d, "target")
-	tr := trgt["time_range"].([]interface{})
+	client := meta.(*pc.Client)
+	id := d.Id()
+	resp, err := report.Get(client, id)
+	if err != nil {
+		log.Printf("[WARN] Error getting response %s", err)
+	}
+	tr := flattenTimeRange(resp.Target.TimeRange)
 
-	// Target.
 	tgt := map[string]interface{}{
 		"account_groups":           obj.Target.AccountGroups,
 		"accounts":                 obj.Target.Accounts,
@@ -380,7 +384,7 @@ func readReport(ctx context.Context, d *schema.ResourceData, meta interface{}) d
 		return diag.FromErr(err)
 	}
 
-	saveReport(d, obj)
+	saveReport(d, obj, meta)
 
 	return nil
 }
