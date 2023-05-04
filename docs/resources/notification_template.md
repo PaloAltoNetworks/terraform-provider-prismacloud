@@ -188,9 +188,9 @@ resource "prismacloud_notification_template" "example-SERVICENOW" {
 ### Template Config
 
 * `basic_config` - (Optional) This field includes additional attributes that can be used to customize the notification, as defined [below](#config_params).
-* `open` - (Optional) This field represents the notification status when it is first created and has not yet been `resolved`, `dismissed`, or `snoozed`. This field includes additional attributes, as defined [below](#config_params). Applicable only for integration type `jira` and `service_now`.
-* `resolved` - (Optional) This field represents the notification status when the issue or event that triggered the notification has been resolved or addressed. This field includes additional attributes, as defined [below](#config_params). Applicable only for integration type `jira` and `service_now`.
-* `dismissed` - (Optional) This field represents the notification status when the user has dismissed or ignored the notification. This field includes additional attributes, as defined [below](#config_params). Applicable only for integration type `service_now`.
+* `open` - (Optional) Provide config to map the `open` alert state to `jira`/`service_now` state and configure the `jira`/`service_now` fields. This field includes additional attributes, as defined [below](#config_params).
+* `resolved` - (Optional) Provide config to map the `resolved` alert state to `jira`/`service_now` state and configure the `jira`/`service_now` fields. This field includes additional attributes, as defined [below](#config_params).
+* `dismissed` - (Optional) Provide config to map the `dismissed` alert state to `service_now` state and configure the `service_now` fields. This field includes additional attributes, as defined [below](#config_params).
 * `snoozed` - (Optional) This field represents the notification status when the user has chosen to temporarily delay or "snooze" the notification. This field includes additional attributes, as defined [below](#config_params).
 
 #### Status
