@@ -667,6 +667,8 @@ The type of cloud account to add.
 * `role_arn` - (Required) Unique identifier for an AWS resource (ARN).
 * `account_type` - (Optional) Defaults to `account` if not specified. Valid values : `account` and `organization`.
 * `features` - (Optional, List) Features list.
+* `storage_scan_config` - Required if onboarding account with `Data Security` feature, defined [below](#storage_scan_config)
+* `storage_uuid` - Required if onboarding aws account with `Data Security` feature, Refer **[StorageUUID](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/aws_storage_uuid)** for more details.
 
 ### Azure
 
@@ -810,6 +812,16 @@ The type of cloud account to add.
 * `name` - Feature name. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
 * `state` - Feature state. Whether the feature to `enabled` or `disabled`.
 
+#### STORAGE_SCAN_CONFIG
+
+* `scan_option` - (Optional, bool) Scan option, default value as `false`.
+* `sns_topic_arn` - SNS topic arn.
+* `buckets` - List of buckets, defined [below](#buckets).
+
+#### BUCKETS
+
+* `backward` - List of backward buckets.
+* `forward` - List of forward buckets.
 
 ## Import
 

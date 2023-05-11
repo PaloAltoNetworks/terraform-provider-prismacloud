@@ -51,6 +51,8 @@ The cloud type given above determines which of the attributes are populated:
 * `last_modified_epoch_millis` - Last modified at epoch millis.
 * `parent_id` - Parent id.
 * `protection_mode` - Protection mode of account.
+* `storage_scan_config` - Storage scan config, defined [below](#storage_scan_config)  
+* `storage_uuid` - StorageUUID.
 
 ### Azure
 
@@ -132,3 +134,14 @@ The cloud type given above determines which of the attributes are populated:
 
 * `name` - Feature name.
 * `state` - Feature state. `enabled` or `disabled`.
+
+#### STORAGE_SCAN_CONFIG
+
+* `scan_option` - Scan option.
+* `sns_topic_arn` - SNS topic arn.
+* `buckets` - List of buckets, defined [below](#buckets).
+
+#### BUCKETS
+
+* `backward` - List of backward buckets.
+* `forward` - List of forward buckets.

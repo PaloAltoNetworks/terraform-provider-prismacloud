@@ -141,6 +141,7 @@ func Provider() *schema.Provider {
 			"prismacloud_trusted_alert_ips":                        dataSourceTrustedAlertIps(),
 			"prismacloud_trusted_login_ip":                         dataSourceTrustedLoginIp(),
 			"prismacloud_trusted_login_ips":                        dataSourceTrustedLoginIps(),
+			"prismacloud_aws_storage_uuid":                         dataSourceStorageUUID(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
