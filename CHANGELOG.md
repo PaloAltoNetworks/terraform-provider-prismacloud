@@ -1,3 +1,16 @@
+## 1.3.8 (May 11, 2023)
+
+* Added support for `Data Security` feature for AWS cloud account onboarding.
+* Bug fix for prismacloud report.
+ 
+NEW DATA SOURCES:
+
+* `prismacloud_notification_template` / `prismacloud_notification_templates`
+
+NEW RESOURCES: 
+
+* `prismacloud_notification_template`
+
 ## 1.3.7 (April 26, 2023)
 
 * Documentation for `prismacloud_trusted_login_ip_status`
