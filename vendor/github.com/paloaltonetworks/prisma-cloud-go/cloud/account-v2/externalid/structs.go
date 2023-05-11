@@ -21,3 +21,10 @@ type Features1 struct {
 	Name  string `json:"featureName"`
 	State string `json:"featureState"`
 }
+
+type StorageUUID struct {
+	AccountId   string `json:"accountId"`
+	ExternalId  string `json:"externalId"`
+	RoleArn     string `json:"roleArn"`
+	StorageUUID string `json:"storageUUID"`
+}

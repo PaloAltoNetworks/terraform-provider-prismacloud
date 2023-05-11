@@ -41,6 +41,18 @@ type Group struct {
 	Name string `json:"name"`
 }
 
+type AwsStorageScan struct {
+	AccountId         string            `json:"accountId"`
+	AccountType       string            `json:"accountType"`
+	Enabled           bool              `json:"enabled"`
+	Features          []Features        `json:"features"`
+	GroupIds          []string          `json:"groupIds"`
+	Name              string            `json:"name"`
+	RoleArn           string            `json:"roleArn"`
+	StorageScanConfig StorageScanConfig `json:"storageScanConfig"`
+	StorageUUID       string            `json:"storageUUID"`
+}
+
 type Aws struct {
 	AccountId   string     `json:"accountId"`
 	AccountType string     `json:"accountType"`
@@ -52,14 +64,27 @@ type Aws struct {
 }
 
 type AwsV2 struct {
-	CloudAccountResp          CloudAccountResp `json:"cloudAccount"`
-	Name                      string           `json:"name"`
-	RoleArn                   string           `json:"roleArn"`
-	ExternalId                string           `json:"externalId"`
-	HasMemberRole             bool             `json:"hasMemberRole"`
-	TemplateUrl               string           `json:"templateUrl"`
-	GroupIds                  []string         `json:"groupIds"`
-	EventbridgeRuleNamePrefix string           `json:"eventBridgeRuleNamePrefix"`
+	CloudAccountResp          CloudAccountResp  `json:"cloudAccount"`
+	Name                      string            `json:"name"`
+	RoleArn                   string            `json:"roleArn"`
+	ExternalId                string            `json:"externalId"`
+	HasMemberRole             bool              `json:"hasMemberRole"`
+	TemplateUrl               string            `json:"templateUrl"`
+	GroupIds                  []string          `json:"groupIds"`
+	EventbridgeRuleNamePrefix string            `json:"eventBridgeRuleNamePrefix"`
+	StorageScanConfig         StorageScanConfig `json:"storageScanConfig"`
+	StorageUUID               string            `json:"storageUUID"`
+}
+
+type StorageScanConfig struct {
+	Buckets     Buckets `json:"buckets"`
+	ScanOption  string  `json:"scanOption"`
+	SnsTopicArn string  `json:"snsTopicArn"`
+}
+
+type Buckets struct {
+	Backward []string `json:"backward"`
+	Forward  []string `json:"forward"`
 }
 
 type Features1 struct {

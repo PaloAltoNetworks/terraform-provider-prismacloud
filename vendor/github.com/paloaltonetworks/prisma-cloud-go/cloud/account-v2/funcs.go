@@ -262,6 +262,10 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 		logMsg.WriteString("aws")
 		cloudType = TypeAws
 		id = v.AccountId
+	case AwsStorageScan:
+		logMsg.WriteString("aws")
+		cloudType = TypeAws
+		id = v.AccountId
 	case Azure:
 		logMsg.WriteString("azure")
 		cloudType = TypeAzure
@@ -304,9 +308,7 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 		if exists {
 			path = append(path, id)
 		}
-
 		_, err := c.Communicate(method, path, nil, account, nil)
 		return err
-
 	}
 }
