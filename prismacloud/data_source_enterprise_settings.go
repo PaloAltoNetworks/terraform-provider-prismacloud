@@ -63,6 +63,19 @@ func dataSourceEnterpriseSettings() *schema.Resource {
 				Computed:    true,
 				Description: "Notification threshold access keys expiry",
 			},
+			"audit_log_siem_intgr_ids": {
+				Type:        schema.TypeSet,
+				Computed:    true,
+				Description: "List of audit log siem integration ids",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"audit_logs_enabled": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "Audit Logs Enabled",
+			},
 		},
 	}
 }

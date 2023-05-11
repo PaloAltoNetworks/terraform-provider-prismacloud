@@ -175,7 +175,6 @@ accountId,groupIDs,name,roleArn
 213456789,Default Account Group ID||AWS Account Group ID,213456789,arn:aws:iam::213456789:role/RedlockReadWriteRole
 321466019,Default Account Group ID||AWS Account Group ID,321466019,arn:aws:iam::321466019:role/RedlockReadWriteRole
 
-Here's how you would do this (Terraform 0.12 code):
 */
 ```
 locals {
@@ -235,12 +234,396 @@ resource "prismacloud_org_cloud_account_v2" "aws_organization_onboarding_example
 
 Before onboarding the aws cloud account `external_id` for account must be generated using `prismacloud_aws_cft_generator`. Otherwise, you will encounter `error 412 : external_id_empty_or_not_generated`. Refer **[AWS CFT generator Readme](/docs/data-sources/aws_cft_generator_external_id.md)** for more details.
 
+## **Example Usage 3**: Azure cloud Tenant onboarding
+
+### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
+
+```hcl
+data "prismacloud_account_supported_features" "prismacloud_supported_features" {
+  cloud_type      = "azure"
+  account_type    = "tenant"
+  deployment_type = "azure"
+}
+```
+
+```hcl
+output "features_supported_tenant" {
+  value = data.prismacloud_account_supported_features.prismacloud_supported_features_tenant.supported_features
+}
+```
+
+### `Step 2`: Fetch the Azure template based on required features. Refer **[Azure template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/azure_template)** for more details.
+
+```hcl
+data "prismacloud_azure_template" "prismacloud_tenant_azure_template" {
+  file_name       = "<file-name>" //Provide filename along with path to store azure template
+  account_type    = "tenant"
+  tenant_id       = "<tenant-id>"
+  deployment_type = "azure"
+  subscription_id = "<subscription-id>"
+  features        = data.prismacloud_account_supported_features.prismacloud_supported_features_tenant.supported_features
+}
+```
+
+### `Step 3`: Execute the generated terraform file <terraform-file>.tf.json in the above step in the Azure Portal to create app registration and roles. Copy the details from the script output
+
+### `Step 4`: Onboard the Azure cloud Active Directory Tenant onto prisma cloud platform
+
+```hcl
+# Azure Tenant account type.
+
+resource "prismacloud_org_cloud_account_v2" "example1" {
+  azure {
+    client_id    = "<client-id>"
+    account_type = "tenant"
+    enabled      = true
+    name         = "test azure account"   //Should be unique for each account
+    group_ids    = [
+      data.prismacloud_account_group.existing_account_group_id_org.group_id, //To use existing Account Group
+      //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    ]
+    environment_type     = "azure" //default:azure
+    key                  = "<secret-key>"
+    service_principal_id = "<service-principal-id>"
+    tenant_id            = "<tenant-id>"
+  }
+}
+
+//Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id_org" {
+  name = "Default Account Group"
+  //Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" //Account group name to be created
+# }
+
+```
+
+### Consolidated code snippet for all the above steps
+
+```
+data "prismacloud_account_supported_features" "prismacloud_supported_features" {
+  cloud_type      = "azure"
+  account_type    = "tenant"
+  deployment_type = "azure"
+}
+
+data "prismacloud_azure_template" "prismacloud_tenant_azure_template" {
+  file_name       = "<file-name>" //Provide filename along with path to store azure template
+  account_type    = "tenant"
+  tenant_id       = "<tenant-id>"
+  deployment_type = "azure"
+  subscription_id = "<subscription-id>"
+  features        = data.prismacloud_account_supported_features.prismacloud_supported_features_tenant.supported_features
+}
+
+resource "prismacloud_org_cloud_account_v2" "example1" {
+  azure {
+    client_id    = "<client-id>"
+    account_type = "tenant"
+    enabled      = true
+    name         = "test azure account"   //Should be unique for each account
+    group_ids    = [
+      data.prismacloud_account_group.existing_account_group_id_org.group_id, //To use existing Account Group
+      //prismacloud_account_group.new_account_group.group_id, //To create new Account group
+    ]
+    environment_type     = "azure" //default:azure
+    key                  = "<secret-key>"
+    service_principal_id = "<service-principal-id>"
+    tenant_id            = "<tenant-id>"
+  }
+}
+
+//Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id_org" {
+  name = "Default Account Group"
+  //Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" //Account group name to be created
+# }
+
+```
+
+## **Example Usage 4**: For Bulk Azure cloud Active Directory Tenant accounts onboarding
+
+### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 3' should be completed for each of the Tenant.
+
+/*
+You can also create cloud accounts from a CSV file using native Terraform
+HCL and looping. Assume you have a CSV file of Azure accounts that looks like this:
+
+name,clientId,key,tenantId,servicePrincipalId
+123456789,6543256,0xJ8Q~,456189,86e43yuhbjc
+213456789,5541253,0yJ9Q,356780,78e43yuhbbn
+321466019,4543250,1xJ8Q~,256783,65e43iuhbjc
+
+*/
+
+```
+locals {
+    instances = csvdecode(file("azure.csv"))
+}
+// Now specify the cloud account resource with a loop like so:
+
+resource "prismacloud_org_cloud_account_v2" "azure_account_bulk_onboarding_example" {
+    for_each = { for inst in local.instances : inst.name => inst }
+    
+    azure {
+        name = each.value.name
+        client_id=each.value.clientId
+        key=each.value.key
+        tenant_id=each.value.tenantId
+        service_principal_id=each.value.servicePrincipalId 
+    }
+}
+```
+
+### prismacloud_org_cloud_account_v2 resource block example for Azure Cloud Tenant with hierarchy_selection
+
+```
+resource "prismacloud_org_cloud_account_v2" "example1" {
+  disable_on_destroy = true
+  azure {
+    client_id = "<client-id>"
+    account_type = "tenant"
+    enabled     = true
+    name        = "test azure account"
+    environment_type       = "azure"
+    key                   = "<secret-id>"
+    monitor_flow_logs       = true
+    service_principal_id    = "<service-principal-id>"
+    tenant_id              = "<tenant-id>"
+    default_account_group_id = "<deafult-account-group-id>" //Must be provided for tenant with management groups(tenant)
+    root_sync_enabled       = true     //Must be true for tenant with management groups(tenant)
+    hierarchy_selection {
+            display_name = "displayNameHere"
+            node_type= "nodeTypeHere"
+            resource_id= "resurceIdHere"
+            selection_type= "selectionTypeHere"
+        }
+    features {
+      name  = "Agentless Scanning"
+      state = "enabled"
+    }
+    features {
+      name  = "Auto Protect"
+      state = "disabled"
+    }
+  }
+}
+```
+
+## Prerequisite
+
+Before onboarding the azure cloud account. `azure_template` for account must be generated using `prismacloud_azure_template`. Refer **[Azure template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/azure_template)** for more details.
+
+## **Example Usage 5**: Gcp cloud organization onboarding
+
+### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
+
+```hcl
+data "prismacloud_account_supported_features" "prismacloud_supported_features" {
+  cloud_type      = "gcp"
+  account_type    = "organization"
+}
+```
+
+```hcl
+output "features_supported_organization" {
+  value = data.prismacloud_account_supported_features.prismacloud_supported_features_organization.supported_features
+}
+```
+
+### `Step 2`: Fetch the Gcp template based on required features. Refer **[Gcp template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/gcp_template)** for more details.
+
+```hcl
+data "prismacloud_gcp_template" "prismacloud_gcp_template" {
+  name = "test account"
+  account_type = "organization"
+  org_id = "<org_id>"
+  authentication_type = "service_account"
+  file_name = "<file-name>" //Provide filename along with path to store gcp template
+  features = data.prismacloud_account_supported_features.prismacloud_supported_features_organization.supported_features
+}
+```
+
+### `Step 3`: Execute the generated terraform file <terraform-file>.tf.json in the above step in the Gcp Portal to create app registration and roles. Copy the details from the script output
+
+### `Step 4`: Onboard the Gcp organization account onto prisma cloud platform
+
+```hcl
+# Gcp organization account type.
+resource "prismacloud_org_cloud_account_v2" "example" {
+  disable_on_destroy=true
+  gcp {
+    account_id          = "<account-id>"
+    account_type        = "organization"
+    enabled            = true
+    name               = "Google Cloud Account"
+    compression_enabled = true
+    credentials        = file("gcp_org_credentials.json") //File containing credentials
+    default_account_group_id    = data.prismacloud_account_group.existing_account_group_id.group_id //To use existing Account Group
+    //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    features {
+      name  = "Agentless Scanning" //To enable 'Agentless Scanning' feature if required.
+      state = "enabled"
+    }
+    features {
+      name  = "Remediation" //To enable Remediation also known as Monitor and Protect
+      state = "disabled"
+    }
+  }
+}
+
+//Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id_org" {
+  name = "Default Account Group"
+  //Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" //Account group name to be created
+# }
+
+```
+
+### Consolidated code snippet for all the above steps
+
+```
+data "prismacloud_account_supported_features" "prismacloud_supported_features" {
+  cloud_type      = "gcp"
+  account_type    = "organization"
+}
+
+data "prismacloud_gcp_template" "prismacloud_gcp_template" {
+  name = "test account"
+  account_type = "organization"
+  org_id = "<org_id>"
+  authentication_type = "service_account"
+  file_name = "<file-name>" //Provide filename along with path to store gcp template
+  features = data.prismacloud_account_supported_features.prismacloud_supported_features_organization.supported_features
+}
+
+resource "prismacloud_org_cloud_account_v2" "example" {
+  disable_on_destroy=true
+  gcp {
+    account_id          = "<account-id>"
+    account_type        = "organization"
+    enabled            = true
+    name               = "Google Cloud Account"
+    compression_enabled = true
+    credentials        = file("gcp_org_credentials.json") //File containing credentials
+    default_account_group_id    = data.prismacloud_account_group.existing_account_group_id.group_id //To use existing Account Group
+    //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    features {
+      name  = "Agentless Scanning" //To enable 'Agentless Scanning' feature if required.
+      state = "enabled"
+    }
+    features {
+      name  = "Remediation" //To enable Remediation also known as Monitor and Protect
+      state = "disabled"
+    }
+  }
+}
+
+//Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id_org" {
+  name = "Default Account Group"
+  //Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" //Account group name to be created
+# }
+
+```
+
+## **Example Usage 8**: For Bulk Gcp organization accounts onboarding
+
+### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 7' should be completed for each of the Organization.
+
+/*
+You can also create cloud accounts from a CSV file using native Terraform
+HCL and looping. Assume you have a CSV file of Organization accounts that looks like this:
+
+accountId,defaultAccountGroupId,name,credentials
+123456789,Default Account Group ID,Google Cloud Account,gcp_credentials_v2.json
+213456789,Default Account Group ID,Google Cloud Account1,gcp_credentials1_v2.json
+321466019,Default Account Group ID,Google Cloud Account2,gcp_credentials2_v2.json
+
+*/
+
+```
+locals {
+    instances = csvdecode(file("gcp.csv"))
+}
+// Now specify the cloud account resource with a loop like so:
+
+resource "prismacloud_org_cloud_account_v2" "gcp_account_bulk_onboarding_example" {
+    for_each = { for inst in local.instances : inst.name => inst }
+    
+    gcp {
+        account_id = each.value.accountId
+        default_account_group_id = each.value.defaultAccountGroupId
+        name = each.value.name
+        credentials=each.value.credentials
+        //
+    }
+}
+```
+### prismacloud_org_cloud_account_v2 resource block example for Gcp Cloud Organization with hierarchy_selection
+
+```
+with_hierarchy_selection
+resource "prismacloud_org_cloud_account_v2" "example_with_hierarchy_selection" {
+  disable_on_destroy=true
+  gcp {
+    account_id          = "<account-id>"
+    account_type        = "organization"
+    enabled            = true
+    name               = "Google Cloud Account"
+    compression_enabled = true
+    credentials        = file("gcp_org_credentials.json") //File containing credentials
+    default_account_group_id    = data.prismacloud_account_group.existing_account_group_id.group_id //To use existing Account Group
+    //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    features {
+      name  = "Agentless Scanning" //To enable 'Agentless Scanning' feature if required.
+      state = "enabled"
+    }
+    features {
+      name  = "Remediation" //To enable Remediation also known as Monitor and Protect
+      state = "disabled"
+    }
+    hierarchy_selection {
+            display_name = "displayNameHere"
+            node_type= "nodeTypeHere"
+            resource_id= "resurceIdHere"
+            selection_type= "selectionTypeHere"
+    }
+  }
+}
+```
+
+## Prerequisite
+
+Before onboarding the gcp cloud account. `gcp_template` for account must be generated using `prismacloud_gcp_template`. Refer **[Gcp template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/gcp_template)** for more details.
+
 ## Argument Reference
 
 The type of cloud account to add.
 
 * `disable_on_destroy` - (Optional, bool) To disable cloud account instead of deleting when calling Terraform destroy (default: `false`).
 * `aws` - AWS account type spec, defined [below](#aws).
+* `azure` - Azure account type spec, defined [below](#azure).
+* `gcp` - Gcp account type spec, defined [below](#gcp).
 
 ### AWS
 
@@ -251,7 +634,40 @@ The type of cloud account to add.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `role_arn` - (Required) Unique identifier for an AWS resource (ARN).
 * `account_type` - (Optional) Defaults to `account` if not specified. Valid values : `account` and `organization`.
-* `features` - (Optional, List) Features list
+* `features` - (Optional, List) Features list.
+
+### Azure
+
+* `enabled` - (Optional, bool) Whether the account is enabled (default: `true`).
+* `group_ids` - (Optional) List of account IDs to which you are assigning this tenant account.
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `client_id` - (Required) Application ID registered with Active Directory.
+* `key` - (Required) Application ID key.
+* `monitor_flow_logs` - (Optional, bool) Automatically ingest flow logs.Should be `false` for `active directory tenant`.
+* `tenant_id` - (Required) Active Directory ID associated with Azure.
+* `service_principal_id` - (Required) Unique ID of the service principal object associated with the Prisma Cloud application that you create.
+* `account_type` - (Optional) Defaults to `account` if not specified. Valid values: `account` or `tenant`.
+* `hierarchy_selection` - (Optional) List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
+* `default_account_group_id` - (Optional, String) *Applicable only for accountType: **tenant**.* This is the Default Account Group ID for the Azure tenant and its member accounts (must be provided for tenant with management groups(`tenant`)).
+* `features` - (Optional, List) Features applicable for azure account, defined [below](#features).
+* `root_sync_enabled` - (Optional, bool) Azure tenant has children. Must be set to true when azure tenant is onboarded with children i.e., for "Tenant with management groups"(`tenant`).
+* `environment_type` - (Optional) Defaults to "azure".Valid values are `azure` or `azure_gov` for azure tenant account.
+
+### Gcp
+
+* `account_id` - (Required) Gcp organization account ID.
+* `account_type` - (Required) Account type. Valid value: `organization`.
+* `enabled` - (Optional, bool) Whether the account is enabled (default: `false`).
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `compression_enabled` - (Optional, bool) Enable or disable compressed network flow log generation. Default value: `false`.
+* `credentials` - (Required) Content of the JSON credentials file.
+* `data_flow_enabled_project` - (Optional) Project ID where the Dataflow API is enabled. Required if `compressionEnabled` is set to `true` and if the `accountType` is `organization`. Optional if the `accountType` is `account` or `masterServiceAccount`.
+* `flow_log_storage_bucket` - (Optional) Cloud Storage Bucket name that is used store the flow logs.
+* `features` - (Optional, List) Features applicable for gcp organization account, defined [below](#features).
+* `account_group_creation_mode` - (Optional) Cloud account group creation mode. Defaults to `MANUAL` if not specified. Valid values: `MANUAL`, `AUTO` or `RECURSIVE`.
+* `hierarchy_selection` - (Optional) List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
+* `default_account_group_id` - (Required) This is the Default Account Group ID for the Gcp organization and its member accounts.
+* `organization_name` - (Optional) Gcp organization name.
 
 ## Attribute Reference
 
@@ -275,6 +691,66 @@ The type of cloud account to add.
 * `parent_id` - Parent id.
 * `protection_mode` - Protection mode of account.
 
+### Azure
+
+* `account_id` - Azure tenant account ID.
+* `enabled` - (bool) Whether the account is enabled.
+* `group_ids` - List of account IDs to which you are assigning this account.
+* `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `client_id` - Application ID registered with Active Directory.
+* `key` - Application ID key.
+* `monitor_flow_logs` - (bool) * `monitor_flow_logs` - (bool) Automatically ingest flow logs. Must be set to false when azure tenant is onboarded without children i.e., for `Active Directory Tenant`.
+* `tenant_id` - Active Directory ID associated with Azure.
+* `service_principal_id` - Unique ID of the service principal object associated with the Prisma Cloud application that you create.
+* `account_type` - `tenant` for azure account.
+* `protection_mode` - Protection mode of account.
+* `default_account_group_id` - Account group id to which you are assigning this account.
+* `root_sync_enabled` - (bool) Azure tenant has children. Must be set to true when azure tenant is onboarded with children i.e., for `Tenant`.
+* `hierarchy_selection` - List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
+* `features` - Features applicable for azure account, defined [below](#features).
+* `environment_type` - `azure` or `azure_gov` for azure account.
+* `parent_id` - Parent id.
+* `customer_name` - Prisma customer name.
+* `created_epoch_millis` - Account created epoch time.
+* `last_modified_by` - Last modified by.
+* `last_modified_epoch_millis` - Last modified at epoch millis.
+* `deleted` - (bool) Whether the account is deleted or not.
+* `template_url` - Template URL.
+* `deployment_type` - `az` for azure account.
+* `deployment_type_description` - Deployment type description. Valid values: `Commercial` or `Government`.
+* `member_sync_enabled` - (bool) Azure tenant has children. Must be set to true when azure tenant is onboarded with children i.e., for `Tenant`.
+
+### Gcp
+
+* `account_id` - Gcp account ID.
+* `account_type` - `organization` for gcp organization account.
+* `enabled` - (bool) Whether the account is enabled.
+* `group_ids` - List of account IDs to which you are assigning this account.
+* `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `compression_enabled` - (bool) Enable or disable compressed network flow log generation.
+* `credentials` - Content of the JSON credentials file.
+* `data_flow_enabled_project` - Project ID where the Dataflow API is enabled.
+* `features` - Features applicable for gcp account, defined [below](#features).
+* `flow_log_storage_bucket` - Cloud Storage Bucket name that is used store the flow logs.
+* `protection_mode` - Protection mode of account.
+* `parent_id` - Parent ID.
+* `customer_name` - Prisma customer name.
+* `created_epoch_millis` - Account created epoch time.
+* `last_modified_by` - Last modified by.
+* `last_modified_epoch_millis` - Last modified at epoch millis.
+* `deleted` - (bool) Whether the account is deleted or not.
+* `storage_scan_enabled` - (bool) Whether the storage scan is enabled.
+* `added_on_ts` - Added on time stamp.
+* `deployment_type` - `gcp` for gcp account.
+* `deployment_type_description` - Deployment type description.
+* `project_id` - Gcp Project ID.
+* `service_account_email` - Service account email of gcp account.
+* `authentication_type` - Authentication type of gcp account.
+* `account_group_creation_mode` - Account group creation mode.
+* `default_account_group_id` - Account group id to which you are assigning this account.
+* `hierarchy_selection` - List of hierarchy selection. Each item has resource ID, display name, node type and selection type, as defined [below](#hierarchy-selection).
+* `organization_name` - Gcp organization name.
+
 #### FEATURES
 
 * `name` - Feature name. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
@@ -282,15 +758,15 @@ The type of cloud account to add.
 
 #### Hierarchy Selection
 
-* `resource_id` - Resource ID. For  ACCOUNT, OU or ROOT. Example : `root`.
-* `display_name` - Display name for ACCOUNT, OU or ROOT. Example : `Root`.
-* `node_type` - Node type - ORG, OU, ACCOUNT.
-* `selection_type` - Selection type - ALL, INCLUDE or EXCLUDE.
+* `resource_id` - Resource ID. For ACCOUNT, OU, ROOT, TENANT, SUBSCRIPTION, PROJECT, FOLDER or ORG. Example : `root`.
+* `display_name` - Display name for ACCOUNT, OU, ROOT, TENANT, SUBSCRIPTION, PROJECT, FOLDER or ORG. Example : `Root`.
+* `node_type` - Node type - ORG, OU, ACCOUNT, SUBSCRIPTION, TENANT, MANAGEMENT_GROUP, PROJECT, FOLDER or ORG.
+* `selection_type` - Selection type. Valid values: INCLUDE to include the specified resource to onboard, EXCLUDE to exclude the specified resource and onboard the rest, ALL to onboard all resources in the organization.
 
 ## Import
 
 Resources can be imported using the cloud type and the ID:
 
 ```
-$ terraform import prismacloud_cloud_account_v2.aws_example aws:accountIdHere
+$ terraform import prismacloud_cloud_account_v2.example accountIdHere
 ```

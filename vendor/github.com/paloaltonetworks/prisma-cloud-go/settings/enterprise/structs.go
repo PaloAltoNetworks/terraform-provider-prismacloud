@@ -11,4 +11,6 @@ type Config struct {
 	NamedUsersAccessKeysExpiryNotificationsEnabled   bool            `json:"namedUsersAccessKeysExpiryNotificationsEnabled"`
 	ServiceUsersAccessKeysExpiryNotificationsEnabled bool            `json:"serviceUsersAccessKeysExpiryNotificationsEnabled"`
 	NotificationThresholdAccessKeysExpiry            int             `json:"notificationThresholdAccessKeysExpiry"`
+	AuditLogSiemIntgrIds                             []string        `json:"auditLogSiemIntgrIds"`
+	AuditLogsEnabled                                 bool            `json:"auditLogsEnabled"`
 }

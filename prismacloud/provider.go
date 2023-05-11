@@ -117,6 +117,9 @@ func Provider() *schema.Provider {
 			"prismacloud_enterprise_settings":                      dataSourceEnterpriseSettings(),
 			"prismacloud_aws_cft_generator":                        dataSourceExternalId(),
 			"prismacloud_account_supported_features":               dataSourceCloudAccountSupportedFeatures(),
+			"prismacloud_azure_template":                           dataSourceAzureTemplate(),
+			"prismacloud_gcp_template":                             dataSourceGcpTemplate(),
+			"prismacloud_ibm_template":                             dataSourceIbmTemplate(),
 			"prismacloud_integration":                              dataSourceIntegration(),
 			"prismacloud_integrations":                             dataSourceIntegrations(),
 			"prismacloud_permission_group":                         dataSourcePermissionGroup(),
@@ -136,6 +139,11 @@ func Provider() *schema.Provider {
 			"prismacloud_user_profiles":                            dataSourceUserProfiles(),
 			"prismacloud_notification_template":                    dataSourceNotificationTemplate(),
 			"prismacloud_notification_templates":                   dataSourceNotificationTemplates(),
+			"prismacloud_trusted_alert_ip":                         dataSourceTrustedAlertIp(),
+			"prismacloud_trusted_alert_ips":                        dataSourceTrustedAlertIps(),
+			"prismacloud_trusted_login_ip":                         dataSourceTrustedLoginIp(),
+			"prismacloud_trusted_login_ips":                        dataSourceTrustedLoginIps(),
+			"prismacloud_aws_storage_uuid":                         dataSourceStorageUUID(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -162,6 +170,9 @@ func Provider() *schema.Provider {
 			"prismacloud_org_cloud_account":                       resourceOrgCloudAccount(),
 			"prismacloud_org_cloud_account_v2":                    resourceOrgV2CloudAccount(),
 			"prismacloud_notification_template":                   resourceNotificationTemplate(),
+			"prismacloud_trusted_alert_ip":                        resourceTrustedAlertIp(),
+			"prismacloud_trusted_login_ip":                        resourceTrustedLoginIp(),
+			"prismacloud_trusted_login_ip_status":                 resourceLoginIpStatus(),
 		},
 
 		ConfigureFunc: providerConfigure,
