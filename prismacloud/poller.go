@@ -1,6 +1,9 @@
 package prismacloud
 
 import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -15,4 +18,18 @@ func PollApiUntilSuccess(p Poller) {
 		}
 		time.Sleep(1 * time.Second)
 	}
+}
+
+func PollApiUntilSuccessCustom(p Poller) diag.Diagnostics {
+	for {
+		if err := p(); err == nil {
+			break
+		} else if "429" == strings.Split(err.Error(), " ")[0] {
+			waitingTime := rand.Intn(5) + 1
+			time.Sleep(time.Duration(waitingTime) * time.Second)
+		} else {
+			return diag.FromErr(err)
+		}
+	}
+	return nil
 }
