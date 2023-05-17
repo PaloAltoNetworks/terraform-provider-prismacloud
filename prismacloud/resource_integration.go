@@ -4,7 +4,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"golang.org/x/net/context"
 	"log"
+	"math/rand"
 	"strings"
+	"time"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
@@ -662,6 +664,23 @@ func saveIntegration(d *schema.ResourceData, o integration.Integration) {
 	}
 }
 
+type PollerCustom func() (integration.Integration, error)
+
+func PollApiUntilSuccessReadIntegration(p PollerCustom) (integration.Integration, error) {
+	for {
+		if o, err := p(); err == nil {
+			break
+		} else if "429" == strings.Split(err.Error(), " ")[0] {
+			waitingTime := rand.Intn(5) + 1
+			time.Sleep(time.Duration(waitingTime) * time.Second)
+		} else {
+			return o, err
+
+		}
+	}
+	return integration.Integration{}, nil
+}
+
 func createIntegration(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	o := parseIntegration(d, "")
@@ -672,8 +691,12 @@ func createIntegration(ctx context.Context, d *schema.ResourceData, meta interfa
 		prismaIdRequired = false
 	}
 
-	if err := integration.Create(client, o, prismaIdRequired); err != nil {
-		return diag.FromErr(err)
+	err := PollApiUntilSuccessCustom(func() error {
+		err := integration.Create(client, o, prismaIdRequired)
+		return err
+	}, "429")
+	if err != nil {
+		return err
 	}
 
 	var id string
@@ -697,7 +720,11 @@ func readIntegration(ctx context.Context, d *schema.ResourceData, meta interface
 		prismaIdRequired = false
 	}
 
-	o, err := integration.Get(client, id, prismaIdRequired)
+	o, err := PollApiUntilSuccessReadIntegration(func() (integration.Integration, error) {
+		o, err := integration.Get(client, id, prismaIdRequired)
+
+		return o, err
+	})
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
 			d.SetId("")
@@ -722,8 +749,12 @@ func updateIntegration(ctx context.Context, d *schema.ResourceData, meta interfa
 		prismaIdRequired = false
 	}
 
-	if err := integration.Update(client, o, prismaIdRequired); err != nil {
-		return diag.FromErr(err)
+	err := PollApiUntilSuccessCustom(func() error {
+		err := integration.Update(client, o, prismaIdRequired)
+		return err
+	}, "429")
+	if err != nil {
+		return err
 	}
 
 	return readIntegration(ctx, d, meta)
@@ -739,11 +770,18 @@ func deleteIntegration(ctx context.Context, d *schema.ResourceData, meta interfa
 		prismaIdRequired = false
 	}
 
-	err := integration.Delete(client, id, prismaIdRequired)
-	if err != nil {
-		if err != pc.ObjectNotFoundError {
-			return diag.FromErr(err)
+	err := PollApiUntilSuccessCustom(func() error {
+		err := integration.Delete(client, id, prismaIdRequired)
+		if err != nil {
+			if err != pc.ObjectNotFoundError {
+				return err
+			}
 		}
+		return err
+
+	}, "429")
+	if err != nil {
+		return err
 	}
 
 	d.SetId("")
