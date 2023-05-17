@@ -407,7 +407,7 @@ type PollerCustom1 func() (string, error)
 func PollApiUntilSuccessRead(p PollerCustom1) (string, error) {
 	for {
 		if o, err := p(); err == nil {
-			break
+			return o, nil
 		} else if "429" == strings.Split(err.Error(), " ")[0] {
 			waitingTime := rand.Intn(5) + 1
 			time.Sleep(time.Duration(waitingTime) * time.Second)
