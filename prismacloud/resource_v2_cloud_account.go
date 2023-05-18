@@ -51,6 +51,7 @@ func resourceV2CloudAccount() *schema.Resource {
 					accountv2.TypeAzure,
 					accountv2.TypeGcp,
 					accountv2.TypeIbm,
+					accountv2.TypeAlibaba,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -254,6 +255,7 @@ func resourceV2CloudAccount() *schema.Resource {
 					accountv2.TypeAws,
 					accountv2.TypeGcp,
 					accountv2.TypeIbm,
+					accountv2.TypeAlibaba,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -429,6 +431,7 @@ func resourceV2CloudAccount() *schema.Resource {
 					accountv2.TypeAws,
 					accountv2.TypeAzure,
 					accountv2.TypeIbm,
+					accountv2.TypeAlibaba,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -617,6 +620,7 @@ func resourceV2CloudAccount() *schema.Resource {
 					accountv2.TypeAws,
 					accountv2.TypeAzure,
 					accountv2.TypeGcp,
+					accountv2.TypeAlibaba,
 				},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -739,6 +743,114 @@ func resourceV2CloudAccount() *schema.Resource {
 							Type:        schema.TypeBool,
 							Computed:    true,
 							Description: "Whether or not the storage scan is enabled",
+						},
+					},
+				},
+			},
+			// Alibaba type.
+			accountv2.TypeAlibaba: {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "Alibaba account type",
+				MaxItems:    1,
+				ConflictsWith: []string{
+					accountv2.TypeAws,
+					accountv2.TypeAzure,
+					accountv2.TypeGcp,
+					accountv2.TypeIbm,
+				},
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Alibaba account ID",
+						},
+						"group_ids": {
+							Type:        schema.TypeSet,
+							Required:    true,
+							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Name to be used for the account on the Prisma Cloud platform (must be unique)",
+						},
+						"ram_arn": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Unique identifier for an Alibaba RAM role resource",
+						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Whether or not the account is enabled",
+						},
+						"deployment_type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Deployment type",
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"ali-int",
+									"ali-cn",
+									"ali-fn",
+								},
+								false,
+							),
+						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Account type -  account",
+						},
+						"last_modified_by": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Last modified by",
+						},
+						"last_modified_ts": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Last modified time stamp",
+						},
+						"storage_scan_enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the storage scan is enabled",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Protection mode",
+						},
+						"added_on": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Added on time stamp",
+						},
+						"last_updated": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Last updated time stamp",
+						},
+						"last_full_snapshot": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Last full snapshot",
+						},
+						"ingestion_endtime": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Ingestion endtime",
+						},
+						"cloud_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Cloud type",
 						},
 					},
 				},
@@ -893,6 +1005,16 @@ func parseV2CloudAccount(d *schema.ResourceData) (string, string, string, interf
 			SvcIdIamId:  x["svc_id_iam_id"].(string),
 		}
 		return accountv2.TypeIbm, x["name"].(string), x["account_id"].(string), ans
+	} else if x := ResourceDataInterfaceMap(d, accountv2.TypeAlibaba); len(x) != 0 {
+		ans := accountv2.Alibaba{
+			AccountId:      x["account_id"].(string),
+			DeploymentType: x["deployment_type"].(string),
+			Enabled:        x["enabled"].(bool),
+			GroupIds:       SetToStringSlice(x["group_ids"].(*schema.Set)),
+			Name:           x["name"].(string),
+			RamArn:         x["ram_arn"].(string),
+		}
+		return accountv2.TypeAlibaba, x["name"].(string), x["account_id"].(string), ans
 	}
 	return "", "", "", nil
 }
@@ -1077,8 +1199,27 @@ func saveV2CloudAccount(d *schema.ResourceData, dest string, obj interface{}) {
 			}
 			val["features"] = ftrList
 		}
+	case accountv2.AlibabaV2:
+		val = map[string]interface{}{
+			"account_type":         v.AccountType,
+			"added_on":             v.AddedOn,
+			"deployment_type":      v.DeploymentType,
+			"enabled":              v.Enabled,
+			"last_modified_ts":     v.LastModifiedTs,
+			"last_modified_by":     v.LastModifiedBy,
+			"name":                 v.Name,
+			"protection_mode":      v.ProtectionMode,
+			"ram_arn":              v.RamArn,
+			"account_id":           v.CloudAccountStatus.AccountId,
+			"last_updated":         v.CloudAccountStatus.LastUpdated,
+			"last_full_snapshot":   v.CloudAccountStatus.LastFullSnapshot,
+			"ingestion_endtime":    v.CloudAccountStatus.IngestionEndTime,
+			"cloud_type":           v.CloudAccountStatus.CloudType,
+			"storage_scan_enabled": v.StorageScanEnabled,
+			"group_ids":            v.GroupIds,
+		}
 	}
-	for _, key := range []string{accountv2.TypeAws, accountv2.TypeAzure, accountv2.TypeGcp, accountv2.TypeIbm} {
+	for _, key := range []string{accountv2.TypeAws, accountv2.TypeAzure, accountv2.TypeGcp, accountv2.TypeIbm, accountv2.TypeAlibaba} {
 		if key != dest {
 			d.Set(key, nil)
 			continue
@@ -1179,6 +1320,14 @@ func deleteV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta inte
 			cloudAccountIbm := cloudAccount.(accountv2.IbmV2)
 			cloudAccountIbm.CloudAccountIbmResp.Enabled = false
 			if err := accountv2.DisableCloudAccount(client, cloudAccountIbm.CloudAccountIbmResp.AccountId); err != nil {
+				return diag.FromErr(err)
+			}
+			return nil
+		case accountv2.TypeAlibaba:
+			cloudAccount, _ := accountv2.Get(client, cloudType, id)
+			cloudAccountAlibaba := cloudAccount.(accountv2.AlibabaV2)
+			cloudAccountAlibaba.Enabled = false
+			if err := accountv2.DisableCloudAccount(client, cloudAccountAlibaba.CloudAccountStatus.AccountId); err != nil {
 				return diag.FromErr(err)
 			}
 			return nil

@@ -648,6 +648,72 @@ resource "prismacloud_cloud_account_v2" "ibm_account_bulk_onboarding_example" {
 
 Before onboarding the IBM cloud account. `ibm_template` for account must be generated using `prismacloud_ibm_template`. Refer **[IBM template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/ibm_template)** for more details.
 
+## **Example Usage 9**: Alibaba cloud account onboarding
+
+### Onboard the cloud account onto prisma cloud platform
+
+```hcl
+# Alibaba account type.
+resource "prismacloud_cloud_account_v2" "alibaba_account_onboarding_example" {
+  disable_on_destroy = false
+  alibaba_cloud {
+    account_id = "<account-id>"
+    enabled    = true
+    group_ids    = [
+      data.prismacloud_account_group.existing_account_group_id.group_id, //To use existing Account Group
+      //prismacloud_account_group.new_account_group.group_id, // To create new Account group
+    ]
+    name            = "Alibaba Cloud Account"
+    ram_arn         = "<ram-arn>"
+    deployment_type = "<deployment-type>"
+  }
+}
+
+// Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id" {
+  name = "Default Account Group"
+  // Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" // Account group name to be created
+# }
+
+```
+
+## **Example Usage 10**: Bulk Alibaba cloud accounts onboarding
+
+/*
+You can also create cloud accounts from a CSV file using native Terraform
+HCL and looping. Assume you have a CSV file of Alibaba accounts that looks like this (with
+"||" separating account group IDs from each other):
+
+accountId,ramArn,groupIds,name
+123456789,acs:ram::123456789:role/prod-role-dnd,Default Account Group ID||Alibaba Account Group ID,Alibaba test account1
+213456789,acs:ram::120456457:role/prod-role-dnd,Default Account Group ID||Alibaba Account Group ID,Alibaba test account2
+321466019,acs:ram::186578390:role/prod-role-dnd,Default Account Group ID||Alibaba Account Group ID,Alibaba test account3
+
+*/
+
+```
+locals {
+    instances = csvdecode(file("alibaba.csv"))
+}
+// Now specify the cloud account resource with a loop like so:
+
+resource "prismacloud_cloud_account_v2" "alibaba_account_bulk_onboarding_example" {
+    for_each = { for inst in local.instances : inst.name => inst }
+    
+    ibm {
+        account_id = each.value.accountId
+        ram_arn = each.value.ramArn
+        group_ids = split("||", each.value.groupIDs)
+        name = each.value.name
+    }
+}
+```
+
 ## Argument Reference
 
 The type of cloud account to add.
@@ -657,6 +723,7 @@ The type of cloud account to add.
 * `azure` - Azure account type spec, defined [below](#azure).
 * `gcp` - Gcp account type spec, defined [below](#gcp).
 * `ibm` - IBM account type spec, defined [below](#ibm).
+* `alibaba_cloud` - Alibaba account type spec, defined [below](#alibaba-cloud).
 
 ### AWS
 
@@ -709,6 +776,15 @@ The type of cloud account to add.
 * `group_ids` - (Required) List of account IDs to which you are assigning this account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `svc_id_iam_id` - (Required) IBM service ID.
+
+### Alibaba Cloud
+
+* `account_id` - (Required) Alibaba account ID.
+* `group_ids` - (Required) List of account IDs to which you are assigning this account.
+* `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `ram_arn` - (Required) Unique identifier for an Alibaba RAM role resource.
+* `enabled` - (Optional, bool) Whether the account is enabled.
+* `deployment_type` - (Optional) Deployment type. Valid values: `ali-int`, `ali-cn` or `ali-fn`.
 
 ## Attribute Reference
 
@@ -806,6 +882,24 @@ The type of cloud account to add.
 * `parent_id` - Parent id.
 * `protection_mode` - Protection mode of account.
 * `storage_scan_enabled` - (bool) Whether the storage scan is enabled.
+
+### Alibaba Cloud
+
+* `account_id` - Alibaba account ID.
+* `account_type` - `account` for Alibaba account.
+* `group_ids` - List of account IDs to which you are assigning this account.
+* `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `ram_arn` - Unique identifier for an Alibaba RAM role resource.
+* `enabled` - (bool) Whether the account is enabled.
+* `deployment_type` - Deployment type.
+* `last_modified_by` - Last modified by.
+* `last_modified_ts` - Last modified time stamp.
+* `storage_scan_enabled` - (bool) Whether the storage scan is enabled.
+* `protection_mode` - Protection mode of account.
+* `added_on` - Added on time stamp.
+* `last_updated` - Last updated.
+* `last_full_snapshot` - Last full snapshot.
+* `ingestion_endtime` - Ingestion endtime.
 
 #### FEATURES
 
