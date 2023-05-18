@@ -5,6 +5,9 @@ import (
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/integration"
 	"golang.org/x/net/context"
+	"math/rand"
+	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -367,7 +370,11 @@ func dataSourceIntegrationRead(ctx context.Context, d *schema.ResourceData, meta
 
 	if id == "" {
 		name := d.Get("name").(string)
-		id, err = integration.Identify(client, name, prismaIdRequired)
+		id1, err := PollApiUntilSuccessRead(func() (string, error) {
+			id1, err1 := integration.Identify(client, name, prismaIdRequired)
+			return id1, err1
+		})
+		id = id1
 		if err != nil {
 			if err == pc.ObjectNotFoundError {
 				d.SetId("")
@@ -377,7 +384,10 @@ func dataSourceIntegrationRead(ctx context.Context, d *schema.ResourceData, meta
 		}
 	}
 
-	o, err := integration.Get(client, id, prismaIdRequired)
+	o, err := PollApiUntilSuccessReadIntegration(func() (integration.Integration, error) {
+		o, err := integration.Get(client, id, prismaIdRequired)
+		return o, err
+	})
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
 			d.SetId("")
@@ -390,4 +400,21 @@ func dataSourceIntegrationRead(ctx context.Context, d *schema.ResourceData, meta
 	saveIntegration(d, o)
 
 	return nil
+}
+
+type PollerCustom1 func() (string, error)
+
+func PollApiUntilSuccessRead(p PollerCustom1) (string, error) {
+	for {
+		if o, err := p(); err == nil {
+			return o, nil
+		} else if "429" == strings.Split(err.Error(), " ")[0] {
+			waitingTime := rand.Intn(5) + 1
+			time.Sleep(time.Duration(waitingTime) * time.Second)
+		} else {
+			return o, err
+
+		}
+	}
+	return "", nil
 }
