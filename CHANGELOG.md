@@ -1,3 +1,7 @@
+## 1.3.9 (May 18, 2023)
+
+* Bug fix for prismacloud integrations rate limit.
+
 ## 1.3.8 (May 11, 2023)
 
 * Added support for `Data Security` feature for AWS cloud account onboarding.
