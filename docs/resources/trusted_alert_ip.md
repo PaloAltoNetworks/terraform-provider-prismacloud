@@ -12,7 +12,7 @@ Manage an trusted alert ip.
 resource "prismacloud_trusted_alert_ip" "example" {
     name = "My new group"
     cidrs {
-        cidr = "1.1.1.1"
+        cidr = "1.1.1.1/32"
         description = "ip address description"
     }
 }
