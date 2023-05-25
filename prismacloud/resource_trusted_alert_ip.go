@@ -7,6 +7,7 @@ import (
 	"github.com/paloaltonetworks/prisma-cloud-go/trusted-alert-ip"
 	"golang.org/x/net/context"
 	"log"
+	"strings"
 )
 
 func resourceTrustedAlertIp() *schema.Resource {
@@ -131,17 +132,40 @@ func createTrustedAlertIp(ctx context.Context, d *schema.ResourceData, meta inte
 	})
 	for _, o := range obj.CIDRS {
 		_, err := trustedalertip.CreateCIDR(client, o, id)
-		if err == pc.OverlappingCIDRError { //change here
-			log.Printf("OverlappingCIDRError : %s", id)
+		if err == pc.OverlappingCIDRError {
+			var resp trustedalertip.TrustedAlertIP
+			PollApiUntilSuccess(func() error {
+				resp1, err := trustedalertip.Get(client, id)
+				resp = resp1
+				return err
+			})
+
+			d.SetId(resp.UUID)
+			saveTrustedAlertIp(d, resp)
+			return diag.FromErr(pc.OverlappingCIDRError)
+		}
+		if err != nil && err != pc.OverlappingCIDRError {
+			var resp trustedalertip.TrustedAlertIP
+			PollApiUntilSuccess(func() error {
+				resp1, err := trustedalertip.Get(client, id)
+				resp = resp1
+				return err
+			})
+
+			d.SetId(resp.UUID)
+			saveTrustedAlertIp(d, resp)
+			return diag.FromErr(err)
 		}
 	}
-
+	var resp trustedalertip.TrustedAlertIP
 	PollApiUntilSuccess(func() error {
-		_, err := trustedalertip.Get(client, id)
+		resp1, err := trustedalertip.Get(client, id)
+		resp = resp1
 		return err
 	})
 
-	d.SetId(id)
+	d.SetId(resp.UUID)
+	saveTrustedAlertIp(d, resp)
 	return readTrustedAlertIp(ctx, d, meta)
 }
 
@@ -210,10 +234,33 @@ func updateTrustedAlertIp(ctx context.Context, d *schema.ResourceData, meta inte
 		_, err := trustedalertip.CreateCIDR(client, o, id)
 		if err == pc.OverlappingCIDRError {
 			if _, err := trustedalertip.UpdateCIDR(client, o, id, o.UUID); err != nil {
+				if "405" == strings.Split(err.Error(), " ")[0] {
+					var resp trustedalertip.TrustedAlertIP
+					PollApiUntilSuccess(func() error {
+						resp1, err := trustedalertip.Get(client, id)
+						resp = resp1
+						return err
+					})
+					d.SetId(resp.UUID)
+					saveTrustedAlertIp(d, resp)
+					return diag.FromErr(pc.OverlappingCIDRError)
+				}
 				return diag.FromErr(err)
 			}
 		}
+		if err != nil && err != pc.OverlappingCIDRError {
+			var resp trustedalertip.TrustedAlertIP
+			PollApiUntilSuccess(func() error {
+				resp1, err := trustedalertip.Get(client, id)
+				resp = resp1
+				return err
+			})
+			d.SetId(resp.UUID)
+			saveTrustedAlertIp(d, resp)
+			return diag.FromErr(err)
+		}
 	}
+
 	return readTrustedAlertIp(ctx, d, meta)
 }
 
