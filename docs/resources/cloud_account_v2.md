@@ -690,9 +690,9 @@ HCL and looping. Assume you have a CSV file of Alibaba accounts that looks like 
 "||" separating account group IDs from each other):
 
 accountId,ramArn,groupIds,name
-123456789,acs:ram::123456789:role/prod-role-dnd,Default Account Group ID||Alibaba Account Group ID,Alibaba test account1
-213456789,acs:ram::120456457:role/prod-role-dnd,Default Account Group ID||Alibaba Account Group ID,Alibaba test account2
-321466019,acs:ram::186578390:role/prod-role-dnd,Default Account Group ID||Alibaba Account Group ID,Alibaba test account3
+123456789,acs:ram::123456789:role/prod-role-dnd,Alibaba Account Group ID,Alibaba test account1
+213456789,acs:ram::120456457:role/prod-role-dnd,Alibaba Account Group ID,Alibaba test account2
+321466019,acs:ram::186578390:role/prod-role-dnd,Alibaba Account Group ID,Alibaba test account3
 
 */
 
