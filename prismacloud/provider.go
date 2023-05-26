@@ -89,6 +89,21 @@ func Provider() *schema.Provider {
 				Description: "Retrieve the provider configuration from this JSON file",
 				DefaultFunc: schema.EnvDefaultFunc("PRISMACLOUD_JSON_CONFIG_FILE", nil),
 			},
+			"max_retries": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Maximum number of retries to be performed in case of rate limit",
+			},
+			"retry_max_delay": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Maximum delay for exponential backoff strategy",
+			},
+			"retries": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Maximum delay for exponential backoff strategy",
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -217,6 +232,9 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		DisableReconnect:        d.Get("disable_reconnect").(bool),
 		JsonWebToken:            d.Get("json_web_token").(string),
 		Logging:                 logSetting,
+		MaxRetries:              d.Get("max_retries").(int),
+		RetryMaxDelay:           d.Get("retry_max_delay").(int),
+		Retries:                 0,
 	}
 
 	err := con.Initialize(d.Get("json_config_file").(string))
