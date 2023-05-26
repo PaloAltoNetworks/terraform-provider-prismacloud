@@ -19,8 +19,8 @@ data "prismacloud_cloud_account_v2" "example" {
 
 The following are the params that this data source supports.  At least one of the cloud account name and the account ID must be specified.  If one is left blank, it is determined at run time.
 
-* `cloud_type` - (Required) The cloud type. Valid value is `aws`, `azure`, `gcp` or `ibm`.
-* `name` - (Optional, computed) Cloud account name; computed if this is not supplied. Applicable only for `aws`, `azure` and `ibm`.
+* `cloud_type` - (Required) The cloud type. Valid value is `aws`, `azure`, `gcp`, `ibm` or `alibaba_cloud`.
+* `name` - (Optional, computed) Cloud account name; computed if this is not supplied. Applicable only for `aws`, `azure`, `ibm` and `alibaba_cloud`. 
 * `account_id` - (Optional, computed) Account ID; computed if this is not supplied.
 
 ## Attribute Reference
@@ -32,6 +32,7 @@ The cloud type given above determines which of the attributes are populated:
 * `azure` - Azure account type spec, defined [below](#azure).
 * `gcp` - Gcp account type spec, defined [below](#gcp).
 * `ibm` - IBM account type spec, defined [below](#ibm).
+* `alibaba_cloud` - Alibaba account type spec, defined [below](#alibaba-cloud).
 
 ### AWS
 
@@ -129,6 +130,24 @@ The cloud type given above determines which of the attributes are populated:
 * `parent_id` - Parent id.
 * `protection_mode` - Protection mode of account.
 * `storage_scan_enabled` - (bool) Whether the storage scan is enabled.
+
+### Alibaba Cloud
+
+* `account_id` - Alibaba account ID.
+* `account_type` - `account` for Alibaba account.
+* `group_ids` - List of account IDs to which you are assigning this account.
+* `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
+* `ram_arn` - Unique identifier for an Alibaba RAM role resource.
+* `enabled` - (bool) Whether the account is enabled.
+* `deployment_type` - Deployment type.
+* `last_modified_by` - Last modified by.
+* `last_modified_ts` - Last modified time stamp.
+* `storage_scan_enabled` - (bool) Whether the storage scan is enabled.
+* `protection_mode` - Protection mode of account.
+* `added_on` - Added on time stamp.
+* `last_updated` - Last updated.
+* `last_full_snapshot` - Last full snapshot.
+* `ingestion_endtime` - Ingestion endtime.
 
 #### FEATURES
 

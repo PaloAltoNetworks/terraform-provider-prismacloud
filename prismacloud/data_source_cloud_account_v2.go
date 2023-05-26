@@ -647,6 +647,99 @@ func dataSourceV2CloudAccount() *schema.Resource {
 					},
 				},
 			},
+			//Alibaba type
+			accountv2.TypeAlibaba: {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "Alibaba account type",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"account_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Alibaba account ID",
+						},
+						"group_ids": {
+							Type:        schema.TypeSet,
+							Computed:    true,
+							Description: "List of account IDs to which you are assigning this account",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Name to be used for the account on the Prisma Cloud platform (must be unique)",
+						},
+						"ram_arn": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Unique identifier for an Alibaba RAM role resource",
+						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the account is enabled",
+						},
+						"deployment_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Deployment type",
+						},
+						"account_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Account type -  account",
+						},
+						"last_modified_by": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Last modified by",
+						},
+						"last_modified_ts": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Last modified time stamp",
+						},
+						"storage_scan_enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Whether or not the storage scan is enabled",
+						},
+						"protection_mode": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Protection mode",
+						},
+						"added_on": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Added on time stamp",
+						},
+						"last_updated": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Last updated time stamp",
+						},
+						"last_full_snapshot": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Last full snapshot",
+						},
+						"ingestion_endtime": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Ingestion endtime",
+						},
+						"cloud_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Cloud type",
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -692,6 +785,8 @@ func dataSourceV2CloudAccountRead(ctx context.Context, d *schema.ResourceData, m
 			name = v.CloudAccountGcpResp.Name
 		case accountv2.IbmV2:
 			name = v.CloudAccountIbmResp.Name
+		case accountv2.AlibabaV2:
+			name = v.Name
 		}
 	}
 
