@@ -311,3 +311,56 @@ type IbmAccountResponse struct {
 	StorageScanEnabled        bool        `json:"storageScanEnabled"`
 	Features                  []Features1 `json:"features"`
 }
+
+// Alibaba
+type Alibaba struct {
+	AccountId      string   `json:"accountId"`
+	DeploymentType string   `json:"deploymentType"`
+	Enabled        bool     `json:"enabled"`
+	GroupIds       []string `json:"groupIds"`
+	Name           string   `json:"name"`
+	RamArn         string   `json:"ramArn"`
+}
+
+type AlibabaV2 struct {
+	Name               string             `json:"name"`
+	CloudAccountStatus CloudAccountStatus `json:"cloudAccountStatus"`
+	AccountType        string             `json:"accountType"`
+	AddedOn            int                `json:"addedOn"`
+	Enabled            bool               `json:"enabled"`
+	LastModifiedTs     int                `json:"lastModifiedTs"`
+	LastModifiedBy     string             `json:"lastModifiedBy"`
+	ProtectionMode     string             `json:"protectionMode"`
+	StorageScanEnabled bool               `json:"storageScanEnabled"`
+	DeploymentType     string             `json:"deploymentType"`
+	GroupIds           []string           `json:"groupIds"`
+	RamArn             string             `json:"ramArn"`
+}
+
+type CloudAccountStatus struct {
+	AccountId        string `json:"accountId"`
+	LastUpdated      int    `json:"lastUpdated"`
+	LastFullSnapshot int    `json:"lastFullSnapshot"`
+	IngestionEndTime int    `json:"ingestionEndTime"`
+	CloudType        string `json:"cloudType"`
+}
+type AlibabaAccountResponse struct {
+	Name                  string   `json:"name"`
+	AccountId             string   `json:"accountId"`
+	CloudType             string   `json:"cloudType"`
+	AccountType           string   `json:"accountType"`
+	AddedOn               int      `json:"addedOn"`
+	Enabled               bool     `json:"enabled"`
+	LastModifiedTs        int      `json:"lastModifiedTs"`
+	LastModifiedBy        string   `json:"lastModifiedBy"`
+	ProtectionMode        string   `json:"protectionMode"`
+	StorageScanEnabled    bool     `json:"storageScanEnabled"`
+	DeploymentType        string   `json:"deploymentType"`
+	Groups                []Groups `json:"groups"`
+	GroupIds              []string `json:"groupIds"`
+	NumberOfChildAccounts int      `json:"numberOfChildAccounts"`
+}
+type Groups struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}

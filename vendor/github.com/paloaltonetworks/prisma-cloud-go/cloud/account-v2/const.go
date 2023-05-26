@@ -19,9 +19,12 @@ var ListSuffixGcp = []string{"cas", "v1", "cloud_account", "gcp"}
 
 var ListSuffixIbm = []string{"cas", "v1", "cloud_account", "ibm"}
 
+var AlibabaSuffix = []string{"cloud"}
+
 const (
-	TypeAws   = "aws"
-	TypeAzure = "azure"
-	TypeGcp   = "gcp"
-	TypeIbm   = "ibm"
+	TypeAws     = "aws"
+	TypeAzure   = "azure"
+	TypeGcp     = "gcp"
+	TypeIbm     = "ibm"
+	TypeAlibaba = "alibaba_cloud"
 )

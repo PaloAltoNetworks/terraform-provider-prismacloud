@@ -55,6 +55,16 @@ func ListIbm(c pc.PrismaCloudClient) ([]IbmAccountResponse, error) {
 	return ansib, nil
 }
 
+func ListAlibaba(c pc.PrismaCloudClient) ([]AlibabaAccountResponse, error) {
+	c.Log(pc.LogAction, "(get) list of %s", plural)
+
+	var ansalibaba []AlibabaAccountResponse
+	if _, err := c.Communicate("GET", AlibabaSuffix, nil, nil, &ansalibaba); err != nil {
+		return nil, err
+	}
+	return ansalibaba, nil
+}
+
 // Names returns the name listing for cloud accounts.
 func Names(c pc.PrismaCloudClient) ([]NameTypeId, error) {
 	c.Log(pc.LogAction, "(get) %s names", singular)
@@ -124,6 +134,18 @@ func Identify(c pc.PrismaCloudClient, cloudType, name string) (string, error) {
 
 		}
 	}
+	if strings.EqualFold("alibaba_cloud", cloudType) {
+		ansalibaba, err := ListAlibaba(c)
+		if err != nil {
+			return "", err
+		}
+		for _, o := range ansalibaba {
+			if strings.EqualFold(o.CloudType, cloudType) && o.Name == name {
+				return o.AccountId, nil
+			}
+
+		}
+	}
 
 	return "", pc.ObjectNotFoundError
 }
@@ -171,6 +193,27 @@ func Get(c pc.PrismaCloudClient, cloudType, id string) (interface{}, error) {
 		case TypeIbm:
 			return *ans.(*IbmV2), err
 		}
+	} else if cloudType == "alibaba_cloud" {
+		path := make([]string, 0, len(AlibabaSuffix)+2)
+		path = append(path, AlibabaSuffix...)
+		path = append(path, cloudType, id)
+
+		var ans interface{}
+
+		switch cloudType {
+		case TypeAlibaba:
+			ans = &AlibabaV2{}
+		default:
+			return nil, fmt.Errorf("Invalid cloud type: %s", cloudType)
+		}
+
+		_, err := c.Communicate("GET", path, nil, nil, ans)
+
+		switch cloudType {
+		case TypeAlibaba:
+			return *ans.(*AlibabaV2), err
+		}
+
 	} else {
 		path := make([]string, 0, len(ListSuffix)+1)
 		path = append(path, ListSuffix...)
@@ -278,6 +321,10 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 		logMsg.WriteString("ibm")
 		cloudType = TypeIbm
 		id = v.AccountId
+	case Alibaba:
+		logMsg.WriteString("alibaba")
+		cloudType = TypeAlibaba
+		id = v.AccountId
 	default:
 		return fmt.Errorf("invalid account type %v", v)
 	}
@@ -298,6 +345,16 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 		if exists {
 			path = append(path, id)
 		}
+		_, err := c.Communicate(method, path, nil, account, nil)
+		return err
+	} else if cloudType == "alibaba_cloud" {
+		path := make([]string, 0, len(AlibabaSuffix)+2)
+		path = append(path, AlibabaSuffix...)
+		path = append(path, cloudType)
+		if exists {
+			path = append(path, id)
+		}
+
 		_, err := c.Communicate(method, path, nil, account, nil)
 		return err
 	} else {

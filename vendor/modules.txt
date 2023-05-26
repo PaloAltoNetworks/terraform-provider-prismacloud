@@ -244,7 +244,7 @@ github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 ## explicit
 github.com/oklog/run
-# github.com/paloaltonetworks/prisma-cloud-go v0.6.7
+# github.com/paloaltonetworks/prisma-cloud-go v0.6.8
 ## explicit; go 1.13
 github.com/paloaltonetworks/prisma-cloud-go
 github.com/paloaltonetworks/prisma-cloud-go/alert
@@ -268,6 +268,7 @@ github.com/paloaltonetworks/prisma-cloud-go/data-security/datapattern
 github.com/paloaltonetworks/prisma-cloud-go/data-security/dataprofile
 github.com/paloaltonetworks/prisma-cloud-go/integration
 github.com/paloaltonetworks/prisma-cloud-go/ip-address
+github.com/paloaltonetworks/prisma-cloud-go/notification-template
 github.com/paloaltonetworks/prisma-cloud-go/permission_group
 github.com/paloaltonetworks/prisma-cloud-go/policy
 github.com/paloaltonetworks/prisma-cloud-go/report
