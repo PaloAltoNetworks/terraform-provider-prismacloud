@@ -1,3 +1,7 @@
+## 1.4.0 (May 26, 2023)
+
+* Enhancement for Alibaba Cloud Account Onboarding.
+
 ## 1.3.9 (May 18, 2023)
 
 * Bug fix for prismacloud integrations rate limit.
