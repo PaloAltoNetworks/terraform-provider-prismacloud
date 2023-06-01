@@ -27,6 +27,7 @@ func resourceNotificationTemplate() *schema.Resource {
 			"integration_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				Description: "integrationId",
 			},
 			"created_ts": {
@@ -85,11 +86,13 @@ func resourceNotificationTemplate() *schema.Resource {
 			"enabled": {
 				Type:        schema.TypeBool,
 				Optional:    true,
+				Computed:    true,
 				Description: "enabled",
 			},
 			"template_type": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				Description: "templateType",
 			},
 			"template_config": {
