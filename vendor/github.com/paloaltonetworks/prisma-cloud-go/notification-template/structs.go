@@ -4,8 +4,8 @@ package notification_template
 type NotificationTemplateRequest struct {
 	IntegrationType string               `json:"integrationType"`
 	IntegrationId   string               `json:"integrationId,omitempty"`
-	TemplateType    string               `json:"templateType"`
-	Enabled         bool                 `json:"enabled"`
+	TemplateType    string               `json:"templateType,omitempty"`
+	Enabled         bool                 `json:"enabled,omitempty"`
 	Name            string               `json:"name"`
 	TemplateConfig  TemplateConfigStruct `json:"templateConfig"`
 }

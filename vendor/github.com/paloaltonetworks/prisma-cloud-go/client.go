@@ -26,6 +26,9 @@ type Client struct {
 	SkipSslCertVerification bool            `json:"skip_ssl_cert_verification"`
 	Logging                 map[string]bool `json:"logging"`
 	DisableReconnect        bool            `json:"disable_reconnect"`
+	MaxRetries              int             `json:"max_retries"`
+	RetryMaxDelay           int             `json:"retry_max_delay"`
+	Retries                 int             `json:"retries"`
 
 	// Advanced user config.
 	Transport *http.Transport `json:"-"`
@@ -318,6 +321,16 @@ func (c *Client) communicate(method string, suffix []string, query, data interfa
 			}
 		}
 		return body, InvalidCredentialsError
+	case http.StatusTooManyRequests:
+		delay := 2 + c.Retries
+		if delay <= c.RetryMaxDelay && delay > 0 && c.MaxRetries > 0 {
+			time.Sleep(time.Duration(delay) * time.Second)
+			c.MaxRetries = c.MaxRetries - 1
+			c.Retries = c.Retries + 1
+			return c.communicate(method, suffix, query, data, ans, false)
+		} else if delay > c.RetryMaxDelay || c.MaxRetries <= 0 {
+			return nil, fmt.Errorf("max_retries or retry_max_delay insufficient")
+		}
 	default:
 		errLocation := "X-Redlock-Status"
 		if _, ok := resp.Header[errLocation]; !ok {
