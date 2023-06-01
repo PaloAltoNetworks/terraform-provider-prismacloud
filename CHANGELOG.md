@@ -1,3 +1,8 @@
+## 1.4.1 (June 01, 2023)
+
+* Global solution for Rate Limit issue.
+* Bug fix for prismacloud trusted alert IP.
+
 ## 1.4.0 (May 26, 2023)
 
 * Enhancement for Alibaba Cloud Account Onboarding.
