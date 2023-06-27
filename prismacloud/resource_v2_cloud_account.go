@@ -590,6 +590,7 @@ func resourceV2CloudAccount() *schema.Resource {
 						"project_id": {
 							Type:        schema.TypeString,
 							Optional:    true,
+							Computed:    true,
 							Description: "GCP project ID",
 						},
 						"service_account_email": {
@@ -1245,12 +1246,15 @@ func createV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta inte
 		}
 	}
 
+	var resp1 interface{}
 	PollApiUntilSuccess(func() error {
-		_, err := accountv2.Get(client, cloudType, accId)
+		resp, err := accountv2.Get(client, cloudType, accId)
+		resp1 = resp
 		return err
 	})
 
 	d.SetId(TwoStringsToId(cloudType, accId))
+	saveV2CloudAccount(d, cloudType, resp1)
 	return readV2CloudAccount(ctx, d, meta)
 }
 
@@ -1258,7 +1262,7 @@ func readV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta interf
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
 
-	obj, err := accountv2.Get(client, cloudType, id)
+	_, err := accountv2.Get(client, cloudType, id)
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
 			d.SetId("")
@@ -1267,20 +1271,26 @@ func readV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta interf
 		return diag.FromErr(err)
 	}
 
-	saveV2CloudAccount(d, cloudType, obj)
-
 	return nil
 }
 
 func updateV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
-	_, _, _, obj := parseV2CloudAccount(d)
+	cloudType, _, accId, obj := parseV2CloudAccount(d)
+	var resp1 interface{}
 
 	if err := accountv2.Update(client, obj); err != nil {
 		return diag.FromErr(err)
 	}
+	PollApiUntilSuccess(func() error {
+		resp, err := accountv2.Get(client, cloudType, accId)
+		resp1 = resp
+		return err
+	})
 
+	d.SetId(TwoStringsToId(cloudType, accId))
+	saveV2CloudAccount(d, cloudType, resp1)
 	return readV2CloudAccount(ctx, d, meta)
 }
 
