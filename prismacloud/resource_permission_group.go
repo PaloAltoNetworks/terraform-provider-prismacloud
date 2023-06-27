@@ -34,6 +34,7 @@ func resourcePermissionGroup() *schema.Resource {
 			"permission_group_type": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				Description: "Permission group type",
 				ValidateFunc: validation.StringInSlice(
 					[]string{
@@ -112,21 +113,25 @@ func resourcePermissionGroup() *schema.Resource {
 			"accept_account_groups": {
 				Type:        schema.TypeBool,
 				Optional:    true,
+				Computed:    true,
 				Description: "Accept account groups",
 			},
 			"accept_resource_lists": {
 				Type:        schema.TypeBool,
 				Optional:    true,
+				Computed:    true,
 				Description: "Accept resource lists",
 			},
 			"accept_code_repositories": {
 				Type:        schema.TypeBool,
 				Optional:    true,
+				Computed:    true,
 				Description: "Accept code repositories",
 			},
 			"custom": {
 				Type:        schema.TypeBool,
 				Optional:    true,
+				Computed:    true,
 				Description: "Custom",
 			},
 			"id": {
@@ -221,12 +226,15 @@ func createPermissionGroup(ctx context.Context, d *schema.ResourceData, meta int
 		return diag.FromErr(err)
 	}
 
+	var resp1 permission_group.PermissionGroup
 	PollApiUntilSuccess(func() error {
-		_, err := permission_group.Get(client, id)
+		resp, err := permission_group.Get(client, id)
+		resp1 = resp
 		return err
 	})
 
 	d.SetId(id)
+	savePermissionGroup(d, resp1)
 	return readPermissionGroup(ctx, d, meta)
 }
 
@@ -234,7 +242,7 @@ func readPermissionGroup(ctx context.Context, d *schema.ResourceData, meta inter
 	client := meta.(*pc.Client)
 	id := d.Id()
 
-	obj, err := permission_group.Get(client, id)
+	_, err := permission_group.Get(client, id)
 	if err != nil {
 		if err == pc.InvalidPermissionGroupIdError {
 			d.SetId("")
@@ -242,8 +250,6 @@ func readPermissionGroup(ctx context.Context, d *schema.ResourceData, meta inter
 		}
 		return diag.FromErr(err)
 	}
-
-	savePermissionGroup(d, obj)
 
 	return nil
 }
@@ -256,6 +262,14 @@ func updatePermissionGroup(ctx context.Context, d *schema.ResourceData, meta int
 	if err := permission_group.Update(client, obj); err != nil {
 		return diag.FromErr(err)
 	}
+	var resp1 permission_group.PermissionGroup
+	PollApiUntilSuccess(func() error {
+		resp, err := permission_group.Get(client, obj.Id)
+		resp1 = resp
+		return err
+	})
+	d.SetId(obj.Id)
+	savePermissionGroup(d, resp1)
 
 	return readPermissionGroup(ctx, d, meta)
 }
