@@ -608,6 +608,7 @@ func resourceOrgV2CloudAccount() *schema.Resource {
 						"project_id": {
 							Type:        schema.TypeString,
 							Optional:    true,
+							Computed:    true,
 							Description: "GCP project ID",
 						},
 						"service_account_email": {
@@ -682,6 +683,7 @@ func resourceOrgV2CloudAccount() *schema.Resource {
 						"organization_name": {
 							Type:        schema.TypeString,
 							Optional:    true,
+							Computed:    true,
 							Description: "GCP organization name",
 						},
 						"default_account_group_id": {
@@ -1052,12 +1054,16 @@ func createOrgV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta i
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
+	var resp1 interface{}
 	PollApiUntilSuccess(func() error {
-		_, err := org.Get(client, cloudType, accId)
+		resp, err := org.Get(client, cloudType, accId)
+		resp1 = resp
 		return err
 	})
 
 	d.SetId(TwoStringsToId(cloudType, accId))
+	saveOrgV2CloudAccount(d, cloudType, resp1)
 	return readOrgV2CloudAccount(ctx, d, meta)
 }
 
@@ -1065,7 +1071,7 @@ func readOrgV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta int
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
 
-	obj, err := org.Get(client, cloudType, id)
+	_, err := org.Get(client, cloudType, id)
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
 			d.SetId("")
@@ -1074,19 +1080,26 @@ func readOrgV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta int
 		return diag.FromErr(err)
 	}
 
-	saveOrgV2CloudAccount(d, cloudType, obj)
-
 	return nil
 }
 
 func updateOrgV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
-	_, _, _, obj := parseOrgV2CloudAccount(d)
+	cloudType, _, accId, obj := parseOrgV2CloudAccount(d)
+	var resp1 interface{}
 
 	if err := org.Update(client, obj); err != nil {
 		return diag.FromErr(err)
 	}
 
+	PollApiUntilSuccess(func() error {
+		resp, err := org.Get(client, cloudType, accId)
+		resp1 = resp
+		return err
+	})
+
+	d.SetId(TwoStringsToId(cloudType, accId))
+	saveOrgV2CloudAccount(d, cloudType, resp1)
 	return readOrgV2CloudAccount(ctx, d, meta)
 }
 
