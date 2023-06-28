@@ -1,3 +1,7 @@
+## 1.4.2 (June 28, 2023)
+
+* Bug fixes
+
 ## 1.4.1 (June 01, 2023)
 
 * Global solution for Rate Limit issue.
