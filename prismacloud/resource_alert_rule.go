@@ -392,11 +392,15 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 	var resourceList []rule.ResourceList
 	if rle := tgt["resource_list"]; rle != nil && len(rle.([]interface{})) > 0 {
 		rl := rle.([]interface{})
-		resourceList = make([]rule.ResourceList, 0, len(rl))
-		rmap := rl[0].(map[string]interface{})
-		resourceList = append(resourceList, rule.ResourceList{
-			IncludedResourceLists: ListToStringSlice(rmap["compute_access_group_ids"].([]interface{})),
-		})
+		if rl != nil {
+			if rl[0] != nil {
+				rmap := rl[0].(map[string]interface{})
+				resourceList = make([]rule.ResourceList, 0, len(rl))
+				resourceList = append(resourceList, rule.ResourceList{
+					IncludedResourceLists: ListToStringSlice(rmap["compute_access_group_ids"].([]interface{})),
+				})
+			}
+		}
 	}
 
 	var reslistEle rule.ResourceList
