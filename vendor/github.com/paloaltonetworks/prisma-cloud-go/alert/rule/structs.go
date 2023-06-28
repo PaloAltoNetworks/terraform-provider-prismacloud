@@ -31,7 +31,7 @@ type Target struct {
 	ExcludedAccounts []string     `json:"excludedAccounts,omitempty"`
 	Regions          []string     `json:"regions,omitempty"`
 	Tags             []Tag        `json:"tags,omitempty"`
-	ResourceList     ResourceList `json:"includedResourceLists"`
+	ResourceList     ResourceList `json:"includedResourceLists,omitempty"`
 }
 
 type Tag struct {
@@ -40,7 +40,7 @@ type Tag struct {
 }
 
 type ResourceList struct {
-	IncludedResourceLists []string `json:"computeAccessGroupIds"`
+	IncludedResourceLists []string `json:"computeAccessGroupIds,omitempty"`
 }
 
 type NotificationConfig struct {
