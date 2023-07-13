@@ -1,3 +1,7 @@
+## 1.4.3 (July 13, 2023)
+
+* Adding logs
+
 ## 1.4.2 (June 28, 2023)
 
 * Bug fixes
