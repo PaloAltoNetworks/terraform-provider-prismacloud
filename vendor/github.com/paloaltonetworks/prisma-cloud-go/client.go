@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os/exec"
 	"strings"
 	"time"
 )
@@ -295,6 +296,10 @@ func (c *Client) communicate(method string, suffix []string, query, data interfa
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	newUUID, err := exec.Command("uuidgen").Output()
+	uuid := strings.TrimSpace(string(newUUID))
+	uuidPC := "PrismaCloud-terraform-" + uuid
+	req.Header.Set("terraform-request-identifier", uuidPC)
 	if c.JsonWebToken != "" {
 		req.Header.Set("x-redlock-auth", c.JsonWebToken)
 	}
@@ -310,6 +315,10 @@ func (c *Client) communicate(method string, suffix []string, query, data interfa
 		return nil, err
 	}
 	c.logSendReceive(LogReceive, resp.StatusCode, []byte(body))
+
+	requestId := "X-Redlock-Request-Id"
+	traceId := "Trace-Id"
+	log.Printf("X-Redlock-Request-Id : %v Trace-Id : %v for path: %s terraform-request-identifier : %v", resp.Header[requestId], resp.Header[traceId], path.String(), uuidPC)
 
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusNoContent, http.StatusCreated:
