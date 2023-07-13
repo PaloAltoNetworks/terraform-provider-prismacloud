@@ -462,6 +462,7 @@ func resourceV2CloudAccount() *schema.Resource {
 						"group_ids": {
 							Type:        schema.TypeSet,
 							Optional:    true,
+							Computed:    true,
 							Description: "List of account IDs to which you are assigning this account",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -470,6 +471,7 @@ func resourceV2CloudAccount() *schema.Resource {
 						"default_account_group_id": {
 							Type:        schema.TypeString,
 							Optional:    true,
+							Computed:    true,
 							Description: "Account group id to which you are assigning this account",
 						},
 						"name": {

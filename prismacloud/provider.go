@@ -92,11 +92,13 @@ func Provider() *schema.Provider {
 			"max_retries": {
 				Type:        schema.TypeInt,
 				Optional:    true,
+				Default:     5,
 				Description: "Maximum number of retries to be performed in case of rate limit",
 			},
 			"retry_max_delay": {
 				Type:        schema.TypeInt,
 				Optional:    true,
+				Default:     30,
 				Description: "Maximum delay for exponential backoff strategy",
 			},
 			"retries": {
