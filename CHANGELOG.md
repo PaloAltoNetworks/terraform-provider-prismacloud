@@ -1,15 +1,15 @@
 ## 1.4.4 (July 14, 2023)
 
 * Support to enable rate limit handling by default.
-* Documentation updated
+* Documentation updated.
 
 ## 1.4.3 (July 13, 2023)
 
-* Adding logs
+* Adding logs.
 
 ## 1.4.2 (June 28, 2023)
 
-* Bug fixes
+* Bug fixes.
 
 ## 1.4.1 (June 01, 2023)
 
