@@ -1,4 +1,4 @@
-## 1.4.3 (July 13, 2023)
+## 1.4.4 (July 14, 2023)
 
 * Support to enable rate limit handling by default.
 * Documentation updated
