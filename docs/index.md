@@ -38,8 +38,8 @@ The following arguments are supported:
 * `disable_reconnect` - (bool) Prisma Cloud invalidates authenticated sessions after 10minutes.  By default the provider will silently get a new JSON web token and continue deploying the plan.  If you do not want the provider to fetch a new JSON web token, set this to `true`.
 * `json_web_token` - (Env: `PRISMACLOUD_JSON_WEB_TOKEN`) A JSON web token.  These are only valid for 10 minutes once issued.  If this is specified but not the `username` / `password` then the provider will not have a way to reauthenticate once the JSON web token expires.
 * `json_config_file` - (Env: `PRISMACLOUD_JSON_CONFIG_FILE`) Retrieve the provider configuration from this JSON file.  When retrieving params from the JSON configuration file, the param names are the same as the provider params, except that underscores in provider params become hyphens in the JSON config file.  For example, the provider param `json_web_token` is `json-web-token` in the config file.
-* `max_retries` - (Optional) Defaults to 0. Maximum number of times an API call is retried when requests are throttled.  
-* `retry_max_delay` - (Optional) Defaults to 0. Maximum time the API calls are retried when creating or updating resources. 
+* `max_retries` - (Optional) Maximum number of times an API call is retried when requests are throttled (default: `5`).  
+* `retry_max_delay` - (Optional) Maximum time the API calls are retried when creating or updating resources (default: `30`).
 
 ## Support
 
