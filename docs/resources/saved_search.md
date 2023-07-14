@@ -24,6 +24,7 @@ resource "prismacloud_saved_search" "example" {
 
 resource "prismacloud_rql_search" "x" {
     search_type = "config"
+    skip_result = true
     query = "config from cloud.resource where api.name = 'aws-ec2-describe-instances'"
     time_range {
         relative {

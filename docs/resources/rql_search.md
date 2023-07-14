@@ -14,6 +14,7 @@ NOTE:  Prisma Cloud does not currently support deleting RQL searches, so
 ```hcl
 resource "prismacloud_rql_search" "example" {
     search_type = "config"
+    skip_result = true
     query = "config from cloud.resource where api.name = 'aws-ec2-describe-instances'"
     time_range {
         relative {
