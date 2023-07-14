@@ -104,7 +104,7 @@ func Provider() *schema.Provider {
 			"retries": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "Maximum delay for exponential backoff strategy",
+				Description: "Retries",
 			},
 		},
 
