@@ -3,7 +3,7 @@
 * Support to enable rate limit handling by default.
 * Documentation updated
 
-* ## 1.4.3 (July 13, 2023)
+## 1.4.3 (July 13, 2023)
 
 * Adding logs
 
