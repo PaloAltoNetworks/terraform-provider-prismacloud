@@ -90,7 +90,7 @@ func (c *Client) Initialize(filename string) error {
 		if c2.Timeout > 0 {
 			c.Timeout = c2.Timeout
 		} else {
-			c.Timeout = 90
+			c.Timeout = 180
 		}
 	}
 	if c.Timeout < 0 {
