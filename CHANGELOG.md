@@ -1,3 +1,8 @@
+## 1.4.5 (July 18, 2023)
+
+* Default client timeout increased to 180 sec from 90 sec
+* Documentation updates for rql search and saved search.
+
 ## 1.4.4 (July 14, 2023)
 
 * Support to enable rate limit handling by default.
