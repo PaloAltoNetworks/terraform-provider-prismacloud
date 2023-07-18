@@ -6,8 +6,9 @@ page_title: "Prisma Cloud: prismacloud_rql_search"
 
 Manage a RQL search on the Prisma Cloud Platform.
 
-NOTE:  Prisma Cloud does not currently support deleting RQL searches, so
-`terraform destroy` is a noop.
+NOTE:  
+* Prisma Cloud does not currently support deleting RQL searches, so `terraform destroy` is a noop.
+* In scenarios where a use case necessitates updating the resource `prismacloud_rql_search`, it is advised to first remove the corresponding `prismacloud_rql_search` resources from the Terraform state file.
 
 ## Example Usage
 

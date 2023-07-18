@@ -8,6 +8,8 @@ Manage a saved search on the Prisma Cloud Platform.
 
 ## Example Usage
 
+NOTE: In scenarios where a use case necessitates updating the resource `prismacloud_rql_search`, it is advised to first remove the corresponding `prismacloud_rql_search` resources from the Terraform state file.
+
 ```hcl
 resource "prismacloud_saved_search" "example" {
     name = "Made by Terraform"
