@@ -44,7 +44,6 @@ func resourceAlertRule() *schema.Resource {
 				Optional:    true,
 				Description: "Enabled",
 				Default:     true,
-				ForceNew:    true,
 			},
 			"scan_all": {
 				Type:        schema.TypeBool,
@@ -66,6 +65,12 @@ func resourceAlertRule() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+			},
+			"deleted": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Deleted",
+				ForceNew:    true,
 			},
 			"excluded_policies": {
 				Type:        schema.TypeSet,
@@ -196,6 +201,7 @@ func resourceAlertRule() *schema.Resource {
 						"resource_list": {
 							Type:        schema.TypeList,
 							Optional:    true,
+							Computed:    true,
 							Description: "Model for holding the lists resource list ids by resource list type",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -242,7 +248,6 @@ func resourceAlertRule() *schema.Resource {
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Description: "Scan enabled",
-							ForceNew:    true,
 						},
 						"recipients": {
 							Type:        schema.TypeSet,
@@ -417,6 +422,7 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 		Policies:           SetToStringSlice(d.Get("policies").(*schema.Set)),
 		PolicyLabels:       SetToStringSlice(d.Get("policy_labels").(*schema.Set)),
 		ExcludedPolicies:   SetToStringSlice(d.Get("excluded_policies").(*schema.Set)),
+		Deleted:            d.Get("deleted").(bool),
 		Target: rule.Target{
 			AccountGroups:    accountGroups,
 			ExcludedAccounts: excludedAccounts,
@@ -486,6 +492,8 @@ func saveAlertRule(d *schema.ResourceData, o rule.Rule) {
 	d.Set("description", o.Description)
 	d.Set("enabled", o.Enabled)
 	d.Set("scan_all", o.ScanAll)
+	d.Set("deleted", o.Deleted)
+
 	if err = d.Set("policies", o.Policies); err != nil {
 		log.Printf("[WARN] Error setting 'policies' for %q: %s", d.Id(), err)
 	}
@@ -646,7 +654,8 @@ func updateAlertRule(ctx context.Context, d *schema.ResourceData, meta interface
 func deleteAlertRule(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
-	obj := parseAlertRule(d, id)
+	obj := parseAlertRule(d, "")
+
 	if err := rule.Delete(client, id, obj); err != nil {
 		if err != pc.ObjectNotFoundError {
 			return diag.FromErr(err)

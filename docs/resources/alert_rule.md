@@ -20,6 +20,7 @@ resource "prismacloud_alert_rule" "example" {
 * `name` - (Required) Rule/Scan name
 * `description` - Description
 * `enabled` - (bool) Enabled (default: `true`)
+* `deleted` - (bool) Deleted
 * `scan_all` - (bool) Scan all policies
 * `policies` - List of specific policies to scan
 * `policy_labels` - List of policy labels
