@@ -46,6 +46,7 @@ The following arguments are supported:
 * `name` - (Required) Name.
 * `description` - Description.
 * `time_range` - (Required) The RQL time range spec, as defined [below](#time-range).
+* `cloud_type` - Cloud type. Valid values: `aws`, `azure`, `gcp`, `alibaba_cloud` or `oci`.
 
 ### Time Range
 

@@ -74,6 +74,7 @@ There should be one and only one target block:
 * `notification_channels` - List of notification channels
 * `open_alerts_count` - (int) Open alerts count
 * `read_only` - (bool) Read only
+* `deleted` - (bool) Deleted
 
 In each `notification_config` section, the following attributes are available:
 
