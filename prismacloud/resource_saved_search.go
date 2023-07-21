@@ -2,6 +2,7 @@ package prismacloud
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/rql/history"
 	"golang.org/x/net/context"
@@ -43,6 +44,21 @@ func resourceSavedSearch() *schema.Resource {
 				Description: "Description",
 			},
 			"time_range": timeRangeSchema("resource_saved_search"),
+			"cloud_type": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Cloud Type",
+				ValidateFunc: validation.StringInSlice(
+					[]string{
+						"aws",
+						"azure",
+						"gcp",
+						"alibaba_cloud",
+						"oci",
+					},
+					false,
+				),
+			},
 
 			// Output.
 			"saved": {
@@ -63,6 +79,7 @@ func createSavedSearch(ctx context.Context, d *schema.ResourceData, meta interfa
 		Query:       d.Get("query").(string),
 		Description: d.Get("description").(string),
 		TimeRange:   ParseTimeRange(ResourceDataInterfaceMap(d, "time_range")),
+		CloudType:   d.Get("cloud_type").(string),
 	}
 
 	if err := history.Save(client, req); err != nil {
@@ -88,6 +105,7 @@ func updateSavedSearch(ctx context.Context, d *schema.ResourceData, meta interfa
 		Query:       d.Get("query").(string),
 		Description: d.Get("description").(string),
 		TimeRange:   ParseTimeRange(ResourceDataInterfaceMap(d, "time_range")),
+		CloudType:   d.Get("cloud_type").(string),
 	}
 
 	if err := history.Save(client, req); err != nil {
@@ -118,6 +136,7 @@ func readSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface
 	d.Set("name", info.Name)
 	d.Set("description", info.Description)
 	d.Set("saved", info.Saved)
+	d.Set("cloud_type", info.CloudType)
 
 	return nil
 }
