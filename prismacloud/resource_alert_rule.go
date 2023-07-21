@@ -68,7 +68,7 @@ func resourceAlertRule() *schema.Resource {
 			},
 			"deleted": {
 				Type:        schema.TypeBool,
-				Optional:    true,
+				Computed:    true,
 				Description: "Deleted",
 				ForceNew:    true,
 			},
@@ -654,7 +654,7 @@ func updateAlertRule(ctx context.Context, d *schema.ResourceData, meta interface
 func deleteAlertRule(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
-	obj := parseAlertRule(d, "")
+	obj := parseAlertRule(d, id)
 
 	if err := rule.Delete(client, id, obj); err != nil {
 		if err != pc.ObjectNotFoundError {

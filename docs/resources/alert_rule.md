@@ -20,7 +20,6 @@ resource "prismacloud_alert_rule" "example" {
 * `name` - (Required) Rule/Scan name
 * `description` - Description
 * `enabled` - (bool) Enabled (default: `true`)
-* `deleted` - (bool) Deleted
 * `scan_all` - (bool) Scan all policies
 * `policies` - List of specific policies to scan
 * `policy_labels` - List of policy labels
@@ -75,6 +74,7 @@ There should be one and only one target block:
 * `notification_channels` - List of notification channels
 * `open_alerts_count` - (int) Open alerts count
 * `read_only` - (bool) Read only
+* `deleted` - (bool) Deleted
 
 In each `notification_config` section, the following attributes are available:
 
