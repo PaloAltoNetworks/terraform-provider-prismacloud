@@ -68,7 +68,7 @@ func resourceAlertRule() *schema.Resource {
 			},
 			"deleted": {
 				Type:        schema.TypeBool,
-				Computed:    true,
+				Optional:    true,
 				Description: "Deleted",
 				ForceNew:    true,
 			},
