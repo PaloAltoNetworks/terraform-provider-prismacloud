@@ -29,4 +29,5 @@ type SavedSearch struct {
 	Query       string              `json:"query"`
 	Saved       bool                `json:"saved"`
 	Description string              `json:"description,omitempty"`
+	CloudType   string              `json:"cloudType,omitempty"`
 }

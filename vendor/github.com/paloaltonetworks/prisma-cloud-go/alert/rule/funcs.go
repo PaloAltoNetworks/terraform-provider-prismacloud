@@ -70,7 +70,7 @@ func Delete(c pc.PrismaCloudClient, id string, rule Rule) error {
 	if err != nil {
 		_, err := c.Communicate("DELETE", path, nil, nil, nil)
 		return err
-	} else if rule.Enabled == true {
+	} else if rule.Deleted == false { {
 		_, err := c.Communicate("DELETE", path, nil, nil, nil)
 		return err
 	}
