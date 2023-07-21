@@ -1,6 +1,10 @@
+## 1.4.6 (July 21, 2023)
+
+* Added support for `cloud_type` in prismacloud saved search.
+
 ## 1.4.5 (July 18, 2023)
 
-* Default client timeout increased to 180 sec from 90 sec
+* Default client timeout increased to 180 sec from 90 sec.
 * Documentation updates for rql search and saved search.
 
 ## 1.4.4 (July 14, 2023)
