@@ -122,7 +122,7 @@ resource "prismacloud_rql_search" "example" {
 
 * `name` - (Required) Policy name
 * `policy_type` - (Required) Policy type. Valid values are `config`, `audit_event`, `iam`, `network`, `data`, or `anomaly`
-* `description` - Description
+* `description` - Description (Should be excluded for `build and run` policy)
 * `severity` - Severity. Valid values are `low` (default), `medium`, `high`,`informational`, or `critical`.
 * `recommendation` - Remediation recommendation
 * `cloud_type` - Cloud type (Optional for policies having RQL query with multiway joins, otherwise required) - valid values are `aws`,`azure`,`gcp`,`alibaba_cloud` and `all`
