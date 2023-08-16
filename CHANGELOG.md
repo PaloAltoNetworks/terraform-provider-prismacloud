@@ -1,3 +1,9 @@
+## 1.4.7 (Aug 16, 2023)
+
+* Added new API support for `prismacloud_datapattern` and `prismacloud_dataprofile`.
+* Documentation update for policy.
+* Bug fix for `prismacloud_rql_search`
+
 ## 1.4.6 (July 21, 2023)
 
 * Added support for `cloud_type` in prismacloud saved search.
