@@ -38,7 +38,7 @@ func dataSourceDataProfiles() *schema.Resource {
 							Description: "Profile status (active or disabled)",
 						},
 						"updated_at": {
-							Type:        schema.TypeString,
+							Type:        schema.TypeInt,
 							Computed:    true,
 							Description: "Updated at (unix time)",
 						},
@@ -51,6 +51,11 @@ func dataSourceDataProfiles() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 							Description: "Created by",
+						},
+						"type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Type (basic or advance)",
 						},
 					},
 				},
@@ -77,6 +82,7 @@ func dataSourceDataProfilesRead(d *schema.ResourceData, meta interface{}) error 
 			"updated_at":     v.UpdatedAt,
 			"updated_by":     v.UpdatedBy,
 			"created_by":     v.CreatedBy,
+			"type":           v.Type,
 		})
 	}
 
