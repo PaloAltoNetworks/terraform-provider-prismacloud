@@ -27,3 +27,4 @@ Each data profile has the following attributes:
 * `updated_at` - Updated at (unix time).
 * `updated_by` - Updated by.
 * `created_by` - Created by.
+* `type` - Type (basic or advance).
