@@ -29,3 +29,6 @@ type ListBody struct {
 	LastUpdatedByFilter []string  `json:"lastUpdatedByFilter"`
 	Patterns            []Pattern `json:"patterns"`
 }
+type TenantInfo struct {
+	DlpTenantId string `json:"dlpTenantId"`
+}

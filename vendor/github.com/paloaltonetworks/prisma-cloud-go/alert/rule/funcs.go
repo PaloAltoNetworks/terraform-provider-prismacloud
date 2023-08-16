@@ -62,11 +62,11 @@ func Update(c pc.PrismaCloudClient, rule Rule) error {
 // Delete removes the alert rule that has the specified ID.
 func Delete(c pc.PrismaCloudClient, id string, rule Rule) error {
 	c.Log(pc.LogAction, "(delete) %s id:%s", singular, id)
-
 	path := make([]string, 0, len(Suffix)+1)
 	path = append(path, Suffix...)
 	path = append(path, id)
 	_, err := c.Communicate("GET", path, nil, nil, nil)
+
 	if err != nil {
 		_, err := c.Communicate("DELETE", path, nil, nil, nil)
 		return err
@@ -74,6 +74,7 @@ func Delete(c pc.PrismaCloudClient, id string, rule Rule) error {
 		_, err := c.Communicate("DELETE", path, nil, nil, nil)
 		return err
 	}
+
 	return err
 }
 

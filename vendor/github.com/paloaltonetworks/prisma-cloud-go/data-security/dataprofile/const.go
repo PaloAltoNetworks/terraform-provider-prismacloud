@@ -5,4 +5,6 @@ const (
 	plural   = "data profiles"
 )
 
-var Suffix = []string{"dlp", "api", "v1", "dss-api", "data-profile"}
+var Suffix = []string{"pcds", "config", "v3", "dss-api", "data-profile", "dssTenantId"}
+
+var TenantSuffix = []string{"api", "v1", "provision", "dlp", "status"}

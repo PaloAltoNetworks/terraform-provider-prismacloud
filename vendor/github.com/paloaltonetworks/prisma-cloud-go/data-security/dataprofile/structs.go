@@ -17,6 +17,16 @@ type Profile struct {
 	UpdatedAt            string               `json:"updatedAt,omitempty"`
 }
 
+type ListProfile struct {
+	Id        string `json:"id,omitempty"`
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	Status    string `json:"status"`
+	UpdatedAt int    `json:"updatedAt,omitempty"`
+	UpdatedBy string `json:"updatedBy,omitempty"`
+	CreatedBy string `json:"createdBy,omitempty"`
+}
+
 type DataPatternsRulesOne struct {
 	OperatorType     string               `json:"operatorType,omitempty"`
 	DataPatternRules []DataPatternRuleOne `json:"dataPatternRules,omitempty"`
@@ -54,5 +64,9 @@ type DataPatternRuleOne struct {
 }
 
 type ListBody struct {
-	Profiles []Profile `json:"profiles"`
+	Profiles []ListProfile `json:"profiles"`
+}
+
+type TenantInfo struct {
+	DlpTenantId string `json:"dlpTenantId"`
 }

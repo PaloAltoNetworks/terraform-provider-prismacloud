@@ -5,6 +5,8 @@ const (
 	plural   = "data patterns"
 )
 
-var Suffix = []string{"dlp", "api", "v1", "dss-api", "data-pattern"}
+var Suffix = []string{"pcds", "config", "v3", "dss-api", "data-pattern", "dssTenantId"}
+
+var TenantSuffix = []string{"api", "v1", "provision", "dlp", "status"}
 
 var listBody = ListBody{ModeFilter: []string{"predefined", "custom"}}
