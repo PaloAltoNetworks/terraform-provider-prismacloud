@@ -102,7 +102,8 @@ func resourceResourceList() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"hosts": {
 										Type:        schema.TypeList,
-										Required:    true,
+										Optional:    true,
+										Computed:    true,
 										Description: "List of pattern strings to define hosts in resource list",
 										MinItems:    1,
 										Elem: &schema.Schema{
@@ -111,7 +112,8 @@ func resourceResourceList() *schema.Resource {
 									},
 									"app_id": {
 										Type:        schema.TypeList,
-										Required:    true,
+										Optional:    true,
+										Computed:    true,
 										Description: "List of pattern strings to define app_id in resource list",
 										MinItems:    1,
 										Elem: &schema.Schema{
@@ -120,7 +122,8 @@ func resourceResourceList() *schema.Resource {
 									},
 									"images": {
 										Type:        schema.TypeList,
-										Required:    true,
+										Optional:    true,
+										Computed:    true,
 										Description: "List of pattern strings to define images in resource list",
 										MinItems:    1,
 										Elem: &schema.Schema{
@@ -129,7 +132,8 @@ func resourceResourceList() *schema.Resource {
 									},
 									"labels": {
 										Type:        schema.TypeList,
-										Required:    true,
+										Optional:    true,
+										Computed:    true,
 										Description: "List of pattern strings to define labels in resource list",
 										MinItems:    1,
 										Elem: &schema.Schema{
@@ -138,7 +142,8 @@ func resourceResourceList() *schema.Resource {
 									},
 									"clusters": {
 										Type:        schema.TypeList,
-										Required:    true,
+										Optional:    true,
+										Computed:    true,
 										Description: "List of pattern strings to define clusters in resource list",
 										MinItems:    1,
 										Elem: &schema.Schema{
@@ -147,7 +152,8 @@ func resourceResourceList() *schema.Resource {
 									},
 									"code_repos": {
 										Type:        schema.TypeList,
-										Required:    true,
+										Optional:    true,
+										Computed:    true,
 										Description: "List of pattern strings to define code_repos in resource list",
 										MinItems:    1,
 										Elem: &schema.Schema{
@@ -156,7 +162,8 @@ func resourceResourceList() *schema.Resource {
 									},
 									"functions": {
 										Type:        schema.TypeList,
-										Required:    true,
+										Optional:    true,
+										Computed:    true,
 										Description: "List of pattern strings to define functions in resource list",
 										MinItems:    1,
 										Elem: &schema.Schema{
@@ -165,7 +172,8 @@ func resourceResourceList() *schema.Resource {
 									},
 									"containers": {
 										Type:        schema.TypeList,
-										Required:    true,
+										Optional:    true,
+										Computed:    true,
 										Description: "List of pattern strings to define containers in resource list",
 										MinItems:    1,
 										Elem: &schema.Schema{
@@ -174,7 +182,8 @@ func resourceResourceList() *schema.Resource {
 									},
 									"namespaces": {
 										Type:        schema.TypeList,
-										Required:    true,
+										Optional:    true,
+										Computed:    true,
 										Description: "List of pattern strings to define namespaces in resource list",
 										MinItems:    1,
 										Elem: &schema.Schema{
