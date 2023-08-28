@@ -84,7 +84,7 @@ Each member has the following attributes:
 Each Tag has the following attributes:
 
 * `key` - Key of the tag.
-* `value` - Value of the tag.
+* `value` - Value of the tag. (optional)
 
 #### Azure Resource Groups
 
@@ -92,14 +92,16 @@ Consists of a list of Azure Resource Groups IDs (string) associated with the res
 
 #### Compute Access Groups
 
-Each Tag has the following attributes:
+Specifies the filters to define the scope of what is accessible within each type of resource. By default, each field is populated with a wildcard to match all objects of a specific type.
 
-* `app_id` - List of filters to define the scope of what app_ids are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `clusters` - List of filters to define the scope of what clusters are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `code_repos` - List of filters to define the scope of what code_repos are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `containers` - List of filters to define the scope of what containers are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `functions` - List of filters to define the scope of what functions are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `hosts` - List of filters to define the scope of what hosts are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `images` - List of filters to define the scope of what images are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `labels` - List of filters to define the scope of what labels are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `namespaces` - List of filters to define the scope of what namespaces are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
+Each Compute Access Groups object has the following attributes:
+
+* `app_id` - (optional)
+* `clusters` - (optional)
+* `code_repos` - (optional)
+* `containers` - (optional)
+* `functions` - (optional)
+* `hosts` - (optional)
+* `images` - (optional)
+* `labels` - (optional)
+* `namespaces` - (optional)
