@@ -46,15 +46,16 @@ Each Tag has the following attributes:
 
 #### Compute Access Groups
 
-Each compute access group has the following attributes:
+Specifies the filters to define the scope of what is accessible within each type of resource. By default, each field is populated with a wildcard to match all objects of a specific type.
 
-* `app_id` - List of filters to define the scope of what app_ids are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `clusters` - List of filters to define the scope of what clusters are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `code_repos` - List of filters to define the scope of what code_repos are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `containers` - List of filters to define the scope of what containers are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `functions` - List of filters to define the scope of what functions are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `hosts` - List of filters to define the scope of what hosts are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `images` - List of filters to define the scope of what images are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `labels` - List of filters to define the scope of what labels are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
-* `namespaces` - List of filters to define the scope of what namespaces are accessible. By default, it is populated with a wildcard to match all objects of the specific type.
+Each Compute Access Groups object has the following attributes:
 
+* `app_id` - (Optional) App id
+* `clusters` - (Optional) Clusters
+* `code_repos` - (Optional) Code repos
+* `containers` - (Optional) Containers
+* `functions` - (Optional) Functions
+* `hosts` - (Optional) Hosts
+* `images` - (Optional) Images
+* `labels` - (Optional) Labels
+* `namespaces` - (Optional) Namespaces

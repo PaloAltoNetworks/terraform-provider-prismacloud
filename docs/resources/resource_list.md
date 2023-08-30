@@ -62,7 +62,7 @@ resource "prismacloud_resource_list" "example" {
 ## Argument Reference
 
 * `name` - (Required) Name of the resource list.
-* `resource_list_type` - (Required) Name of the resource list.
+* `resource_list_type` - (Required) Type of the resource list.
 * `description` - (Optional) Description of the resource list.
 * `members` - (Required) Associated resource list members as defined [below](#members).
 
