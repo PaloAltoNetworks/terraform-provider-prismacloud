@@ -4,7 +4,7 @@ page_title: "Prisma Cloud: prismacloud_resource_list"
 
 # prismacloud_resource_list
 
-Create resource list information by id.
+Manage a resource list.
 
 ## Example Usage (with tags)
 
@@ -61,10 +61,10 @@ resource "prismacloud_resource_list" "example" {
 
 ## Argument Reference
 
-* `name` - (required) Name of the resource list.
-* `resource_list_type` - (required) Name of the resource list.
-* `description` - (optional) Description of the resource list.
-* `members` - (required) Associated resource list members as defined [below](#members).
+* `name` - (Required) Name of the resource list.
+* `resource_list_type` - (Required) Name of the resource list.
+* `description` - (Optional) Description of the resource list.
+* `members` - (Required) Associated resource list members as defined [below](#members).
 
 ## Attribute Reference
 
@@ -83,8 +83,8 @@ Each member has the following attributes:
 
 Each Tag has the following attributes:
 
-* `key` - (required) Key of the tag.
-* `value` - (optional) Value of the tag.
+* `key` - (Required) Key of the tag.
+* `value` - (Optional) Value of the tag.
 
 #### Compute Access Groups
 
@@ -92,12 +92,12 @@ Specifies the filters to define the scope of what is accessible within each type
 
 Each Compute Access Groups object has the following attributes:
 
-* `app_id` - (optional) app id
-* `clusters` - (optional) clusters
-* `code_repos` - (optional) code repos
-* `containers` - (optional) containers
-* `functions` - (optional) functions
-* `hosts` - (optional) hosts
-* `images` - (optional) images
-* `labels` - (optional) labels
-* `namespaces` - (optional) namespaces
+* `app_id` - (Optional) App id
+* `clusters` - (Optional) Clusters
+* `code_repos` - (Optional) Code repos
+* `containers` - (Optional) Containers
+* `functions` - (Optional) Functions
+* `hosts` - (Optional) Hosts
+* `images` - (Optional) Images
+* `labels` - (Optional) Labels
+* `namespaces` - (Optional) Namespaces
