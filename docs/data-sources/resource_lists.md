@@ -21,10 +21,10 @@ data "prismacloud_resource_lists" "example" {}
 
 Each resource list has the following attributes.
 
-* `id` - (string) ID of resource list.
-* `name` - (string) Name of resouce list.
-* `description` - (string) Description of the resource list.
-* `resource_list_type` - (string) Type of resource list.
-* `last_modified_by` - (string) Last modified by.
-* `last_modified_ts` - (int) Last modified timestamp.
+* `id` - ID of resource list.
+* `name` - Name of resource list.
+* `description` - Description of the resource list.
+* `resource_list_type` - Type of resource list.
+* `last_modified_by` - Last modified by.
+* `last_modified_ts` - Last modified timestamp.
 

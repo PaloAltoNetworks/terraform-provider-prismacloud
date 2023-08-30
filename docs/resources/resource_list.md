@@ -61,14 +61,14 @@ resource "prismacloud_resource_list" "example" {
 
 ## Argument Reference
 
-* `name` - (string) Name of the resource list. (required)
-* `resource_list_type` - (string) Name of the resource list. (required)
-* `description` - (string) Description of the resource list.
-* `members` - Associated resource list members as defined [below](#members). (required)
+* `name` - (required) Name of the resource list.
+* `resource_list_type` - (required) Name of the resource list.
+* `description` - (optional) Description of the resource list.
+* `members` - (required) Associated resource list members as defined [below](#members).
 
 ## Attribute Reference
 
-* `last_modified_by` - (string) Last modified by.
+* `last_modified_by` - Last modified by.
 * `last_modified_ts` - (int) Last modified timestamp.
 
 ### Members
@@ -76,19 +76,15 @@ resource "prismacloud_resource_list" "example" {
 Each member has the following attributes:
 
 * `tags` - Associated resource list tags as defined [below](#tags)
-* `azure_resource_groups` - Associated resource list Azure Resource Groups as defined [below](#azure-resource-groups)
+* `azure_resource_groups` - Consists of a list of Azure Resource Groups IDs associated with the resource list.
 * `compute_access_groups` - Associated resource list Compute Access Groups as defined [below](#compute-access-groups)
 
 #### Tags
 
 Each Tag has the following attributes:
 
-* `key` - Key of the tag.
-* `value` - Value of the tag. (optional)
-
-#### Azure Resource Groups
-
-Consists of a list of Azure Resource Groups IDs (string) associated with the resource list.
+* `key` - (required) Key of the tag.
+* `value` - (optional) Value of the tag.
 
 #### Compute Access Groups
 
@@ -96,12 +92,12 @@ Specifies the filters to define the scope of what is accessible within each type
 
 Each Compute Access Groups object has the following attributes:
 
-* `app_id` - (optional)
-* `clusters` - (optional)
-* `code_repos` - (optional)
-* `containers` - (optional)
-* `functions` - (optional)
-* `hosts` - (optional)
-* `images` - (optional)
-* `labels` - (optional)
-* `namespaces` - (optional)
+* `app_id` - (optional) app id
+* `clusters` - (optional) clusters
+* `code_repos` - (optional) code repos
+* `containers` - (optional) containers
+* `functions` - (optional) functions
+* `hosts` - (optional) hosts
+* `images` - (optional) images
+* `labels` - (optional) labels
+* `namespaces` - (optional) namespaces
