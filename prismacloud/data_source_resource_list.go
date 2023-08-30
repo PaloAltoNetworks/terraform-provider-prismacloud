@@ -51,19 +51,16 @@ func dataSourceResourceList() *schema.Resource {
 						"tags": {
 							Type:        schema.TypeSet,
 							Computed:    true,
-							Optional:    true,
 							Description: "List of key:value pairs of tag members",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"key": {
 										Type:     schema.TypeString,
 										Computed: true,
-										Optional: true,
 									},
 									"value": {
 										Type:     schema.TypeString,
 										Computed: true,
-										Optional: true,
 									},
 								},
 							},
@@ -71,7 +68,6 @@ func dataSourceResourceList() *schema.Resource {
 						"azure_resource_groups": {
 							Type:        schema.TypeSet,
 							Computed:    true,
-							Optional:    true,
 							Description: "List of Azure resource groups part of the resource list",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -80,13 +76,11 @@ func dataSourceResourceList() *schema.Resource {
 						"compute_access_groups": {
 							Type:        schema.TypeSet,
 							Computed:    true,
-							Optional:    true,
 							Description: "Members when resource list type = compute access group",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"hosts": {
 										Type:        schema.TypeList,
-										Optional:    true,
 										Computed:    true,
 										Description: "Resource list ID",
 										Elem: &schema.Schema{
@@ -95,7 +89,6 @@ func dataSourceResourceList() *schema.Resource {
 									},
 									"app_id": {
 										Type:        schema.TypeList,
-										Optional:    true,
 										Computed:    true,
 										Description: "Resource list ID",
 										Elem: &schema.Schema{
@@ -104,7 +97,6 @@ func dataSourceResourceList() *schema.Resource {
 									},
 									"images": {
 										Type:        schema.TypeList,
-										Optional:    true,
 										Computed:    true,
 										Description: "Resource list ID",
 										Elem: &schema.Schema{
@@ -113,7 +105,6 @@ func dataSourceResourceList() *schema.Resource {
 									},
 									"labels": {
 										Type:        schema.TypeList,
-										Optional:    true,
 										Computed:    true,
 										Description: "Resource list ID",
 										Elem: &schema.Schema{
@@ -122,7 +113,6 @@ func dataSourceResourceList() *schema.Resource {
 									},
 									"clusters": {
 										Type:        schema.TypeList,
-										Optional:    true,
 										Computed:    true,
 										Description: "Resource list ID",
 										Elem: &schema.Schema{
@@ -131,7 +121,6 @@ func dataSourceResourceList() *schema.Resource {
 									},
 									"code_repos": {
 										Type:        schema.TypeList,
-										Optional:    true,
 										Computed:    true,
 										Description: "Resource list ID",
 										Elem: &schema.Schema{
@@ -140,7 +129,6 @@ func dataSourceResourceList() *schema.Resource {
 									},
 									"functions": {
 										Type:        schema.TypeList,
-										Optional:    true,
 										Computed:    true,
 										Description: "Resource list ID",
 										Elem: &schema.Schema{
@@ -149,7 +137,6 @@ func dataSourceResourceList() *schema.Resource {
 									},
 									"containers": {
 										Type:        schema.TypeList,
-										Optional:    true,
 										Computed:    true,
 										Description: "Resource list ID",
 										Elem: &schema.Schema{
@@ -158,7 +145,6 @@ func dataSourceResourceList() *schema.Resource {
 									},
 									"namespaces": {
 										Type:        schema.TypeList,
-										Optional:    true,
 										Computed:    true,
 										Description: "Resource list ID",
 										Elem: &schema.Schema{
