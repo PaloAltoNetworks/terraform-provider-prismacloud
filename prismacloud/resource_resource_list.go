@@ -42,7 +42,6 @@ func resourceResourceList() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Resource list type",
-				ForceNew:    true,
 				ValidateFunc: validation.StringInSlice(
 					[]string{
 						resource_list.TypeTags,
@@ -320,7 +319,7 @@ func readResourceList(ctx context.Context, d *schema.ResourceData, meta interfac
 	id := d.Id()
 	obj, err := resource_list.Get(client, id)
 	if err != nil {
-		if errors.Is(err, pc.ObjectNotFoundError) {
+		if errors.Is(err, pc.ResourceListNotFoundError) {
 			d.SetId("")
 			return nil
 		}
