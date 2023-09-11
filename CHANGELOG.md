@@ -1,3 +1,13 @@
+## 1.4.8 (Sep 11, 2023)
+
+NEW DATA SOURCES:
+
+* `prismacloud_resource_list` / `prismacloud_resource_lists`
+
+NEW RESOURCES: 
+
+* `prismacloud_resource_list`
+
 ## 1.4.7 (Aug 16, 2023)
 
 * Added new API support for `prismacloud_datapattern` and `prismacloud_dataprofile`.
