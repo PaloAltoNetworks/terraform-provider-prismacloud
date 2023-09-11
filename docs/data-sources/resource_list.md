@@ -50,12 +50,12 @@ Specifies the filters to define the scope of what is accessible within each type
 
 Each Compute Access Groups object has the following attributes:
 
-* `app_id` - (Optional) App id
-* `clusters` - (Optional) Clusters
-* `code_repos` - (Optional) Code repos
-* `containers` - (Optional) Containers
-* `functions` - (Optional) Functions
-* `hosts` - (Optional) Hosts
-* `images` - (Optional) Images
-* `labels` - (Optional) Labels
-* `namespaces` - (Optional) Namespaces
+* `app_id` - App id
+* `clusters` - Clusters
+* `code_repos` - Code repos
+* `containers` - Containers
+* `functions` - Functions
+* `hosts` - Hosts
+* `images` - Images
+* `labels` - Labels
+* `namespaces` - Namespaces
