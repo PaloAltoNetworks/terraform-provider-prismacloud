@@ -272,6 +272,7 @@ github.com/paloaltonetworks/prisma-cloud-go/notification-template
 github.com/paloaltonetworks/prisma-cloud-go/permission_group
 github.com/paloaltonetworks/prisma-cloud-go/policy
 github.com/paloaltonetworks/prisma-cloud-go/report
+github.com/paloaltonetworks/prisma-cloud-go/resource-list
 github.com/paloaltonetworks/prisma-cloud-go/rql/history
 github.com/paloaltonetworks/prisma-cloud-go/rql/search
 github.com/paloaltonetworks/prisma-cloud-go/settings/enterprise
