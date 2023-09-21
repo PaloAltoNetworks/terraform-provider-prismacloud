@@ -10,17 +10,17 @@ Manage a specific policy.
 
 ```hcl
 resource "prismacloud_policy" "example" {
-    name = "My Policy"
-    policy_type = "network"
-    rule {
-        name = "my rule"
-        criteria = "savedSearchId"
-        parameters = {
-          savedSearch = false
-          withIac     = false
-        }
-        rule_type = "Network"
+  name = "My Policy"
+  policy_type = "network"
+  rule {
+    name = "my rule"
+    criteria = "savedSearchId"
+    parameters = {
+      savedSearch = false
+      withIac     = false
     }
+    rule_type = "Network"
+  }
 }
 ```
 
@@ -118,11 +118,40 @@ resource "prismacloud_rql_search" "example" {
 }
 ```
 
+## Example Usage (Custom Build and Run Policy)
+```hcl
+resource "prismacloud_policy" "Policy" {
+  policy_type     = "config"
+  cloud_type      = "aws"
+  policy_subtypes = ["run", "build"]
+  name            = "sample custom build and run policy created with terraform"
+  labels          = ["some_tag"]
+  description     = "this describes the policy"
+  rule {
+    name       = "sample custom build and run policy created with terraform"
+    rule_type  = "Config"
+    criteria   = "savedSearchId"
+    parameters = {
+      savedSearch = true
+      withIac     = true
+    }
+    children {
+      type           = "build"
+      recommendation = "fix it"
+      metadata       = {
+        "code" : file("policies/aks/aks002.yaml"),
+      }
+    }
+  }
+}
+```
+
 ## Argument Reference
 
 * `name` - (Required) Policy name
 * `policy_type` - (Required) Policy type. Valid values are `config`, `audit_event`, `iam`, `network`, `data`, or `anomaly`
-* `description` - Description (Should be excluded for `build and run` policy)
+* `policy_subtypes` - Policy subtypes. Valid values are `run`, `build`
+* `description` - Description
 * `severity` - Severity. Valid values are `low` (default), `medium`, `high`,`informational`, or `critical`.
 * `recommendation` - Remediation recommendation
 * `cloud_type` - Cloud type (Optional for policies having RQL query with multiway joins, otherwise required) - valid values are `aws`,`azure`,`gcp`,`alibaba_cloud` and `all`
@@ -173,14 +202,13 @@ This section may be present or may be omitted:
 #### Children
 
 * `criteria` - (Required for custom build policy) Criteria for build policy.
-* `metadata` - (Required for custom code build policy, map of string) YAML string for code build policy. Valid key is `code`. 
+* `metadata` - (Required for custom code build policy, map of string) YAML string for code build policy. Valid key is `code`.
 * `recommendation` - (Optional, string) Recommendation.
 * `type` - (Required) Type of policy. Valid values are: `tf`, `cft`, `k8s` or `build`.
 
 ## Attribute Reference
 
 * `policy_id` - Policy ID
-* `policy_subtypes` - Policy subtypes
 * `created_on` - (int) Created on
 * `created_by` - Created by
 * `last_modified_on` - (int) Last modified on
