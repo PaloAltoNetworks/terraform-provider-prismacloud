@@ -271,7 +271,7 @@ func dataSourcePolicy() *schema.Resource {
 				},
 			},
 			"remediation": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: "Model for remediation",
 				Elem: &schema.Resource{
@@ -295,6 +295,22 @@ func dataSourcePolicy() *schema.Resource {
 							Type:        schema.TypeString,
 							Computed:    true,
 							Description: "CLI script JSON schema",
+						},
+						"actions": {
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"operation": {
+								  		Type:     schema.TypeString,
+								  		Computed: true,
+									},
+									"payload": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
 						},
 					},
 				},
