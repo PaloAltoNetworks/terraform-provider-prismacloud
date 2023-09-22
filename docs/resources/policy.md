@@ -118,11 +118,42 @@ resource "prismacloud_rql_search" "example" {
 }
 ```
 
+## Example Usage (Custom Build and Run Policy)
+```hcl
+resource "prismacloud_policy" "Policy" {
+  policy_type     = "config"
+  cloud_type      = "aws"
+  policy_subtypes = ["run", "build"]
+  name            = "sample custom build and run policy with remediation"
+  severity        = "high"
+  labels          = ["some_tag"]
+  description     = "this describes the policy"
+  recommendation  = "fix it"
+  rule {
+    name       = "sample custom build and run policy with remediation"
+    rule_type  = "Config"
+    criteria   = "savedSearchId"
+    parameters = {
+      savedSearch = true
+      withIac     = true
+    }
+    children {
+      type           = "build"
+      recommendation = "fix it"
+      metadata       = {
+        "code" : file("policies/aks/aks002.yaml"),
+      }
+    }
+  }
+}
+```
+
 ## Argument Reference
 
 * `name` - (Required) Policy name
 * `policy_type` - (Required) Policy type. Valid values are `config`, `audit_event`, `iam`, `network`, `data`, or `anomaly`
-* `description` - Description (Should be excluded for `build and run` policy)
+* `policy_subtypes` - Policy subtypes. Valid values are `build`, `run`
+* `description` - Description 
 * `severity` - Severity. Valid values are `low` (default), `medium`, `high`,`informational`, or `critical`.
 * `recommendation` - Remediation recommendation
 * `cloud_type` - Cloud type (Optional for policies having RQL query with multiway joins, otherwise required) - valid values are `aws`,`azure`,`gcp`,`alibaba_cloud` and `all`
@@ -180,7 +211,6 @@ This section may be present or may be omitted:
 ## Attribute Reference
 
 * `policy_id` - Policy ID
-* `policy_subtypes` - Policy subtypes
 * `created_on` - (int) Created on
 * `created_by` - Created by
 * `last_modified_on` - (int) Last modified on

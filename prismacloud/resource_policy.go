@@ -62,7 +62,8 @@ func resourcePolicy() *schema.Resource {
 				),
 			},
 			"policy_subtypes": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
+				Optional:    true,
 				Computed:    true,
 				Description: "Policy subtypes",
 				Elem: &schema.Schema{
@@ -450,6 +451,7 @@ func resourcePolicy() *schema.Resource {
 
 func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 	rspec := d.Get("rule").([]interface{})[0].(map[string]interface{})
+	ps := d.Get("policy_subtypes")
 	ans := policy.Policy{
 		PolicyId:               id,
 		Name:                   d.Get("name").(string),
@@ -463,6 +465,7 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 		Overridden:             d.Get("overridden").(bool),
 		Deleted:                d.Get("deleted").(bool),
 		RestrictAlertDismissal: d.Get("restrict_alert_dismissal").(bool),
+		PolicySubTypes:         SetToStringSlice(ps.(*schema.Set)),
 		Rule: policy.Rule{
 			Name:           rspec["name"].(string),
 			CloudType:      rspec["cloud_type"].(string),
@@ -541,7 +544,6 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 	d.Set("policy_id", obj.PolicyId)
 	d.Set("name", obj.Name)
 	d.Set("policy_type", obj.PolicyType)
-	d.Set("policy_subtypes", obj.PolicySubTypes)
 	d.Set("system_default", obj.SystemDefault)
 	d.Set("description", obj.Description)
 	d.Set("severity", obj.Severity)
@@ -562,6 +564,10 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 	d.Set("policy_category", obj.PolicyCategory)
 	d.Set("policy_class", obj.PolicyClass)
 	d.Set("remediable", obj.Remediable)
+
+	if err := d.Set("policy_subtypes", StringSliceToSet(obj.PolicySubTypes)); err != nil {
+		log.Printf("[WARN] Error setting 'policy_subtypes' for %q: %s", d.Id(), err)
+	}
 
 	if err := d.Set("labels", StringSliceToSet(obj.Labels)); err != nil {
 		log.Printf("[WARN] Error setting 'labels' for %q: %s", d.Id(), err)
