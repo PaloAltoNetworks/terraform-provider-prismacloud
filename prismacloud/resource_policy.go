@@ -378,6 +378,22 @@ func resourcePolicy() *schema.Resource {
 							Optional:    true,
 							Description: "CLI script JSON schema",
 						},
+						"actions": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"operation": {
+								  		Type:     schema.TypeString,
+								  		Optional: true,
+									},
+									"payload": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -512,6 +528,16 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 			ans.Remediation.TemplateType = rems["template_type"].(string)
 			ans.Remediation.Description = rems["description"].(string)
 			ans.Remediation.CliScriptTemplate = rems["cli_script_template"].(string)
+			if rems["actions"] != nil && len(rems["actions"].([]interface{})) > 0 {
+				actions := make([]policy.Action, 0, len(rems["actions"].([]interface{})))
+				for _, action := range rems["actions"].([]interface{}) {
+					actions = append(actions, policy.Action{
+						Operation:    action.(map[string]interface{})["operation"].(string),
+						Payload: action.(map[string]interface{})["payload"].(string),
+					})
+				}
+				ans.Remediation.Actions = actions
+			}
 			var csjs interface{}
 			if err := json.Unmarshal([]byte(rems["cli_script_json_schema_string"].(string)), &csjs); err != nil {
 				log.Printf("[WARN] Error unmarshalling 'cli_script_json_schema_string' for %q: %s", d.Id(), err)
@@ -651,13 +677,24 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 			}
 			csjs = string(b)
 		}
+		var actions []map[string]string
+		if obj.Remediation.Actions != nil  && len(obj.Remediation.Actions) > 0 {
+			actions = make([]map[string]string, len(obj.Remediation.Actions))
+			for i, action := range obj.Remediation.Actions {
+				actions[i] = map[string]string{
+					"operation": action.Operation,
+					"payload":   action.Payload,
+				}
+			}
+		}
 		rem := map[string]interface{}{
 			"template_type":                 obj.Remediation.TemplateType,
 			"description":                   obj.Remediation.Description,
 			"cli_script_template":           obj.Remediation.CliScriptTemplate,
+			"actions":                       actions,
 			"cli_script_json_schema_string": csjs,
 		}
-		if err := d.Set("remediation", rem); err != nil {
+		if err := d.Set("remediation", []interface{}{rem} ); err != nil {
 			log.Printf("[WARN] Error setting 'remediation' for %q: %s", d.Id(), err)
 		}
 	}

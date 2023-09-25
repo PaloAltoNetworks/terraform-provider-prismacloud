@@ -190,6 +190,7 @@ This section may be present or may be omitted:
 * `description` - Description
 * `cli_script_template` - CLI script template
 * `cli_script_json_schema_string` - CLI script JSON schema
+* `actions` - List of actions, as defined [below](#action)
 
 ### Compliance Metadata
 
@@ -207,6 +208,11 @@ This section may be present or may be omitted:
 * `metadata` - (Required for custom code build policy, map of string) YAML string for code build policy. Valid key is `code`. 
 * `recommendation` - (Optional, string) Recommendation.
 * `type` - (Required) Type of policy. Valid values are: `tf`, `cft`, `k8s` or `build`.
+
+#### Action
+
+* `operation` - Operation
+* `payload` - Payload
 
 ## Attribute Reference
 
