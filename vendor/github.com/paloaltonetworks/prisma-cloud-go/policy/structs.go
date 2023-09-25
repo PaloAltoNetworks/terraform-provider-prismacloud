@@ -71,6 +71,12 @@ type Remediation struct {
 	Description         string      `json:"description,omitempty"`
 	CliScriptTemplate   string      `json:"cliScriptTemplate,omitempty"`
 	CliScriptJsonSchema interface{} `json:"cliScriptJsonSchema,omitempty"`
+	Actions             []Action    `json:"actions,omitempty"`
+}
+
+type Action struct {
+	Operation string `json:"operation,oimtempty"`
+	Payload   string `json:"payload,omitempty"`
 }
 
 type DataCriteria struct {
