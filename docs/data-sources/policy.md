@@ -70,6 +70,7 @@ You must specify at least one of the following:
 * `description` - Description
 * `cli_script_template` - CLI script template
 * `cli_script_json_schema_string` - CLI script JSON schema
+* `actions` - List of actions, as defined [below](#action)
 
 ### Compliance Metadata
 
@@ -97,3 +98,8 @@ You must specify at least one of the following:
 * `metadata` - YAML string for code build policy. 
 * `recommendation` - Recommendation.
 * `type` - Type of policy. 
+
+#### Action
+
+* `operation` - Operation
+* `payload` - Payload
