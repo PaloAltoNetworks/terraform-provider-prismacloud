@@ -141,7 +141,7 @@ resource "prismacloud_policy" "Policy" {
       type           = "build"
       recommendation = "fix it"
       metadata       = {
-        "code" : file("policies/aks/aks002.yaml"),
+        "code" : file("folder/build_and_run_policy.yaml"),
       }
     }
   }
