@@ -1,3 +1,9 @@
+## 1.4.9 (Sep 25, 2023)
+
+* Added support for build and run policy.
+* Added support for `actions` in policy remediation.
+* Bug fix in policy remediation.
+
 ## 1.4.8 (Sep 11, 2023)
 
 NEW DATA SOURCES:
