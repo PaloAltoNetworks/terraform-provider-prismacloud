@@ -66,7 +66,7 @@ resource "prismacloud_cloud_account_v2" "aws_account_onboarding_example" {
             data.prismacloud_account_group.existing_account_group_id.group_id,// To use existing Account Group
             // prismacloud_account_group.new_account_group.group_id, // To create new Account group
         ]
-        role_arn = "${aws_cloudformation_stack.prismacloud_iam_role_stack.outputs.PrismaCloudRoleARN}" // IAM role arn from step 3
+        role_arn = data.aws_cloudformation_stack.prismacloud_iam_role_stack.outputs.PrismaCloudRoleARN // IAM role arn from step 3
         features {              // feature names from step 1
             name = "Remediation" // To enable Remediation also known as Monitor and Protect
             state = "enabled"
@@ -76,6 +76,12 @@ resource "prismacloud_cloud_account_v2" "aws_account_onboarding_example" {
             state = "enabled"
         }
     }
+}
+
+//Retrive PrismaCloudRoleARN
+data "aws_cloudformation_stack" "prismacloud_iam_role_stack" {
+  depends_on = [aws_cloudformation_stack.prismacloud_iam_role_stack]
+  name       = "PrismaCloudAppTerraformTest"
 }
 
 // Retrive existing account group name id
@@ -112,6 +118,12 @@ resource "aws_cloudformation_stack" "prismacloud_iam_role_stack" {
   template_url = data.prismacloud_aws_cft_generator.prismacloud_account_cft.s3_presigned_cft_url
 }
 
+//Retrive PrismaCloudRoleARN
+data "aws_cloudformation_stack" "prismacloud_iam_role_stack" {
+  depends_on = [aws_cloudformation_stack.prismacloud_iam_role_stack]
+  name       = "PrismaCloudAppTerraformTest"
+}
+
 resource "prismacloud_cloud_account_v2" "aws_account_onboarding_example" {
     disable_on_destroy = true
     aws {
@@ -121,7 +133,7 @@ resource "prismacloud_cloud_account_v2" "aws_account_onboarding_example" {
             data.prismacloud_account_group.existing_account_group_id.group_id,// To use existing Account Group
             // prismacloud_account_group.new_account_group.group_id, // To create new Account group
         ]
-        role_arn = "${aws_cloudformation_stack.prismacloud_iam_role_stack.outputs.PrismaCloudRoleARN}" // IAM role arn from prismacloud_iam_role_stack resource
+        role_arn = data.aws_cloudformation_stack.prismacloud_iam_role_stack.outputs.PrismaCloudRoleARN // IAM role arn from prismacloud_iam_role_stack resource
         features {              // feature names from prismacloud_supported_features data source
             name = "Remediation" // To enable Remediation also known as Monitor and Protect
             state = "enabled"
