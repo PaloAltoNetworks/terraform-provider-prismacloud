@@ -81,7 +81,7 @@ resource "prismacloud_cloud_account_v2" "aws_account_onboarding_example" {
 // Retrive PrismaCloudRoleARN
 data "aws_cloudformation_stack" "prismacloud_iam_role_stack" {
   depends_on = [aws_cloudformation_stack.prismacloud_iam_role_stack]
-  name       = "PrismaCloudAppTerraformTest"
+  name       = "PrismaCloudApp"
 }
 
 // Retrive existing account group name id
@@ -121,7 +121,7 @@ resource "aws_cloudformation_stack" "prismacloud_iam_role_stack" {
 // Retrive PrismaCloudRoleARN
 data "aws_cloudformation_stack" "prismacloud_iam_role_stack" {
   depends_on = [aws_cloudformation_stack.prismacloud_iam_role_stack]
-  name       = "PrismaCloudAppTerraformTest"
+  name       = "PrismaCloudApp"
 }
 
 resource "prismacloud_cloud_account_v2" "aws_account_onboarding_example" {
