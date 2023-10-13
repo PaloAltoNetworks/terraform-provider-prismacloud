@@ -1,3 +1,7 @@
+## 1.5.0 (Oct 13, 2023)
+
+* Documentation update for AWS cloud account onboarding.
+
 ## 1.4.9 (Sep 25, 2023)
 
 * Added support for build and run policy.
