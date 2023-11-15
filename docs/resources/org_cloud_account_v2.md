@@ -239,7 +239,7 @@ Before onboarding the aws cloud account `external_id` for account must be genera
 ### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
 
 ```hcl
-data "prismacloud_account_supported_features" "prismacloud_supported_features" {
+data "prismacloud_account_supported_features" "prismacloud_supported_features_tenant" {
   cloud_type      = "azure"
   account_type    = "tenant"
   deployment_type = "azure"
