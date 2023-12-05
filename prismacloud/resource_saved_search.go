@@ -102,7 +102,7 @@ func updateSavedSearch(ctx context.Context, d *schema.ResourceData, meta interfa
 	client := meta.(*pc.Client)
 	old, new := d.GetChange("name")
 	if old.(string) != new.(string) {
-		return diag.Errorf("saved search name cannot be changed once created")
+		return diag.Errorf("saved search name is immutable")
 	}
 
 	req := history.SavedSearch{
