@@ -1,3 +1,9 @@
+## 1.5.1 (Dec 5, 2023)
+
+* Documentation update for Azure tenant cloud account onboarding.
+* Bug fix for `prismacloud_account_group`
+* Documentation update and code optimization for `prismacloud_saved_search`
+
 ## 1.5.0 (Oct 13, 2023)
 
 * Documentation update for AWS cloud account onboarding.
