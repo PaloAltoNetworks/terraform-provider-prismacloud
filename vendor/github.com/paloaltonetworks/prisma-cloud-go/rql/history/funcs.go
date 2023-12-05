@@ -55,20 +55,22 @@ func Get(c pc.PrismaCloudClient, id string) (Query, error) {
 }
 
 // Save saves an historic RQL search query to the saved searches list.
-func Save(c pc.PrismaCloudClient, req SavedSearch) error {
+func Save(c pc.PrismaCloudClient, req SavedSearch) (Query, error) {
 	c.Log(pc.LogAction, "(create) saved search: %s", req.Id)
+
+	var ans Query
 
 	// Sanity check the time range.
 	if err := req.TimeRange.SetType(); err != nil {
-		return err
+		return Query{}, err
 	}
 
 	path := make([]string, 0, len(Suffix)+1)
 	path = append(path, Suffix...)
 	path = append(path, req.Id)
 
-	_, err := c.Communicate("POST", path, nil, req, nil)
-	return err
+	_, err := c.Communicate("POST", path, nil, req, &ans)
+	return ans, err
 }
 
 // Delete removes an existing saved search query.
