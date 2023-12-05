@@ -12,6 +12,7 @@ Retrieve information about azure template for azure account.
 data "prismacloud_azure_template" "example" {
   file_name       = "<file-name>" //Provide filename along with path to store azure template
   account_type    = "account"
+  deployment_type = "azure"
   subscription_id = "<subscription-id>"
   tenant_id       = "<tenant_id>"
 }
@@ -23,6 +24,7 @@ data "prismacloud_azure_template" "example" {
 data "prismacloud_azure_template" "example" {
   file_name    = "<file-name>"  //Provide filename along with path to store azure template
   account_type = "tenant"
+  deployment_type = "azure"
   tenant_id    = "<tenant-id>"
 }
 ```
@@ -33,6 +35,7 @@ data "prismacloud_azure_template" "example" {
 data "prismacloud_azure_template" "example" {
   file_name         = "<file-name>" //Provide filename along with path to store azure template
   account_type      = "tenant"
+  deployment_type = "azure"
   tenant_id         = "<tenant-id>"
   root_sync_enabled = true
 }

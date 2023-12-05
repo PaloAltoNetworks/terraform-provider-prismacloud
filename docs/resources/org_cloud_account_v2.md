@@ -234,7 +234,7 @@ resource "prismacloud_org_cloud_account_v2" "aws_organization_onboarding_example
 
 Before onboarding the aws cloud account `external_id` for account must be generated using `prismacloud_aws_cft_generator`. Otherwise, you will encounter `error 412 : external_id_empty_or_not_generated`. Refer **[AWS CFT generator Readme](/docs/data-sources/aws_cft_generator_external_id.md)** for more details.
 
-## **Example Usage 3**: Azure cloud Tenant onboarding
+## **Example Usage 3**: Azure cloud Active Directory Tenant onboarding
 
 ### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
 
@@ -248,7 +248,7 @@ data "prismacloud_account_supported_features" "prismacloud_supported_features" {
 
 ```hcl
 output "features_supported_tenant" {
-  value = data.prismacloud_account_supported_features.prismacloud_supported_features_tenant.supported_features
+  value = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features_all
 }
 ```
 
@@ -260,8 +260,7 @@ data "prismacloud_azure_template" "prismacloud_tenant_azure_template" {
   account_type    = "tenant"
   tenant_id       = "<tenant-id>"
   deployment_type = "azure"
-  subscription_id = "<subscription-id>"
-  features        = data.prismacloud_account_supported_features.prismacloud_supported_features_tenant.supported_features
+  features        = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features_all
 }
 ```
 
@@ -316,8 +315,7 @@ data "prismacloud_azure_template" "prismacloud_tenant_azure_template" {
   account_type    = "tenant"
   tenant_id       = "<tenant-id>"
   deployment_type = "azure"
-  subscription_id = "<subscription-id>"
-  features        = data.prismacloud_account_supported_features.prismacloud_supported_features_tenant.supported_features
+  features        = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features_all
 }
 
 resource "prismacloud_org_cloud_account_v2" "example1" {
@@ -384,9 +382,45 @@ resource "prismacloud_org_cloud_account_v2" "azure_account_bulk_onboarding_examp
 }
 ```
 
-### prismacloud_org_cloud_account_v2 resource block example for Azure Cloud Tenant with hierarchy_selection
+## **Example Usage 5**: Azure cloud Tenant onboarding
 
+### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
+
+```hcl
+data "prismacloud_account_supported_features" "prismacloud_supported_features" {
+  cloud_type        = "azure"
+  account_type      = "tenant"
+  deployment_type   = "azure"
+  root_sync_enabled = true   //Must be true for tenant with management groups(tenant)
+}
 ```
+
+```hcl
+output "features_supported_tenant" {
+  value = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features
+}
+```
+
+### `Step 2`: Fetch the Azure template based on required features. Refer **[Azure template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/azure_template)** for more details.
+
+```hcl
+data "prismacloud_azure_template" "prismacloud_tenant_azure_template" {
+  file_name         = "<file-name>" //Provide filename along with path to store azure template
+  account_type      = "tenant"
+  tenant_id         = "<tenant-id>"
+  deployment_type   = "azure"
+  root_sync_enabled = true
+  features          = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features
+}
+```
+
+### `Step 3`: Execute the generated terraform file <terraform-file>.tf.json in the above step in the Azure Portal to create app registration and roles. Copy the details from the script output
+
+### `Step 4`: Onboard the Azure cloud Tenant onto prisma cloud platform
+
+```hcl
+# Azure Tenant account type.
+
 resource "prismacloud_org_cloud_account_v2" "example1" {
   disable_on_destroy = true
   azure {
@@ -399,14 +433,15 @@ resource "prismacloud_org_cloud_account_v2" "example1" {
     monitor_flow_logs       = true
     service_principal_id    = "<service-principal-id>"
     tenant_id              = "<tenant-id>"
-    default_account_group_id = "<deafult-account-group-id>" //Must be provided for tenant with management groups(tenant)
+    default_account_group_id = data.prismacloud_account_group.existing_account_group_id_org.group_id //To use existing Account Group
+    //prismacloud_account_group.new_account_group.group_id, //To create new Account group //Must be provided for tenant with management groups(tenant)
     root_sync_enabled       = true     //Must be true for tenant with management groups(tenant)
     hierarchy_selection {
-            display_name = "displayNameHere"
-            node_type= "nodeTypeHere"
-            resource_id= "resurceIdHere"
-            selection_type= "selectionTypeHere"
-        }
+      display_name = "displayNameHere"
+      node_type= "nodeTypeHere"
+      resource_id= "resurceIdHere"
+      selection_type= "selectionTypeHere"
+    }
     features {
       name  = "Agentless Scanning"
       state = "enabled"
@@ -417,13 +452,89 @@ resource "prismacloud_org_cloud_account_v2" "example1" {
     }
   }
 }
+
+//Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id_org" {
+  name = "Default Account Group"
+  //Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" //Account group name to be created
+# }
+
+```
+
+### Consolidated code snippet for all the above steps
+
+```
+data "prismacloud_account_supported_features" "prismacloud_supported_features" {
+  cloud_type        = "azure"
+  account_type      = "tenant"
+  deployment_type   = "azure"
+  root_sync_enabled = true   //Must be true for tenant with management groups(tenant)
+}
+
+data "prismacloud_azure_template" "prismacloud_tenant_azure_template" {
+  file_name         = "<file-name>" //Provide filename along with path to store azure template
+  account_type      = "tenant"
+  tenant_id         = "<tenant-id>"
+  deployment_type   = "azure"
+  root_sync_enabled = true
+  features          = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features
+}
+
+resource "prismacloud_org_cloud_account_v2" "example1" {
+  disable_on_destroy = true
+  azure {
+    client_id = "<client-id>"
+    account_type = "tenant"
+    enabled     = true
+    name        = "test azure account"
+    environment_type       = "azure"
+    key                   = "<secret-id>"
+    monitor_flow_logs       = true
+    service_principal_id    = "<service-principal-id>"
+    tenant_id              = "<tenant-id>"
+    default_account_group_id = data.prismacloud_account_group.existing_account_group_id_org.group_id //To use existing Account Group
+    //prismacloud_account_group.new_account_group.group_id, //To create new Account group //Must be provided for tenant with management groups(tenant)
+    root_sync_enabled       = true     //Must be true for tenant with management groups(tenant)
+    hierarchy_selection {
+      display_name = "displayNameHere"
+      node_type= "nodeTypeHere"
+      resource_id= "resurceIdHere"
+      selection_type= "selectionTypeHere"
+    }
+    features {
+      name  = "Agentless Scanning"
+      state = "enabled"
+    }
+    features {
+      name  = "Auto Protect"
+      state = "disabled"
+    }
+  }
+}
+
+//Retrive existing account group name id
+data "prismacloud_account_group" "existing_account_group_id_org" {
+  name = "Default Account Group"
+  //Change the account group name, if you already have an account group that you wish to map the account. 
+}
+
+// To create a new account group, if required
+# resource "prismacloud_account_group" "new_account_group" {
+#     name = "MyNewAccountGroup" //Account group name to be created
+# }
+
 ```
 
 ## Prerequisite
 
 Before onboarding the azure cloud account. `azure_template` for account must be generated using `prismacloud_azure_template`. Refer **[Azure template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/azure_template)** for more details.
 
-## **Example Usage 5**: Gcp cloud organization onboarding
+## **Example Usage 6**: Gcp cloud organization onboarding
 
 ### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
 
@@ -546,7 +657,7 @@ data "prismacloud_account_group" "existing_account_group_id_org" {
 
 ```
 
-## **Example Usage 8**: For Bulk Gcp organization accounts onboarding
+## **Example Usage 7**: For Bulk Gcp organization accounts onboarding
 
 ### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 7' should be completed for each of the Organization.
 
