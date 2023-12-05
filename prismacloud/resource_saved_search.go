@@ -36,7 +36,6 @@ func resourceSavedSearch() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Saved search name",
-				ForceNew:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -82,22 +81,29 @@ func createSavedSearch(ctx context.Context, d *schema.ResourceData, meta interfa
 		CloudType:   d.Get("cloud_type").(string),
 	}
 
-	if err := history.Save(client, req); err != nil {
+	resp, err := history.Save(client, req)
+	if err != nil {
 		return diag.FromErr(err)
 	}
 
+	var resp1 history.Query
 	PollApiUntilSuccess(func() error {
-		_, err := history.Get(client, req.Id)
+		resp2, err := history.Get(client, resp.Id)
+		resp1 = resp2
 		return err
 	})
 
-	d.SetId(req.Id)
+	d.SetId(resp1.Id)
 
 	return readSavedSearch(ctx, d, meta)
 }
 
 func updateSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
+	old, new := d.GetChange("name")
+	if old.(string) != new.(string) {
+		return diag.Errorf("saved search name cannot be changed once created")
+	}
 
 	req := history.SavedSearch{
 		Id:          d.Get("search_id").(string),
@@ -108,16 +114,19 @@ func updateSavedSearch(ctx context.Context, d *schema.ResourceData, meta interfa
 		CloudType:   d.Get("cloud_type").(string),
 	}
 
-	if err := history.Save(client, req); err != nil {
+	resp, err := history.Save(client, req)
+	if err != nil {
 		return diag.FromErr(err)
 	}
 
+	var resp1 history.Query
 	PollApiUntilSuccess(func() error {
-		_, err := history.Get(client, req.Id)
+		resp2, err := history.Get(client, resp.Id)
+		resp1 = resp2
 		return err
 	})
 
-	d.SetId(req.Id)
+	d.SetId(resp1.Id)
 
 	return readSavedSearch(ctx, d, meta)
 }
@@ -132,7 +141,7 @@ func readSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface
 	}
 
 	d.Set("query", info.Query)
-	d.Set("search_id", id)
+	d.Set("search_id", info.Id)
 	d.Set("name", info.Name)
 	d.Set("description", info.Description)
 	d.Set("saved", info.Saved)

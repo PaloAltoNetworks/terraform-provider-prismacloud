@@ -43,7 +43,7 @@ The following arguments are supported:
 
 * `query` - (Required) The RQL query.
 * `search_id` - (Required) The search ID.
-* `name` - (Required) Name.
+* `name` - (Required) Name (Must be unique and is immutable once created). 
 * `description` - Description.
 * `time_range` - (Required) The RQL time range spec, as defined [below](#time-range).
 * `cloud_type` - Cloud type. Valid values: `aws`, `azure`, `gcp`, `alibaba_cloud` or `oci`.
