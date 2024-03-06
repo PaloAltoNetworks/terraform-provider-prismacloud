@@ -33,5 +33,5 @@ You must specify:
 ### Asset Groups
 
 * `account_group_ids` - A list of account group IDs associated with the collection.
-* `account_ids` - A set of cloud account IDs associated with the collection.
-* `repository_ids` - A set of repository IDs associated with the collection.
+* `account_ids` - A list of cloud account IDs associated with the collection.
+* `repository_ids` - A list of repository IDs associated with the collection.
