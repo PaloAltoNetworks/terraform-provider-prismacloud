@@ -1,3 +1,15 @@
+## 1.5.2 (Mar 6, 2024)
+
+* Removed child_group_ids attribute from prismacloud_account_group.
+
+NEW DATA SOURCES:
+
+* `prismacloud_collection` / `prismacloud_collections`
+
+NEW RESOURCES: 
+
+* `prismacloud_collection`
+
 ## 1.5.1 (Dec 5, 2023)
 
 * Documentation update for Azure tenant cloud account onboarding.
