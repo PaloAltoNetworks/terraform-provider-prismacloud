@@ -14,6 +14,7 @@ var AccountGroupNotFoundError = errors.New("account_group_not_found")         //
 var InternalError = errors.New("internal_error")                              //compliance standard requirement
 var OverlappingCIDRError = errors.New("overlapping_cidr")
 var ResourceListNotFoundError = errors.New("non_existing_resource_list_id") //resource list
+var CollectionNotFoundError = errors.New("invalid_collection_id")           //collection
 
 type PrismaCloudErrorList struct {
 	Errors     []PrismaCloudError
@@ -53,6 +54,8 @@ func (e PrismaCloudErrorList) GenericError() error {
 			return OverlappingCIDRError
 		} else if e.Errors[i].ResourceListNotFoundError() {
 			return ResourceListNotFoundError
+		} else if e.Errors[i].CollectionNotFoundError() {
+			return CollectionNotFoundError
 		}
 	}
 
@@ -96,4 +99,7 @@ func (e PrismaCloudError) AccountGroupNotFoundError() bool {
 }
 func (e PrismaCloudError) ResourceListNotFoundError() bool {
 	return strings.HasSuffix(e.Message, "non_existing_resource_list_id")
+}
+func (e PrismaCloudError) CollectionNotFoundError() bool {
+	return strings.HasSuffix(e.Message, "invalid_collection_id")
 }
