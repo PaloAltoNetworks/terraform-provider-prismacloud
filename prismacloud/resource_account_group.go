@@ -47,6 +47,14 @@ func resourceAccountGroup() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"child_group_ids": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "Child account group IDs",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"last_modified_by": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -108,11 +116,13 @@ func resourceAccountGroup() *schema.Resource {
 
 func parseAccountGroup(d *schema.ResourceData, id string) group.Group {
 	account_ids := d.Get("account_ids")
+	child_group_ids := d.Get("child_group_ids")
 	return group.Group{
-		Id:          id,
-		Name:        d.Get("name").(string),
-		Description: d.Get("description").(string),
-		AccountIds:  SetToStringSlice(account_ids.(*schema.Set)),
+		Id:            id,
+		Name:          d.Get("name").(string),
+		Description:   d.Get("description").(string),
+		AccountIds:    SetToStringSlice(account_ids.(*schema.Set)),
+		ChildGroupIds: SetToStringSlice(child_group_ids.(*schema.Set)),
 	}
 }
 
@@ -126,6 +136,9 @@ func saveAccountGroup(d *schema.ResourceData, obj group.Group) {
 	d.Set("last_modified_ts", obj.LastModifiedTs)
 	if err = d.Set("account_ids", obj.AccountIds); err != nil {
 		log.Printf("[WARN] Error setting 'account_ids' field for %q: %s", d.Id(), err)
+	}
+	if err = d.Set("child_group_ids", obj.ChildGroupIds); err != nil {
+		log.Printf("[WARN] Error setting 'child_group_ids' field for %q: %s", d.Id(), err)
 	}
 
 	/*
@@ -218,6 +231,7 @@ func deleteAccountGroup(ctx context.Context, d *schema.ResourceData, meta interf
 
 	obj := parseAccountGroup(d, id)
 	obj.AccountIds = make([]string, 0)
+	obj.ChildGroupIds = make([]string, 0)
 	if err := group.Update(client, obj); err != nil {
 		return diag.FromErr(err)
 	}
