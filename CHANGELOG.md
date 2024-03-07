@@ -1,3 +1,7 @@
+## 1.5.3 (Mar 7, 2024)
+
+* The removal of the child_group_ids attribute from prismacloud_account_group has been reverted.
+  
 ## 1.5.2 (Mar 6, 2024)
 
 * Removed child_group_ids attribute from prismacloud_account_group.
