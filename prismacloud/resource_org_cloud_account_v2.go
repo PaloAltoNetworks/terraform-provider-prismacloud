@@ -1073,13 +1073,34 @@ func readOrgV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta int
 	client := meta.(*pc.Client)
 	cloudType, id := IdToTwoStrings(d.Id())
 
-	_, err := org.Get(client, cloudType, id)
+	cloudAccount, err := org.Get(client, cloudType, id)
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
 			d.SetId("")
 			return nil
 		}
 		return diag.FromErr(err)
+	}
+
+	switch cloudType {
+	case org.TypeAwsOrg:
+		cloudAccountAws := cloudAccount.(org.AwsOrgV2)
+		if cloudAccountAws.CloudAccountResp.Deleted == true {
+			d.SetId("")
+		}
+		return nil
+	case org.TypeAzureOrg:
+		orgAccountAzure := cloudAccount.(org.AzureOrgV2)
+		if orgAccountAzure.CloudAccountAzureResp.Deleted == true {
+			d.SetId("")
+		}
+		return nil
+	case org.TypeGcpOrg:
+		orgAccountGcp := cloudAccount.(org.GcpOrgV2)
+		if orgAccountGcp.CloudAccountGcpResp.Deleted == true {
+			d.SetId("")
+		}
+		return nil
 	}
 
 	return nil
