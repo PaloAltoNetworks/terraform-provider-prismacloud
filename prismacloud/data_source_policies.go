@@ -52,6 +52,14 @@ func dataSourcePolicies() *schema.Resource {
 							Computed:    true,
 							Description: "Policy type",
 						},
+						"policy_subtypes": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "Policy subtypes",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
 						"system_default": {
 							Type:        schema.TypeBool,
 							Computed:    true,
@@ -154,6 +162,7 @@ func dataSourcePoliciesRead(ctx context.Context, d *schema.ResourceData, meta in
 			"policy_id":         i.PolicyId,
 			"name":              i.Name,
 			"policy_type":       i.PolicyType,
+			"policy_subtypes":   i.PolicySubTypes,
 			"system_default":    i.SystemDefault,
 			"description":       i.Description,
 			"severity":          i.Severity,

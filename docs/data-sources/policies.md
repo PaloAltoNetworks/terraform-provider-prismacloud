@@ -33,6 +33,7 @@ Each policy has the following attributes:
 * `policy_id` - Policy ID
 * `name` - Policy name
 * `policy_type` - Policy type
+* `policy_subtypes` - Policy subtypes
 * `system_default` - (bool) If the policy is a system default for Prisma Cloud
 * `description` - Description
 * `severity` - Severity
