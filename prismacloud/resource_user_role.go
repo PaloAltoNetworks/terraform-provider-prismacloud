@@ -7,6 +7,7 @@ import (
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/user/role"
+	"github.com/paloaltonetworks/prisma-cloud-go/user/profile"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -32,6 +33,12 @@ func resourceUserRole() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: "Role UUID",
+			},
+			"delete_associated_users": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:	 false,
+				Description: "Delete any associated users on role deletion. This is use useful when SSO is enabled",
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -280,6 +287,17 @@ func updateUserRole(ctx context.Context, d *schema.ResourceData, meta interface{
 func deleteUserRole(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()
+
+	delete_associated_users := d.Get("delete_associated_users").(bool)
+	if delete_associated_users {
+		associated_users := SetToStringSlice(d.Get("associated_users").(*schema.Set))
+		for _, user := range associated_users {
+			log.Printf("[DEBUG] Purging user %s", user)
+			if err := profile.Delete(client, user, profile.TypeUserAccount); err != nil {
+				return diag.FromErr(err)
+			}
+		}
+	}
 
 	err := role.Delete(client, id)
 	if err != nil {
