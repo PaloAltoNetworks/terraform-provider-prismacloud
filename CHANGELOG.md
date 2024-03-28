@@ -1,3 +1,7 @@
+## 1.5.4 (Mar 28, 2024)
+
+* Added support for policy subtypes in prismacloud_policies.
+
 ## 1.5.3 (Mar 7, 2024)
 
 * The removal of the child_group_ids attribute from prismacloud_account_group has been reverted.
