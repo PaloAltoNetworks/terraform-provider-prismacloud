@@ -87,9 +87,10 @@ resource "prismacloud_policy" "example" {
     rule_type = "Config"
     parameters = {
       savedSearch = true
-      withIac     = true
+      withIac     = false
     }
-    criteria = file("policies/aks/aks001.rql")
+    # Since search_id is not computed, make sure to use the id attribute so that terraform will track the dependency
+    criteria = prismacloud_saved_search.example.id
   }
 }
 
@@ -103,6 +104,9 @@ resource "prismacloud_saved_search" "example" {
       unit   = prismacloud_rql_search.example.time_range.0.relative.0.unit
       amount = prismacloud_rql_search.example.time_range.0.relative.0.amount
     }
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
