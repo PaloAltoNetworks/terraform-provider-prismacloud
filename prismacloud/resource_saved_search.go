@@ -39,7 +39,7 @@ func resourceSavedSearch() *schema.Resource {
 				// Cannot be updated since the API copies the search and does not delete the original.
 				// ForceNew avoids cyclical issues and behaves more predictably for users (copy & delete).
 				// Assumes user sets lifecycle create_before_destroy to true
-				ForceNew:    true,
+				ForceNew: true,
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -127,7 +127,7 @@ func updateSavedSearch(ctx context.Context, d *schema.ResourceData, meta interfa
 		return err
 	})
 	// Any changes that result in a new Id, such as updating name, should force new
-	d.SetId(resp1.Id)  // noop
+	d.SetId(resp1.Id) // noop
 
 	return readSavedSearch(ctx, d, meta)
 }
