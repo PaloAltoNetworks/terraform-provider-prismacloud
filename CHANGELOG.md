@@ -1,3 +1,7 @@
+## 1.5.5 (May 13, 2024)
+
+* Bug fix for `prismacloud_cloud_account_v2` that ensures Terraform accurately recognizes and re-onboards cloud accounts deleted externally.
+
 ## 1.5.4 (Mar 28, 2024)
 
 * Added support for policy subtypes in prismacloud_policies.
