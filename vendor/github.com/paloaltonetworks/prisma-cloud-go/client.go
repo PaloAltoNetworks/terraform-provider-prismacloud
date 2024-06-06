@@ -331,7 +331,7 @@ func (c *Client) communicate(method string, suffix []string, query, data interfa
 		}
 		return body, InvalidCredentialsError
 	case http.StatusTooManyRequests:
-		delay := 2 + c.Retries
+		delay := 1 << c.Retries
 		if delay <= c.RetryMaxDelay && delay > 0 && c.MaxRetries > 0 {
 			time.Sleep(time.Duration(delay) * time.Second)
 			c.MaxRetries = c.MaxRetries - 1
