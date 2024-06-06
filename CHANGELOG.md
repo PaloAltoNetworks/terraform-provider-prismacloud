@@ -1,3 +1,7 @@
+## 1.5.6 (June 6, 2024)
+
+* Bug fix for rate limit issue.
+
 ## 1.5.5 (May 13, 2024)
 
 * Bug fix for `prismacloud_cloud_account_v2` that ensures Terraform accurately recognizes and re-onboards cloud accounts deleted externally.
