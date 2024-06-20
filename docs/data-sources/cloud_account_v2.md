@@ -89,7 +89,7 @@ The cloud type given above determines which of the attributes are populated:
 * `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `compression_enabled` - (bool) Enable or disable compressed network flow log generation.
 * `credentials` - Content of the JSON credentials file.
-* `data_flow_enabled_project` - Project ID where the Dataflow API is enabled .
+* `dataflow_enabled_project` - Project ID where the Dataflow API is enabled .
 * `features` - Features applicable for gcp account, defined [below](#features).
 * `flow_log_storage_bucket` - Cloud Storage Bucket name that is used store the flow logs.
 * `protection_mode` - Protection mode of account.

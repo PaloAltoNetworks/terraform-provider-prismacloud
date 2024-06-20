@@ -107,7 +107,7 @@ The type of cloud account to add.  You need to specify one and only one of these
 * `group_ids` - (Required) List of account IDs to which you are assigning this account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `compression_enabled` - (Optional, bool) Enable flow log compression.
-* `data_flow_enabled_project` - (Optional) GCP project for flow log compression.
+* `dataflow_enabled_project` - (Optional) GCP project for flow log compression.
 * `flow_log_storage_bucket` - (Optional) GCP Flow logs storage bucket.
 * `credentials_json` - (Required) Content of the JSON credentials file (read in using `file()`).
 * `account_type` - (Optional) Defaults to "account" if not specified

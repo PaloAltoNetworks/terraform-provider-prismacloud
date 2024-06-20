@@ -143,7 +143,7 @@ and will not detect any drift on it irrespective of the value provided in terraf
 * `group_ids` - List of account IDs to which you are assigning this account.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `compression_enabled` - (Optional, bool) Enable flow log compression.
-* `data_flow_enabled_project` - (Optional) GCP project for flow log compression.
+* `dataflow_enabled_project` - (Optional) GCP project for flow log compression.
 * `flow_log_storage_bucket` - (Optional) GCP Flow logs storage bucket.
 * `credentials_json` - (Required) Content of the JSON credentials file (read in using `file()`).
 * `account_type` - (Optional) Account type. Defaults to `organization` if not specified.
