@@ -61,7 +61,7 @@ The cloud type given above determines which of the attributes are populated:
 * `group_ids` - List of account IDs to which you are assigning this account.
 * `name` - Name to be used for the account on the Prisma Cloud platform
 * `compression_enabled` - (bool) Enable flow log compression.
-* `data_flow_enabled_project` - GCP project for flow log compression.
+* `dataflow_enabled_project` - GCP project for flow log compression.
 * `flow_log_storage_bucket` - GCP Flow logs storage bucket.
 * `credentials_json` - Content of the JSON credentials file.
 
