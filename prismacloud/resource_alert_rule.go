@@ -216,6 +216,47 @@ func resourceAlertRule() *schema.Resource {
 								},
 							},
 						},
+						"alert_rule_policy_filter": {
+							Type:        schema.TypeList,
+							Optional:    true,
+							Description: "Model for Alert Rule Policy Filter",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"cloud_type": {
+										Type:        schema.TypeSet,
+										Optional:    true,
+										Description: "Cloud Type Filter",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"policy_compliance_standard": {
+										Type:        schema.TypeSet,
+										Optional:    true,
+										Description: "Compliance Standard Filter",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"policy_label": {
+										Type:        schema.TypeSet,
+										Optional:    true,
+										Description: "Policy Label Filter",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"policy_severity": {
+										Type:        schema.TypeSet,
+										Optional:    true,
+										Description: "Cloud Type Filter",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -413,6 +454,29 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 		reslistEle = resourceList[0]
 	}
 
+	var alertRulePolicyFilter []rule.AlertRulePolicyFilter
+
+	if arpf := tgt["alert_rule_policy_filter"]; arpf != nil && len(arpf.([]interface{})) > 0 {
+		arfList := arpf.([]interface{})
+		if arfList != nil {
+			if arfList[0] != nil {
+				afmap := arfList[0].(map[string]interface{})
+				alertRulePolicyFilter = make([]rule.AlertRulePolicyFilter, 0, len(arfList))
+				alertRulePolicyFilter = append(alertRulePolicyFilter, rule.AlertRulePolicyFilter{
+					CloudType:                SetToStringSlice(afmap["cloud_type"].(*schema.Set)),
+					PolicyComplianceStandard: SetToStringSlice(afmap["policy_compliance_standard"].(*schema.Set)),
+					PolicyLabel:              SetToStringSlice(afmap["policy_label"].(*schema.Set)),
+					PolicySeverity:           SetToStringSlice(afmap["policy_severity"].(*schema.Set)),
+				})
+			}
+		}
+	}
+
+	var arpfEle rule.AlertRulePolicyFilter
+	if len(alertRulePolicyFilter) > 0 {
+		arpfEle = alertRulePolicyFilter[0]
+	}
+
 	ans := rule.Rule{
 		PolicyScanConfigId: id,
 		Name:               d.Get("name").(string),
@@ -424,11 +488,12 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 		ExcludedPolicies:   SetToStringSlice(d.Get("excluded_policies").(*schema.Set)),
 		Deleted:            d.Get("deleted").(bool),
 		Target: rule.Target{
-			AccountGroups:    accountGroups,
-			ExcludedAccounts: excludedAccounts,
-			Regions:          regions,
-			Tags:             tags,
-			ResourceList:     reslistEle,
+			AccountGroups:         accountGroups,
+			ExcludedAccounts:      excludedAccounts,
+			Regions:               regions,
+			Tags:                  tags,
+			ResourceList:          reslistEle,
+			AlertRulePolicyFilter: arpfEle,
 		},
 		AllowAutoRemediate:  d.Get("allow_auto_remediate").(bool),
 		DelayNotificationMs: d.Get("delay_notification_ms").(int),
@@ -480,13 +545,11 @@ func parseAlertRule(d *schema.ResourceData, id string) rule.Rule {
 
 		}
 	}
-
 	return ans
 }
 
 func saveAlertRule(d *schema.ResourceData, o rule.Rule) {
 	var err error
-
 	d.Set("policy_scan_config_id", o.PolicyScanConfigId)
 	d.Set("name", o.Name)
 	d.Set("description", o.Description)
@@ -540,6 +603,15 @@ func saveAlertRule(d *schema.ResourceData, o rule.Rule) {
 		"compute_access_group_ids": o.Target.ResourceList.IncludedResourceLists,
 	})
 	tgt["resource_list"] = rl
+
+	arpf := make([]interface{}, 0, 1)
+	arpf = append(arpf, map[string]interface{}{
+		"cloud_type":                 o.Target.AlertRulePolicyFilter.CloudType,
+		"policy_compliance_standard": o.Target.AlertRulePolicyFilter.PolicyComplianceStandard,
+		"policy_label":               o.Target.AlertRulePolicyFilter.PolicyLabel,
+		"policy_severity":            o.Target.AlertRulePolicyFilter.PolicySeverity,
+	})
+	tgt["alert_rule_policy_filter"] = arpf
 
 	if err = d.Set("target", []interface{}{tgt}); err != nil {
 		log.Printf("[WARN] Error setting 'target' for %q: %s", d.Id(), err)
