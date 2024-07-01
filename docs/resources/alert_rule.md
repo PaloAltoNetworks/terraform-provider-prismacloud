@@ -10,8 +10,27 @@ Manage an alert rule.
 
 ```hcl
 resource "prismacloud_alert_rule" "example" {
-    name = "My Alert Rule"
-    description = "Made by Terraform"
+  name = "My Alert Rule"
+  description = "Made by Terraform"
+}
+```
+
+## Example Usage (Alert rule with policy filter)
+
+```hcl
+ resource "prismacloud_alert_rule" "example" {
+  name           = "My Alert Rule"
+  description    = "Made by Terraform"
+  enabled        = true
+  target {
+    account_groups = ["accountGroupId"]
+    alert_rule_policy_filter {
+      cloud_type                 = ["cloudType"]
+      policy_severity            = ["severity"]
+      policy_label               = ["policyLabel"]
+      policy_compliance_standard = ["complianceStandardName"]
+    }
+  }
 }
 ```
 
@@ -41,12 +60,20 @@ There should be one and only one target block:
 * `excluded_accounts` - List of excluded accounts
 * `regions` - List of regions
 * `tags` - List of tag models, as defined [below](#tags)
+* `alert_rule_policy_filter` - Model for Alert Rule Policy Filter, as defined [below](#alert_rule_policy_filter)
 * `resource_list` - (Required for Compute Access Groups) Model for holding the resource list for compute access groups [below](#compute-access-group-ids)
 
 ### Tags
 
 * `key` - Resource tag target
 * `values` - List of values for resource tag key
+
+### Alert Rule Policy Filter
+
+* `cloud_type` - Cloud Type. Valid values are `aws`, `alibaba_cloud`, `azure`, `gcp`, `ibm`, `oci`.
+* `policy_compliance_standard` - Compliance Standard name.
+* `policy_label` - Policy Label.
+* `policy_severity` - Policy Severity. Valid values are `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`, `INFORMATIONAL`.
 
 
 ### Compute Access Group IDs

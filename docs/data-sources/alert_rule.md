@@ -10,7 +10,7 @@ Retrieve information on a specific alert rule.
 
 ```hcl
 data "prismacloud_alert_rule" "example" {
-    name = "My Alert Rule"
+  name = "My Alert Rule"
 }
 ```
 
@@ -51,12 +51,20 @@ You must specify at least one of the following:
 * `excluded_accounts` - List of excluded accounts
 * `regions` - List of regions
 * `tags` - List of TargetTag objects, as defined [below](#tags)
+* `alert_rule_policy_filter` - Model for Alert Rule Policy Filter, as defined [below](#alert_rule_policy_filter)
 * `resource_list` - Model for holding the resource list for compute access groups [below](#compute-access-group-ids)
 
 ### Tags
 
 * `key` - Resource tag target
 * `values` - List of values for resource tag key
+
+### Alert Rule Policy Filter
+
+* `cloud_type` - Cloud Type.
+* `policy_compliance_standard` - Compliance Standard name.
+* `policy_label` - Policy Label.
+* `policy_severity` - Policy Severity.
 
 ### Compute Access Group IDs
 

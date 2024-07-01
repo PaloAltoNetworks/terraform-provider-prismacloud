@@ -207,6 +207,47 @@ func dataSourceAlertRule() *schema.Resource {
 								},
 							},
 						},
+						"alert_rule_policy_filter": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "Model for Alert Rule Policy Filter",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"cloud_type": {
+										Type:        schema.TypeSet,
+										Computed:    true,
+										Description: "Cloud Type Filter",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"policy_compliance_standard": {
+										Type:        schema.TypeSet,
+										Computed:    true,
+										Description: "Compliance Standard Filter",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"policy_label": {
+										Type:        schema.TypeSet,
+										Computed:    true,
+										Description: "Policy Label Filter",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+									"policy_severity": {
+										Type:        schema.TypeSet,
+										Computed:    true,
+										Description: "Cloud Type Filter",
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
