@@ -1,3 +1,9 @@
+## 1.5.7 (July 19, 2024)
+
+* Added support for `alert_rule_policy_filter` in `prismacloud_alert_rule`.
+* Addition of a flag to destroy a `prismacloud_user_role` by deleting all associated users.
+* Documentation fix for `prismacloud_cloud_account_v2`, `prismacloud_org_cloud_account_v2`, `prismacloud_cloud_account` and `prismacloud_org_cloud_account`.
+
 ## 1.5.6 (June 6, 2024)
 
 * Bug fix for rate limit issue.
