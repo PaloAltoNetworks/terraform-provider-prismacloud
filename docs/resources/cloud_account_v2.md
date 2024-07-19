@@ -773,7 +773,7 @@ The type of cloud account to add.
 * `default_account_group_id` - (Optional) *Applicable only for accountType: **masterServiceAccount**.* This is the Default Account Group ID for the Gcp masterServiceAccount.
 * `compression_enabled` - (Optional, bool) Enable or disable compressed network flow log generation. Default value: `false`.
 * `credentials` - (Required) Content of the JSON credentials file.
-* `data_flow_enabled_project` - (Optional) Project ID where the Dataflow API is enabled. Required if `compressionEnabled` is set to `true` and if the `accountType` is `organization`. Optional if the `accountType` is `account` or `masterServiceAccount`.
+* `dataflow_enabled_project` - (Optional) Project ID where the Dataflow API is enabled. Required if `compressionEnabled` is set to `true` and if the `accountType` is `organization`. Optional if the `accountType` is `account` or `masterServiceAccount`.
 * `name` - (Required) Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `flow_log_storage_bucket` - (Optional) Cloud Storage Bucket name that is used store the flow logs.
 * `project_id` - (Optional) Gcp Project ID.
@@ -853,7 +853,7 @@ The type of cloud account to add.
 * `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
 * `compression_enabled` - (bool) Enable or disable compressed network flow log generation.
 * `credentials` - Content of the JSON credentials file.
-* `data_flow_enabled_project` - Project ID where the Dataflow API is enabled .
+* `dataflow_enabled_project` - Project ID where the Dataflow API is enabled .
 * `features` - Features applicable for gcp account, defined [below](#features).
 * `flow_log_storage_bucket` - Cloud Storage Bucket name that is used store the flow logs.
 * `protection_mode` - Protection mode of account.

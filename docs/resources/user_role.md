@@ -61,6 +61,7 @@ resource "prismacloud_user_role" "example" {
 * `resource_list_ids` - (Optional) List of resource list IDs.
 * `code_repository_ids` - (Optional) List of code repository IDs.
 * `restrict_dismissal_access` - (Optional, bool) Restrict dismissal access.
+* `delete_associated_users` - (Optional, bool) Delete associated users (`Note`: When the `delete_associated_users` flag is set to true, **all associated users are deleted** before the user role is deleted when the resource is destroyed).
 * `additional_attributes` - (Optional) An Additional attributes spec, as defined [below](#additional-attributes).
 
 ## Additional Attributes
