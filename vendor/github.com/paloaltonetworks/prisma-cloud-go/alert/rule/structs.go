@@ -6,7 +6,7 @@ type Rule struct {
 	Description          string               `json:"description"`
 	Enabled              bool                 `json:"enabled"`
 	ScanAll              bool                 `json:"scanAll"`
-	Policies             []string             `json:"policies"`
+	Policies             []string             `json:"policies,omitempty"`
 	PolicyLabels         []string             `json:"policyLabels"`
 	ExcludedPolicies     []string             `json:"excludedPolicies"`
 	Target               Target               `json:"target"`
@@ -27,11 +27,12 @@ type Rule struct {
 }
 
 type Target struct {
-	AccountGroups    []string     `json:"accountGroups"`
-	ExcludedAccounts []string     `json:"excludedAccounts,omitempty"`
-	Regions          []string     `json:"regions,omitempty"`
-	Tags             []Tag        `json:"tags,omitempty"`
-	ResourceList     ResourceList `json:"includedResourceLists,omitempty"`
+	AccountGroups         []string              `json:"accountGroups"`
+	ExcludedAccounts      []string              `json:"excludedAccounts,omitempty"`
+	Regions               []string              `json:"regions,omitempty"`
+	Tags                  []Tag                 `json:"tags,omitempty"`
+	ResourceList          ResourceList          `json:"includedResourceLists,omitempty"`
+	AlertRulePolicyFilter AlertRulePolicyFilter `json:"alertRulePolicyFilter,omitempty"`
 }
 
 type Tag struct {
@@ -41,6 +42,13 @@ type Tag struct {
 
 type ResourceList struct {
 	IncludedResourceLists []string `json:"computeAccessGroupIds,omitempty"`
+}
+
+type AlertRulePolicyFilter struct {
+	CloudType                []string `json:"cloud.type,omitempty"`
+	PolicyComplianceStandard []string `json:"policy.complianceStandard,omitempty"`
+	PolicyLabel              []string `json:"policy.label,omitempty"`
+	PolicySeverity           []string `json:"policy.severity,omitempty"`
 }
 
 type NotificationConfig struct {
