@@ -36,6 +36,10 @@ func resourceSavedSearch() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Saved search name",
+				// Cannot be updated since the API copies the search and does not delete the original.
+				// ForceNew avoids cyclical issues and behaves more predictably for users (copy & delete).
+				// Assumes user sets lifecycle create_before_destroy to true
+				ForceNew: true,
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -92,7 +96,6 @@ func createSavedSearch(ctx context.Context, d *schema.ResourceData, meta interfa
 		resp1 = resp2
 		return err
 	})
-
 	d.SetId(resp1.Id)
 
 	return readSavedSearch(ctx, d, meta)
@@ -100,13 +103,11 @@ func createSavedSearch(ctx context.Context, d *schema.ResourceData, meta interfa
 
 func updateSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
-	old, new := d.GetChange("name")
-	if old.(string) != new.(string) {
-		return diag.Errorf("saved search name is immutable")
-	}
-
+	// Note, search_id is ignored for updates
+	id := d.Id()
 	req := history.SavedSearch{
-		Id:          d.Get("search_id").(string),
+		Id:          id,
+		Saved:       true,
 		Name:        d.Get("name").(string),
 		Query:       d.Get("query").(string),
 		Description: d.Get("description").(string),
@@ -125,8 +126,8 @@ func updateSavedSearch(ctx context.Context, d *schema.ResourceData, meta interfa
 		resp1 = resp2
 		return err
 	})
-
-	d.SetId(resp1.Id)
+	// Any changes that result in a new Id, such as updating name, should force new
+	d.SetId(resp1.Id) // noop
 
 	return readSavedSearch(ctx, d, meta)
 }

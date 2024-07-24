@@ -302,8 +302,8 @@ func dataSourcePolicy() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"operation": {
-								  		Type:     schema.TypeString,
-								  		Computed: true,
+										Type:     schema.TypeString,
+										Computed: true,
 									},
 									"payload": {
 										Type:     schema.TypeString,

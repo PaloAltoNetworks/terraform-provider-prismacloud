@@ -22,6 +22,10 @@ resource "prismacloud_saved_search" "example" {
             amount = prismacloud_rql_search.x.time_range.0.relative.0.amount
         }
     }
+    lifecycle {
+        # Dependent resources need to be updated before destroy happens
+        create_before_destroy = true
+    }
 }
 
 resource "prismacloud_rql_search" "x" {

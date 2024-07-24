@@ -71,7 +71,7 @@ func updateLoginIpStatus(ctx context.Context, d *schema.ResourceData, meta inter
 	return readLoginIpStatus(ctx, d, meta)
 }
 
-//done
+// done
 func readLoginIpStatus(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 
@@ -85,7 +85,7 @@ func readLoginIpStatus(ctx context.Context, d *schema.ResourceData, meta interfa
 	return nil
 }
 
-//done
+// done
 func deleteLoginIpStatus(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	return nil
 }
