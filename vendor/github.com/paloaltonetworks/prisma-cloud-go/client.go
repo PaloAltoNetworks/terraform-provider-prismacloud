@@ -5,12 +5,14 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -29,7 +31,8 @@ type Client struct {
 	DisableReconnect        bool            `json:"disable_reconnect"`
 	MaxRetries              int             `json:"max_retries"`
 	RetryMaxDelay           int             `json:"retry_max_delay"`
-	Retries                 int             `json:"retries"`
+	Retries                 sync.Map        `json:"retries"`
+	RetryType               string          `json:"retry_type"`
 
 	// Advanced user config.
 	Transport *http.Transport `json:"-"`
@@ -42,6 +45,11 @@ type Client struct {
 	pcAuthFileContent []byte
 	pcResponses       []*http.Response
 	pcResponseIndex   int
+}
+
+// Method to generate a UUID for a resource
+func generateUUID() string {
+	return uuid.New().String()
 }
 
 /*
@@ -181,13 +189,14 @@ func (c *Client) Authenticate() error {
 	   always works.  So just do a full login again if we have the
 	   username and password, falling back to a token refresh.
 	*/
+	resourceUUID := generateUUID()
 	if c.Username != "" && c.Password != "" {
 		c.Log(LogAction, "(auth) retrieving jwt")
 		req := initial{c.Username, c.Password, c.CustomerName}
-		_, err = c.communicate("POST", []string{"login"}, nil, &req, &ans, false)
+		_, err = c.communicate("POST", []string{"login"}, nil, &req, &ans, false, resourceUUID)
 	} else if c.JsonWebToken != "" {
 		c.Log(LogAction, "(auth) refreshing jwt")
-		_, err = c.communicate("GET", []string{"auth_token", "extend"}, nil, nil, &ans, false)
+		_, err = c.communicate("GET", []string{"auth_token", "extend"}, nil, nil, &ans, false, "")
 	} else {
 		return fmt.Errorf("no authentication params given")
 	}
@@ -208,7 +217,8 @@ will unmarshal the returned JSON into it, and you can safely discard the
 slice of bytes returned.
 */
 func (c *Client) Communicate(method string, suffix []string, query, data interface{}, ans interface{}) ([]byte, error) {
-	return c.communicate(method, suffix, query, data, ans, true)
+	resourceUUID := generateUUID()
+	return c.communicate(method, suffix, query, data, ans, true, resourceUUID)
 }
 
 // Log logs a message to the user if the appropriate style is enabled.
@@ -260,9 +270,12 @@ func (c *Client) logSendReceive(logFlag string, code int, b []byte) {
 	log.Printf("%s\n%s", desc, scrubSensitiveData(b2))
 }
 
-func (c *Client) communicate(method string, suffix []string, query, data interface{}, ans interface{}, allowRetry bool) ([]byte, error) {
+func (c *Client) communicate(method string, suffix []string, query, data interface{}, ans interface{}, allowRetry bool, resourceUUID string) ([]byte, error) {
 	var err error
 	var buf bytes.Buffer
+
+	retriesInterface, _ := c.Retries.LoadOrStore(resourceUUID, 0)
+	retries := retriesInterface.(int)
 
 	if data != nil {
 		b, err := json.Marshal(data)
@@ -318,25 +331,36 @@ func (c *Client) communicate(method string, suffix []string, query, data interfa
 
 	requestId := "X-Redlock-Request-Id"
 	traceId := "Trace-Id"
-	log.Printf("X-Redlock-Request-Id : %v Trace-Id : %v for path: %s terraform-request-identifier : %v", resp.Header[requestId], resp.Header[traceId], path.String(), uuidPC)
+	log.Printf("X-Redlock-Request-Id : %v Trace-Id : %v Status-Code: %d for path: %s terraform-request-identifier : %v", resp.Header[requestId], resp.Header[traceId], resp.StatusCode, path.String(), uuidPC)
 
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusNoContent, http.StatusCreated:
+		c.Retries.Delete(resourceUUID)
 		// Alert rule deletion returns StatusNoContent
 	case http.StatusUnauthorized:
 		if !c.DisableReconnect && allowRetry {
+			log.Println("Trying to re-authenticate")
 			if err = c.Authenticate(); err == nil {
-				return c.communicate(method, suffix, query, data, ans, false)
+				log.Println("Re-authentication successfull")
+				return c.communicate(method, suffix, query, data, ans, false, resourceUUID)
 			}
 		}
 		return body, InvalidCredentialsError
 	case http.StatusTooManyRequests:
-		delay := 1 << c.Retries
-		if delay <= c.RetryMaxDelay && delay > 0 && c.MaxRetries > 0 {
+		var delay int
+		retries++
+		if c.RetryType == "exponential_backoff" {
+			delay = 1 << retries
+		} else if c.RetryType == "linear_backoff" {
+			delay = 1 + retries
+		}
+
+		if delay <= c.RetryMaxDelay && delay > 0 && retries <= c.MaxRetries {
+			log.Printf("API received too many requests, retrying")
 			time.Sleep(time.Duration(delay) * time.Second)
 			c.MaxRetries = c.MaxRetries - 1
-			c.Retries = c.Retries + 1
-			return c.communicate(method, suffix, query, data, ans, false)
+			c.Retries.Store(resourceUUID, retries)
+			return c.communicate(method, suffix, query, data, ans, true, resourceUUID)
 		} else if delay > c.RetryMaxDelay || c.MaxRetries <= 0 {
 			return nil, fmt.Errorf("max_retries or retry_max_delay insufficient")
 		}

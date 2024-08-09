@@ -105,7 +105,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/uuid v1.3.0
+# github.com/google/uuid v1.6.0
 ## explicit
 github.com/google/uuid
 # github.com/googleapis/enterprise-certificate-proxy v0.1.0
@@ -244,7 +244,7 @@ github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 ## explicit
 github.com/oklog/run
-# github.com/paloaltonetworks/prisma-cloud-go v0.8.1
+# github.com/paloaltonetworks/prisma-cloud-go v0.8.2
 ## explicit; go 1.13
 github.com/paloaltonetworks/prisma-cloud-go
 github.com/paloaltonetworks/prisma-cloud-go/alert
