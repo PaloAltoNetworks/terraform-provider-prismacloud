@@ -40,6 +40,7 @@ The following arguments are supported:
 * `json_config_file` - (Env: `PRISMACLOUD_JSON_CONFIG_FILE`) Retrieve the provider configuration from this JSON file.  When retrieving params from the JSON configuration file, the param names are the same as the provider params, except that underscores in provider params become hyphens in the JSON config file.  For example, the provider param `json_web_token` is `json-web-token` in the config file.
 * `max_retries` - (Optional) Maximum number of times an API call is retried when requests are throttled (default: `5`).  
 * `retry_max_delay` - (Optional) Maximum time the API calls are retried when creating or updating resources (default: `30`).
+* `retry_type` - (Optional) Specifies the type of backoff strategy for handling retries, allowing users to customize the delay between retry attempts. Valid values are `exponential_backoff` and `linear_backoff` (default: `exponential_backoff`).
 
 ## Support
 
