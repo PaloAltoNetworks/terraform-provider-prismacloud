@@ -1,3 +1,8 @@
+## 1.5.8 (Aug 9, 2024)
+
+* Added support for `retry_type` to specify the backoff strategy for handling retries.
+* Bug fix in rate limit handling.
+
 ## 1.5.7 (July 19, 2024)
 
 * Added support for `alert_rule_policy_filter` in `prismacloud_alert_rule`.
