@@ -101,10 +101,12 @@ func Provider() *schema.Provider {
 				Default:     30,
 				Description: "Maximum delay for exponential backoff strategy",
 			},
-			"retries": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Description: "Retries",
+			"retry_type": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				Description:  "Retry type",
+				Default:      "exponential_backoff",
+				ValidateFunc: validation.StringInSlice([]string{"exponential_backoff", "linear_backoff"}, false),
 			},
 		},
 
@@ -242,7 +244,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		Logging:                 logSetting,
 		MaxRetries:              d.Get("max_retries").(int),
 		RetryMaxDelay:           d.Get("retry_max_delay").(int),
-		Retries:                 0,
+		RetryType:               d.Get("retry_type").(string),
 	}
 
 	err := con.Initialize(d.Get("json_config_file").(string))
