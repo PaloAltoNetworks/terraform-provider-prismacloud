@@ -934,5 +934,5 @@ The type of cloud account to add.
 Resources can be imported using the cloud type and the ID:
 
 ```
-$ terraform import prismacloud_cloud_account_v2.example accountIdHere
+$ terraform import prismacloud_cloud_account_v2.example cloudType:accountId
 ```
