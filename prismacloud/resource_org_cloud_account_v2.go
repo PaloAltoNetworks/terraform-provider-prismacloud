@@ -1087,20 +1087,23 @@ func readOrgV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta int
 		cloudAccountAws := cloudAccount.(org.AwsOrgV2)
 		if cloudAccountAws.CloudAccountResp.Deleted == true {
 			d.SetId("")
+			return nil
 		}
-		return nil
 	case org.TypeAzureOrg:
 		orgAccountAzure := cloudAccount.(org.AzureOrgV2)
 		if orgAccountAzure.CloudAccountAzureResp.Deleted == true {
 			d.SetId("")
+			return nil
 		}
-		return nil
 	case org.TypeGcpOrg:
 		orgAccountGcp := cloudAccount.(org.GcpOrgV2)
 		if orgAccountGcp.CloudAccountGcpResp.Deleted == true {
 			d.SetId("")
+			return nil
 		}
-		return nil
+	}
+	if _, ok := d.GetOk(cloudType); !ok {
+		saveOrgV2CloudAccount(d, cloudType, cloudAccount)
 	}
 
 	return nil

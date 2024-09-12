@@ -1278,26 +1278,30 @@ func readV2CloudAccount(ctx context.Context, d *schema.ResourceData, meta interf
 		cloudAccountAws := cloudAccount.(accountv2.AwsV2)
 		if cloudAccountAws.CloudAccountResp.Deleted == true {
 			d.SetId("")
+			return nil
 		}
-		return nil
 	case accountv2.TypeAzure:
 		cloudAccountAzure := cloudAccount.(accountv2.AzureV2)
 		if cloudAccountAzure.CloudAccountAzureResp.Deleted == true {
 			d.SetId("")
+			return nil
 		}
-		return nil
 	case accountv2.TypeGcp:
 		cloudAccountGcp := cloudAccount.(accountv2.GcpV2)
 		if cloudAccountGcp.CloudAccountGcpResp.Deleted == true {
 			d.SetId("")
+			return nil
 		}
-		return nil
 	case accountv2.TypeIbm:
 		cloudAccountIbm := cloudAccount.(accountv2.IbmV2)
 		if cloudAccountIbm.CloudAccountIbmResp.Deleted == true {
 			d.SetId("")
+			return nil
 		}
-		return nil
+	}
+
+	if _, ok := d.GetOk(cloudType); !ok {
+		saveV2CloudAccount(d, cloudType, cloudAccount)
 	}
 
 	return nil
