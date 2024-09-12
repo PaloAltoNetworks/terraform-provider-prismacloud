@@ -1,3 +1,7 @@
+## 1.5.9 (Sep 12, 2024)
+
+* Bug fixes in `prismacloud_cloud_account_v2` and `prismacloud_org_cloud_account_v2`
+
 ## 1.5.8 (Aug 9, 2024)
 
 * Added support for `retry_type` to specify the backoff strategy for handling retries.
