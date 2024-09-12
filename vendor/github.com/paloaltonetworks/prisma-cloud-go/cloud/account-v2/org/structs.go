@@ -159,7 +159,6 @@ type AzureOrgV2 struct {
 
 type AzureOrg struct {
 	OrgAccountAzure       OrgAccountAzure      `json:"cloudAccount"`
-	Enabled               bool                 `json:"enabled"`
 	ClientId              string               `json:"clientId"`
 	HierarchySelection    []HierarchySelection `json:"hierarchySelection"`
 	DefaultAccountGroupId string               `json:"defaultAccountGroupId"`

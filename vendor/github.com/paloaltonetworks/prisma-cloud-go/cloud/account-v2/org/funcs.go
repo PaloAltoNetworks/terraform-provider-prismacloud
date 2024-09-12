@@ -221,7 +221,7 @@ func createUpdate(exists bool, c pc.PrismaCloudClient, account interface{}) erro
 	case AzureOrg:
 		logMsg.WriteString("azure")
 		cloudType = TypeAzureOrg
-		id = v.OrgAccountAzure.AccountId
+		id = v.TenantId
 	case GcpOrg:
 		logMsg.WriteString("gcp")
 		cloudType = TypeGcpOrg
