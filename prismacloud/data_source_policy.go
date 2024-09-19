@@ -37,7 +37,7 @@ func dataSourcePolicy() *schema.Resource {
 				Description: "Policy type",
 			},
 			"policy_subtypes": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Computed:    true,
 				Description: "Policy subtypes",
 				Elem: &schema.Schema{

@@ -151,7 +151,7 @@ resource "prismacloud_policy" "Policy" {
 ## Argument Reference
 
 * `name` - (Required) Policy name
-* `policy_type` - (Required) Policy type. Valid values are `config`, `audit_event`, `iam`, `network`, `data`, or `anomaly`
+* `policy_type` - (Required) Policy type. Valid values are `config`, `audit_event`, `iam`, `network`, `data`, `anomaly` or `attack_path`
 * `policy_subtypes` - Policy subtypes. Valid values are `build`, `run`
 * `description` - Description 
 * `severity` - Severity. Valid values are `low` (default), `medium`, `high`,`informational`, or `critical`.
