@@ -493,7 +493,7 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	_, _, searchId := parseRqlSearchId(d.Id())
-	query := d.Get("query").(string) 
+	query := d.Get("query").(string)
 	searchType := d.Get("search_type").(string)
 	limit := d.Get("limit").(int)
 	tr := ParseTimeRange(ResourceDataInterfaceMap(d, "time_range"))

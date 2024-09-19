@@ -52,6 +52,8 @@ $ $GOPATH/bin/terraform-provider-prismacloud
 ...
 ```
 
+Since [vendoring](https://go.dev/ref/mod#vendoring) is used, make sure to execute `go mod vendor` as needed. If the `vendor` directory is not up-to-date, the `make build` command may return error messages containing `import lookup disabled by -mod=vendor`.
+
 To test the provider, you can run `make test`.
 
 ```sh
