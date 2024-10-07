@@ -1,3 +1,8 @@
+## 1.6.0 (Oct 7, 2024)
+
+* Added support for attack path policy in `prismacloud_policy`.
+* Added support for asset search in `prismacloud_rql_search`
+
 ## 1.5.9 (Sep 12, 2024)
 
 * Bug fixes in `prismacloud_cloud_account_v2` and `prismacloud_org_cloud_account_v2`
