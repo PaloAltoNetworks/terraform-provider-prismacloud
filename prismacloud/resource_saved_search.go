@@ -54,6 +54,7 @@ func resourceSavedSearch() *schema.Resource {
 						"gcp",
 						"alibaba_cloud",
 						"oci",
+						"all",
 					},
 					false,
 				),
@@ -149,6 +150,8 @@ func readSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface
 
 	return nil
 }
+
+
 
 func deleteSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)

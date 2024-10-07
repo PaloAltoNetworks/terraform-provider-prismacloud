@@ -30,6 +30,7 @@ func resourceRqlSearch() *schema.Resource {
 					"network",
 					"event",
 					"iam",
+					"asset",
 				}, false),
 				ForceNew: true,
 			},
@@ -365,6 +366,117 @@ func resourceRqlSearch() *schema.Resource {
 					},
 				},
 			},
+			"asset_data": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "List of asset data structs",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"unified_asset_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Unified Asset Id",
+						},
+						"external_asset_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "External Asset Id",
+						},
+						"asset_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Asset Name",
+						},
+						"asset_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Asset Type",
+						},
+						"cloud_account_id": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Cloud Account Id",
+						},
+						"cloud_account_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Cloud Account Name",
+						},
+						"cloud_service_name": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Cloud Service Name",
+						},
+						"cloud_region": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Cloud Region",
+						},
+						"finding_count": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Finding Count",
+						},
+						"last_modified_at": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Last Modified At",
+						},
+						"asset_category": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Asset Category",
+						},
+						"asset_class": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Asset Class",
+						},
+						"cloud_type": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Cloud Type",
+						},
+						"finding_types_by_severity_order": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "Finding Types By Severity Order ",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"matched_security_issues": {
+							Type:        schema.TypeList,
+							Computed:    true,
+							Description: "Finding Types By Severity Order List",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"type": {
+										Type:        schema.TypeString,
+										Computed:    true,
+										Description: "Type of Matched Security Issue",
+									},
+									"count": {
+										Type:        schema.TypeInt,
+										Computed:    true,
+										Description: "Count of Matched Security Issues",
+									},
+								},
+							},
+						},
+						"total_security_issues_count": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Total Security Issues Count",
+						},
+						"matching_security_issues_count": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: "Matching Security Issues Count",
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -391,7 +503,7 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 			SkipResult: skipResult,
 		}
 
-		resp, err := search.ConfigSearch(client, req)
+		resp, err := search.ConfigSearch(client, req) 
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -483,6 +595,30 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 		})
 
 		id = buildRqlSearchId(searchType, query, resp.Id)
+	case "asset":
+		req := search.AssetRequest{
+			Query:      query,
+			Limit:      limit,
+			SkipResult: skipResult,
+		}
+
+		resp, err := search.AssetSearch(client, req)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		PollApiUntilSuccess(func() error {
+			r := search.AssetRequest{
+				SavedSearchId: resp.ResultMetadata.SearchId,
+				Query:         query,
+				Limit:         limit,
+				SkipResult:    skipResult,
+			}
+			_, err := search.AssetSearch(client, r)
+			return err
+		})
+
+		id = buildRqlSearchId(searchType, query, resp.ResultMetadata.SearchId)
 	}
 
 	d.SetId(id)
@@ -524,6 +660,7 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 		d.Set("event_data", nil)
 		d.Set("network_data", nil)
 		d.Set("iam_data", nil)
+		d.Set("asset_data", nil)
 
 		if len(resp.Data.Items) == 0 {
 			d.Set("config_data", nil)
@@ -565,6 +702,7 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 		d.Set("event_data", nil)
 		d.Set("config_data", nil)
 		d.Set("iam_data", nil)
+		d.Set("asset_data", nil)
 
 		if len(resp.Data.Items) == 0 {
 			d.Set("network_data", nil)
@@ -604,6 +742,7 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 		d.Set("config_data", nil)
 		d.Set("network_data", nil)
 		d.Set("iam_data", nil)
+		d.Set("asset_data", nil)
 
 		if len(resp.Data.Items) == 0 {
 			d.Set("event_data", nil)
@@ -639,6 +778,7 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 		d.Set("config_data", nil)
 		d.Set("network_data", nil)
 		d.Set("event_data", nil)
+		d.Set("asset_data", nil)
 
 		tr := flattenTimeRange(resp.TimeRange)
 		if err = d.Set("time_range", tr); err != nil {
@@ -704,6 +844,62 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 				log.Printf("[WARN] Error setting 'iam_data' for %q: %s", d.Id(), err)
 			}
 
+		}
+	case "asset":
+		req := search.AssetRequest{
+			SavedSearchId: searchId,
+			Query:         query,
+			Limit:         limit,
+			SkipResult:    skipResult,
+		}
+		resp, err := search.AssetSearch(client, req)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		d.Set("search_id", resp.ResultMetadata.SearchId)
+		d.Set("cloud_type", resp.ResultMetadata.CloudType)
+		d.Set("config_data", nil)
+		d.Set("network_data", nil)
+		d.Set("event_data", nil)
+		d.Set("iam_data", nil)
+		d.Set("group_by", nil)
+		if len(resp.Value) == 0 {
+			d.Set("asset_data", nil)
+		} else {
+			list := make([]interface{}, 0, len(resp.Value))
+			for _, x := range resp.Value {
+				matchedSecurityIssuesList := make([]interface{}, 0, len(x.MatchedSecurityIssues))
+				for _,val := range x.MatchedSecurityIssues {
+					matchedSecurityIssuesList = append(matchedSecurityIssuesList, map[string]interface{}{
+						"type" : val.Type,
+						"count" : val.Count,
+					})
+				}
+				list = append(list, map[string]interface{}{
+					"unified_asset_id":                x.UnifiedAssetId,
+					"external_asset_id":               x.ExternalAssetId,
+					"asset_name":                      x.AssetName,
+					"asset_type":                      x.AssetType,
+					"cloud_account_id":                x.CloudAccountId,
+					"cloud_account_name":              x.CloudAccountName,
+					"cloud_service_name":              x.CloudServiceName,
+					"cloud_region":                    x.CloudRegion,
+					"finding_count":                   x.FindingCount,
+					"last_modified_at":                x.LastModifiedAt,
+					"asset_category":                  x.AssetCategory,
+					"asset_class":                     x.AssetClass,
+					"cloud_type":                      x.CloudType,
+					"finding_types_by_severity_order": x.FindingTypesBySeverityOrder,
+					"matched_security_issues":         matchedSecurityIssuesList,
+					"total_security_issues_count":     x.TotalSecurityIssuesCount,
+					"matching_security_issues_count":  x.MatchingSecurityIssuesCount,
+				})
+			}
+			log.Printf("Setting Asset Data")
+			if err = d.Set("asset_data", list); err != nil {
+				log.Printf("[WARN] Error setting 'asset_data' for %q: %s", d.Id(), err)
+			}
 		}
 	}
 	return nil
