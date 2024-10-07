@@ -31,7 +31,7 @@ resource "prismacloud_rql_search" "example" {
 The following arguments are supported:
 
 * `search_type` - (Required) The search type. Valid values are `config`
-  (default) `event`, `network` and `iam`.
+  (default) `event`, `network`, `iam` and `attack_path`.
 * `query` - (Required) The RQL query.
 * `limit` - (int) Limit rules (default: `10`).
 * `skip_result` - (bool) Skip RQL search results in response. Applicable for `config`, `event` and `network` RQL search.
@@ -135,7 +135,8 @@ The following attributes are supported:
 
 * `message_code` - Message code.
 
-* `asset_data` supports the following attributes:   
+`asset_data` supports the following attributes:   
+
 * `unified_asset_id` - Unified Asset Id            
 * `external_asset_id` - External Asset Id
 * `asset_name` - Asset Name
@@ -145,7 +146,7 @@ The following attributes are supported:
 * `cloud_service_name` - Cloud Service Name
 * `cloud_region`  - Cloud Region
 * `finding_count` - Finding Count  
-* `last_modified_at` - Last Modified At   
+* `last_modified_at` - Last modified timestamp  
 * `asset_category` - Asset Category
 * `asset_class` - Asset Class
 * `cloud_type` - Cloud Type

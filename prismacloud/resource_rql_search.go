@@ -863,6 +863,7 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 		d.Set("network_data", nil)
 		d.Set("event_data", nil)
 		d.Set("iam_data", nil)
+		d.Set("group_by", nil)
 		if len(resp.Value) == 0 {
 			d.Set("asset_data", nil)
 		} else {

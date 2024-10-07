@@ -148,6 +148,42 @@ resource "prismacloud_policy" "Policy" {
 }
 ```
 
+## Example Usage (Attack Path Policy)
+```hcl
+resource "prismacloud_policy" "example" {
+    name = "Attack Path Policy"
+    policy_type = "attack_path"
+    cloud_type = "<cloud_type>"
+    rule {
+        name = "Attack Path Policy"
+        criteria =  prismacloud_saved_search.assetSavedSearch.search_id
+        parameters = {
+          savedSearch = true
+        }
+        rule_type = "attack_path"
+    }
+    severity = "low"
+}
+
+resource "prismacloud_saved_search" "assetSavedSearch" {
+    name = "Terraform Asset Saved Search"
+    description = "Made by terraform"
+    search_id = prismacloud_rql_search.asset.search_id
+    query = prismacloud_rql_search.asset.query
+    time_range {
+        to_now {
+            unit = "epoch"
+        }
+    }
+}
+
+resource "prismacloud_rql_search" "asset" {
+    search_type = "asset"
+    query = "<asset_query>"
+}
+```
+
+
 ## Argument Reference
 
 * `name` - (Required) Policy name
