@@ -14,6 +14,7 @@ const (
 	RuleTypeAnomaly       = "Anomaly"
 	RuleTypeData          = "DLP"
 	RuleTypeNetworkConfig = "NetworkConfig"
+	RuleAttackPath        = "attack_path"
 )
 
 // Valid values for Policy.PolicyType.
@@ -24,6 +25,7 @@ const (
 	PolicyTypeIAM        = "iam"
 	PolicyTypeAnomaly    = "anomaly"
 	PolicyTypeData       = "data"
+	PolicyTypeAttackPath = "attack_path"
 )
 
 // Valid values for Policy.Rule.Severity.

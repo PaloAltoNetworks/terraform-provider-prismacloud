@@ -206,3 +206,47 @@ type IamItem struct {
 type Exception struct {
 	MessageCode string `json:"messageCode"`
 }
+type AssetRequest struct {
+	SavedSearchId    string              `json:"savedSearchId,omitempty"`
+	Query            string              `json:"query"`
+	SkipResult       bool                `json:"skipResult,omitempty"`
+	Limit            int                 `json:"limit,omitempty"`
+}
+
+type AssetResponse struct {
+	ResultMetadata     ResultMetadata    `json:"resultMetadata"`
+	SearchType         string            `json:"searchType"`
+	Value              []AssetValue      `json:"value"`
+}
+
+type AssetValue struct {
+	UnifiedAssetId                 string              `json:"unifiedAssetId"`
+	ExternalAssetId                string              `json:"externalAssetId"`
+	AssetName                      string              `json:"assetName"`
+	AssetType                      string              `json:"assetType"`
+	CloudAccountId                 string              `json:"cloudAccountId"`
+	CloudAccountName               string              `json:"cloudAccountName"`
+	CloudServiceName               string              `json:"cloudServiceName"`
+	CloudRegion                    string              `json:"cloudRegion"`
+	FindingCount                   int                 `json:"findingCount"`
+	LastModifiedAt                 int                 `json:"lastModifiedAt"`
+	AssetCategory                  string              `json:"assetCategory"`
+	AssetClass                     string              `json:"assetClass"`
+	CloudType                      string              `json:"cloudType"`
+	FindingTypesBySeverityOrder    []string            `json:"findingTypesBySeverityOrder"`
+	MatchedSecurityIssues          []MatchedSecurityIssues    `json:"matchedSecurityIssues"`
+	TotalSecurityIssuesCount       int                 `json:"totalSecurityIssuesCount"`
+	MatchingSecurityIssuesCount    int                 `json:"matchingSecurityIssuesCount"`
+}
+
+type ResultMetadata struct {
+	CloudType                string     `json:"cloudType"`
+	ConvertedQuery           string     `json:"convertedQuery"`
+	ResponseTimeInMs         int        `json:"responseTimeInMs"`
+	SearchId                 string     `json:"searchId"`
+}
+
+type MatchedSecurityIssues struct {
+	Type                    string  `json:"type"`
+	Count                   int     `json:"count"`
+}

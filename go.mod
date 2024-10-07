@@ -3,7 +3,7 @@ module github.com/terraform-providers/terraform-provider-prismacloud
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.3
 	github.com/mitchellh/mapstructure v1.1.2
-	github.com/paloaltonetworks/prisma-cloud-go v0.8.3
+	github.com/paloaltonetworks/prisma-cloud-go v0.8.4
 	golang.org/x/net v0.0.0-20220802222814-0bcc04d9c69b
 )
 

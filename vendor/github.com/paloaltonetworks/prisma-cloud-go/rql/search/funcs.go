@@ -76,3 +76,17 @@ func IamSearch(c pc.PrismaCloudClient, req IamRequest) (IamResponse, error) {
 	_, err := c.Communicate("POST", path, nil, req, &resp)
 	return resp, err
 }
+
+// AssetSearch performs an Asset RQL search
+func AssetSearch(c pc.PrismaCloudClient, req AssetRequest) (AssetResponse, error) {
+	c.Log(pc.LogAction, "(get) performing %s", assetSingular)
+
+	var resp AssetResponse
+
+	path := make([]string, 0,len(BaseSuffix) + len(AssetSuffix))
+	path = append(path, BaseSuffix...)
+	path = append(path, AssetSuffix...)
+
+	_, err := c.Communicate("POST", path, nil, req, &resp)
+	return resp, err
+}
