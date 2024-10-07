@@ -31,7 +31,7 @@ resource "prismacloud_rql_search" "example" {
 The following arguments are supported:
 
 * `search_type` - (Required) The search type. Valid values are `config`
-  (default) `event`, `network`, `iam` and `attack_path`.
+  (default) `event`, `network`, `iam` and `asset`.
 * `query` - (Required) The RQL query.
 * `limit` - (int) Limit rules (default: `10`).
 * `skip_result` - (bool) Skip RQL search results in response. Applicable for `config`, `event` and `network` RQL search.
