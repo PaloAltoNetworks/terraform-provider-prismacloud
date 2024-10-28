@@ -36,6 +36,7 @@ The following arguments are supported:
 * `limit` - (int) Limit rules (default: `10`).
 * `skip_result` - (bool) Skip RQL search results in response. Applicable for `config`, `event` and `network` RQL search.
 * `time_range` - (Required for config, event and network RQL search) The RQL time range spec, as defined [below](#time-range).
+* `heuristic_search` - (bool) Perform heuristic search. Applicable for `config` and `audit_event`.
 
 ### Time Range
 

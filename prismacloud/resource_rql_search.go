@@ -51,6 +51,12 @@ func resourceRqlSearch() *schema.Resource {
 				Optional:    true,
 				Description: "Skip search results in response",
 			},
+			"heuristic_search": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Enable heuristic search",
+				Default:     false,
+			},
 			// Output.
 			"group_by": {
 				Type:        schema.TypeList,
@@ -488,6 +494,7 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 	searchType := d.Get("search_type").(string)
 	tr := ParseTimeRange(ResourceDataInterfaceMap(d, "time_range"))
 	skipResult := d.Get("skip_result").(bool)
+	heuristicSearch := d.Get("heuristic_search").(bool)
 	var id string
 
 	if d.Id() != "" {
@@ -497,24 +504,26 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 	switch searchType {
 	case "config":
 		req := search.ConfigRequest{
-			Query:      query,
-			Limit:      limit,
-			TimeRange:  tr,
-			SkipResult: skipResult,
+			Query:           query,
+			Limit:           limit,
+			TimeRange:       tr,
+			SkipResult:      skipResult,
+			HeuristicSearch: heuristicSearch,
 		}
 
-		resp, err := search.ConfigSearch(client, req) 
+		resp, err := search.ConfigSearch(client, req)
 		if err != nil {
 			return diag.FromErr(err)
 		}
 
 		PollApiUntilSuccess(func() error {
 			r := search.ConfigRequest{
-				Id:         resp.Id,
-				Query:      query,
-				Limit:      limit,
-				TimeRange:  tr,
-				SkipResult: skipResult,
+				Id:              resp.Id,
+				Query:           query,
+				Limit:           limit,
+				TimeRange:       tr,
+				SkipResult:      skipResult,
+				HeuristicSearch: heuristicSearch,
 			}
 			_, err := search.ConfigSearch(client, r)
 			return err
@@ -549,10 +558,11 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 		id = buildRqlSearchId(searchType, query, resp.Id)
 	case "event":
 		req := search.EventRequest{
-			Query:      query,
-			Limit:      limit,
-			TimeRange:  tr,
-			SkipResult: skipResult,
+			Query:           query,
+			Limit:           limit,
+			TimeRange:       tr,
+			SkipResult:      skipResult,
+			HeuristicSearch: heuristicSearch,
 		}
 
 		resp, err := search.EventSearch(client, req)
@@ -562,11 +572,12 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 
 		PollApiUntilSuccess(func() error {
 			r := search.EventRequest{
-				Id:         resp.Id,
-				Query:      query,
-				Limit:      limit,
-				TimeRange:  tr,
-				SkipResult: skipResult,
+				Id:              resp.Id,
+				Query:           query,
+				Limit:           limit,
+				TimeRange:       tr,
+				SkipResult:      skipResult,
+				HeuristicSearch: heuristicSearch,
 			}
 			_, err := search.EventSearch(client, r)
 			return err
@@ -629,20 +640,22 @@ func createUpdateRqlSearch(ctx context.Context, d *schema.ResourceData, meta int
 func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	_, _, searchId := parseRqlSearchId(d.Id())
-	query := d.Get("query").(string) 
+	query := d.Get("query").(string)
 	searchType := d.Get("search_type").(string)
 	limit := d.Get("limit").(int)
 	tr := ParseTimeRange(ResourceDataInterfaceMap(d, "time_range"))
 	skipResult := d.Get("skip_result").(bool)
+	heuristicSearch := d.Get("heuristic_search").(bool)
 
 	switch searchType {
 	case "config":
 		req := search.ConfigRequest{
-			Id:         searchId,
-			Query:      query,
-			Limit:      limit,
-			TimeRange:  tr,
-			SkipResult: skipResult,
+			Id:              searchId,
+			Query:           query,
+			Limit:           limit,
+			TimeRange:       tr,
+			SkipResult:      skipResult,
+			HeuristicSearch: heuristicSearch,
 		}
 
 		resp, err := search.ConfigSearch(client, req)
@@ -722,11 +735,12 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 		}
 	case "event":
 		req := search.EventRequest{
-			Id:         searchId,
-			Query:      query,
-			Limit:      limit,
-			TimeRange:  tr,
-			SkipResult: skipResult,
+			Id:              searchId,
+			Query:           query,
+			Limit:           limit,
+			TimeRange:       tr,
+			SkipResult:      skipResult,
+			HeuristicSearch: heuristicSearch,
 		}
 		resp, err := search.EventSearch(client, req)
 		if err != nil {
@@ -870,10 +884,10 @@ func readRqlSearch(ctx context.Context, d *schema.ResourceData, meta interface{}
 			list := make([]interface{}, 0, len(resp.Value))
 			for _, x := range resp.Value {
 				matchedSecurityIssuesList := make([]interface{}, 0, len(x.MatchedSecurityIssues))
-				for _,val := range x.MatchedSecurityIssues {
+				for _, val := range x.MatchedSecurityIssues {
 					matchedSecurityIssuesList = append(matchedSecurityIssuesList, map[string]interface{}{
-						"type" : val.Type,
-						"count" : val.Count,
+						"type":  val.Type,
+						"count": val.Count,
 					})
 				}
 				list = append(list, map[string]interface{}{
