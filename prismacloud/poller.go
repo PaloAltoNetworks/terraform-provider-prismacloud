@@ -43,7 +43,6 @@ func (b *BackOffRetry) PollApiByBackoffUntilSuccess(p Poller) diag.Diagnostics {
 	for {
 		delay = 1 << retries
 		if err := p(); err == nil {
-			log.Printf("Error is nil")
 			break
 		} else if retries <= b.maxRetries && errors.Is(err, pc.ObjectNotFoundError) {
 			log.Printf("Re-trying API call with exponential backoff, delay of %d seconds", delay)
