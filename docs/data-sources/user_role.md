@@ -33,6 +33,7 @@ You must specify at least one of the following:
 * `restrict_dismissal_access` - (bool) Restrict dismissal access.
 * `associated_users` - List of associated application users which cannot exist in the system without the user role.
 * `additional_attributes` - An Additional attributes spec, as defined [below](#additional-attributes).
+* `backoff-retry` - (bool) Backoff retry, useful when role creation takes time.
 
 ## Additional Attributes
 
