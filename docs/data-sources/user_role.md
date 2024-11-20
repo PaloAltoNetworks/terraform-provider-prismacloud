@@ -33,6 +33,8 @@ You must specify at least one of the following:
 * `restrict_dismissal_access` - (bool) Restrict dismissal access.
 * `associated_users` - List of associated application users which cannot exist in the system without the user role.
 * `additional_attributes` - An Additional attributes spec, as defined [below](#additional-attributes).
+* `backoff_retry` - (bool) Backoff retry parameter manages retries when the API fails, using exponential backoff.
+* `max_retries` - (int) (Default: 10) Maximum number of retries.
 
 ## Additional Attributes
 

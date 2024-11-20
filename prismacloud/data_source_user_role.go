@@ -2,11 +2,10 @@ package prismacloud
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"github.com/paloaltonetworks/prisma-cloud-go/user/role"
 	"golang.org/x/net/context"
-
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceUserRole() *schema.Resource {
@@ -29,7 +28,18 @@ func dataSourceUserRole() *schema.Resource {
 				Description:  "Role name",
 				AtLeastOneOf: []string{"name", "role_id"},
 			},
-
+			"backoff_retry": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Enable BackOff Retry for read API calls",
+				Default:     false,
+			},
+			"max_retries": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Maximum number of retries for read API calls",
+				Default:     10,
+			},
 			// Output.
 			"description": {
 				Type:        schema.TypeString,
@@ -126,9 +136,23 @@ func dataSourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta in
 
 	var err error
 	id := d.Get("role_id").(string)
-
+	backoffRetry := d.Get("backoff_retry").(bool)
+	// Helper function to handle backoff retry
+	executeWithBackoff := func(operation func() error) diag.Diagnostics {
+		maxRetries := d.Get("max_retries").(int)
+		backoff := &BackOffRetry{
+			maxRetries: maxRetries,
+		}
+		return backoff.PollApiByBackoffUntilSuccess(operation)
+	}
 	if id == "" {
 		name := d.Get("name").(string)
+		if backoffRetry {
+			executeWithBackoff(func() error {
+				_, err = role.Identify(client, name)
+				return err
+			})
+		}
 		id, err = role.Identify(client, name)
 		if err != nil {
 			if err == pc.ObjectNotFoundError {
@@ -138,7 +162,12 @@ func dataSourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta in
 			return diag.FromErr(err)
 		}
 	}
-
+	if backoffRetry {
+		executeWithBackoff(func() error {
+			_, err = role.Get(client, id)
+			return err
+		})
+	}
 	obj, err := role.Get(client, id)
 	if err != nil {
 		if err == pc.ObjectNotFoundError {
