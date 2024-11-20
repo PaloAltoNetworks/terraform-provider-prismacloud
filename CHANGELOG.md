@@ -1,3 +1,8 @@
+## 1.6.1 (Nov 20, 2024)
+
+* Added support for heuristic search in `prismacloud_rql_search`.
+* Added support for backoff retry in `prismacloud_user_role`
+
 ## 1.6.0 (Oct 7, 2024)
 
 * Added support for attack path policy in `prismacloud_policy`.
