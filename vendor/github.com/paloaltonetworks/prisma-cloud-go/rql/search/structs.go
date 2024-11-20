@@ -11,6 +11,7 @@ type ConfigRequest struct {
 	Limit            int                 `json:"limit,omitempty"`
 	WithResourceJson bool                `json:"withResourceJson,omitempty"`
 	SkipResult       bool                `json:"skipResult,omitempty"`
+	HeuristicSearch  bool                `json:"heuristicSearch,omitempty"`
 }
 
 type ConfigResponse struct {
@@ -59,6 +60,7 @@ type EventRequest struct {
 	Limit            int                 `json:"limit,omitempty"`
 	WithResourceJson bool                `json:"withResourceJson,omitempty"`
 	SkipResult       bool                `json:"skipResult,omitempty"`
+	HeuristicSearch  bool                `json:"heuristicSearch,omitempty"`
 }
 
 type EventResponse struct {
