@@ -7,20 +7,24 @@ page_title: "Prisma Cloud: prismacloud_cloud_account_v2"
 Manage a cloud account on the Prisma Cloud platform.
 
 ## **Example Usage 1**: AWS cloud account onboarding
-### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
+
+### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details
+
 ```hcl
 data "prismacloud_account_supported_features" "prismacloud_supported_features" {
     cloud_type = "aws"
     account_type = "account"
 }
 ```
+
 ```hcl
 output "features_supported" {
     value = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features
 }
 ```
 
-### `Step 2`: Fetch the AWS CFT s3 presigned url based on required features. Refer **[AWS CFT generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/aws_cft_generator_external_id)** for more details.
+### `Step 2`: Fetch the AWS CFT s3 presigned url based on required features. Refer **[AWS CFT generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/aws_cft_generator_external_id)** for more details
+
 ```hcl
 data "prismacloud_aws_cft_generator" "prismacloud_account_cft" {
     account_type = "account"
@@ -28,6 +32,7 @@ data "prismacloud_aws_cft_generator" "prismacloud_account_cft" {
     features = data.prismacloud_account_supported_features.prismacloud_supported_features.supported_features
 }
 ```
+
 ```hcl
 output "s3_presigned_cft_url" {
     value = data.prismacloud_aws_cft_generator.prismacloud_account_cft.s3_presigned_cft_url
@@ -35,10 +40,12 @@ output "s3_presigned_cft_url" {
 ```
 
 ### `Step 3`: Create the IAM Role AWS CloudFormation Stack using S3 presigned cft url from above step2
-To create the IAM role using terraform, the aws official terraform aws_cloudformation_stack resource can be used. Refer https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudformation_stack for more details
+
+To create the IAM role using terraform, the aws official terraform aws_cloudformation_stack resource can be used. Refer <https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudformation_stack> for more details
 
 Example:
-```
+
+```hcl
 resource "aws_cloudformation_stack" "prismacloud_iam_role_stack" {
   name = "PrismaCloudApp" // change if needed
   capabilities = ["CAPABILITY_NAMED_IAM"]
@@ -95,9 +102,10 @@ data "prismacloud_account_group" "existing_account_group_id" {
 # }
 
 ```
+
 ### **Consolidated code snippet for all the above steps**
 
-```
+```hcl
 data "prismacloud_account_supported_features" "prismacloud_supported_features" {
     cloud_type = "aws"
     account_type = "account"
@@ -158,7 +166,8 @@ data "prismacloud_account_group" "existing_account_group_id" {
 ```
 
 ## **Example Usage 2**: Bulk AWS cloud accounts onboarding
-### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 1' should be completed for each of the account and have IAM roles created.
+
+### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 1' should be completed for each of the account and have IAM roles created
 
 /*
 You can also create cloud accounts from a CSV file using native Terraform
@@ -171,7 +180,8 @@ accountId,groupIDs,name,roleArn
 321466019,Default Account Group ID||AWS Account Group ID,321466019,arn:aws:iam::321466019:role/RedlockReadWriteRole
 
 */
-```
+
+```hcl
 locals {
     instances = csvdecode(file("aws.csv"))
 }
@@ -195,7 +205,7 @@ Before onboarding the aws cloud account. `external_id` for account must be gener
 
 ## **Example Usage 3**: Azure cloud account onboarding
 
-### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
+### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details
 
 ```hcl
 data "prismacloud_account_supported_features" "prismacloud_supported_features" {
@@ -211,7 +221,7 @@ output "features_supported" {
 }
 ```
 
-### `Step 2`: Fetch the Azure template based on required features. Refer **[Azure template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/azure_template)** for more details.
+### `Step 2`: Fetch the Azure template based on required features. Refer **[Azure template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/azure_template)** for more details
 
 ```hcl
 data "prismacloud_azure_template" "prismacloud_azure_template" {
@@ -272,7 +282,7 @@ data "prismacloud_account_group" "existing_account_group_id" {
 
 ### **Consolidated code snippet for all the above steps**
 
-```
+```hcl
 data "prismacloud_account_supported_features" "prismacloud_supported_features" {
   cloud_type      = "azure"
   account_type    = "account"
@@ -330,7 +340,7 @@ data "prismacloud_account_group" "existing_account_group_id" {
 
 ## **Example Usage 4**: Bulk Azure cloud accounts onboarding
 
-### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 3' should be completed for each of the account.
+### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 3' should be completed for each of the account
 
 /*
 You can also create cloud accounts from a CSV file using native Terraform
@@ -344,7 +354,7 @@ accountId,groupIDs,name,clientId,key,tenantId,servicePrincipalId
 
 */
 
-```
+```hcl
 locals {
     instances = csvdecode(file("azure.csv"))
 }
@@ -371,7 +381,7 @@ Before onboarding the azure cloud account. `azure_template` for account must be 
 
 ## **Example Usage 5**: Gcp cloud account onboarding
 
-### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details.
+### `Step 1`: Fetch the supported features. Refer **[Supported features readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/cloud_account_supported_features)** for more details
 
 ```hcl
 data "prismacloud_account_supported_features" "prismacloud_supported_features" {
@@ -386,7 +396,7 @@ output "features_supported" {
 }
 ```
 
-### `Step 2`: Fetch the Gcp template based on required features. Refer **[Gcp template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/gcp_template)** for more details.
+### `Step 2`: Fetch the Gcp template based on required features. Refer **[Gcp template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/gcp_template)** for more details
 
 ```hcl
 data "prismacloud_gcp_template" "prismacloud_gcp_template" {
@@ -446,7 +456,7 @@ data "prismacloud_account_group" "existing_account_group_id" {
 
 ### **Consolidated code snippet for all the above steps**
 
-```
+```hcl
 data "prismacloud_account_supported_features" "prismacloud_supported_features" {
   cloud_type      = "gcp"
   account_type    = "<account-type>"   //"account" or "masterServiceAccount"
@@ -502,7 +512,7 @@ data "prismacloud_account_group" "existing_account_group_id" {
 
 ## **Example Usage 6**: Bulk Gcp cloud accounts onboarding
 
-### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 5' should be completed for each of the account.
+### `Prerequisite Step`: Steps 1, 2, 3 mentioned in 'Example Usage 5' should be completed for each of the account
 
 /*
 You can also create cloud accounts from a CSV file using native Terraform
@@ -516,7 +526,7 @@ accountId,groupIDs,name,credentials
 
 */
 
-```
+```hcl
 locals {
     instances = csvdecode(file("gcp.csv"))
 }
@@ -540,7 +550,7 @@ Before onboarding the gcp cloud account. `gcp_template` for account must be gene
 
 ## **Example Usage 7**: IBM cloud account onboarding
 
-### `Step 1`: Fetch the IBM template. Refer **[IBM template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/ibm_template)** for more details.
+### `Step 1`: Fetch the IBM template. Refer **[IBM template generator Readme](https://registry.terraform.io/providers/PaloAltoNetworks/prismacloud/latest/docs/data-sources/ibm_template)** for more details
 
 ```hcl
 data "prismacloud_ibm_template" "prismacloud_ibm_template" {
@@ -586,7 +596,7 @@ data "prismacloud_account_group" "existing_account_group_id" {
 
 ### **Consolidated code snippet for all the above steps**
 
-```
+```hcl
 data "prismacloud_ibm_template" "prismacloud_ibm_template" {
   file_name       = "<file-name>" //Provide filename along with path to store gcp template
   account_type    = "account"
@@ -623,7 +633,7 @@ data "prismacloud_account_group" "existing_account_group_id" {
 
 ## **Example Usage 8**: Bulk IBM cloud accounts onboarding
 
-### `Prerequisite Step`: Steps 1, 2 mentioned in 'Example Usage 7' should be completed for each of the account.
+### `Prerequisite Step`: Steps 1, 2 mentioned in 'Example Usage 7' should be completed for each of the account
 
 /*
 You can also create cloud accounts from a CSV file using native Terraform
@@ -637,7 +647,7 @@ accountId,apiKey,groupIds,name,svcIdIamId
 
 */
 
-```
+```hcl
 locals {
     instances = csvdecode(file("ibm.csv"))
 }
@@ -708,7 +718,7 @@ accountId,ramArn,groupIds,name
 
 */
 
-```
+```hcl
 locals {
     instances = csvdecode(file("alibaba.csv"))
 }
@@ -847,7 +857,7 @@ The type of cloud account to add.
 ### Gcp
 
 * `account_id` - Gcp account ID.
-* `account_type` - `account` for gcp project account and `masterServiceAccount` for gcp master service account.
+* `account_type` - `account` for gcp project account, `masterServiceAccount` for gcp master service account and `workspace_domain` for gcp workspace domain.
 * `enabled` - (bool) Whether the account is enabled.
 * `group_ids` - List of account IDs to which you are assigning this account.
 * `name` - Name to be used for the account on the Prisma Cloud platform (must be unique).
@@ -934,5 +944,5 @@ The type of cloud account to add.
 Resources can be imported using the cloud type and the ID:
 
 ```
-$ terraform import prismacloud_cloud_account_v2.example cloudType:accountId
+terraform import prismacloud_cloud_account_v2.example cloudType:accountId
 ```
