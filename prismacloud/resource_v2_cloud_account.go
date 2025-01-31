@@ -2,13 +2,14 @@ package prismacloud
 
 import (
 	"encoding/json"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2"
-	"golang.org/x/net/context"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	accountv2 "github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2"
+	"golang.org/x/net/context"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 
@@ -443,12 +444,13 @@ func resourceV2CloudAccount() *schema.Resource {
 						"account_type": {
 							Type:        schema.TypeString,
 							Required:    true,
-							Description: "Account type - account, masterServiceAccount or organization",
+							Description: "Account type - account, masterServiceAccount, organization or workspace_domain",
 							ValidateFunc: validation.StringInSlice(
 								[]string{
 									"account",
 									"masterServiceAccount",
 									"organization",
+									"workspace_domain",
 								},
 								false,
 							),
