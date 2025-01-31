@@ -6,8 +6,8 @@ import (
 	"log"
 
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
-	"github.com/paloaltonetworks/prisma-cloud-go/user/role"
 	"github.com/paloaltonetworks/prisma-cloud-go/user/profile"
+	"github.com/paloaltonetworks/prisma-cloud-go/user/role"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -37,7 +37,7 @@ func resourceUserRole() *schema.Resource {
 			"delete_associated_users": {
 				Type:        schema.TypeBool,
 				Optional:    true,
-				Default:	 false,
+				Default:     false,
 				Description: "Delete any associated users on role deletion. This is use useful when SSO is enabled",
 			},
 			"description": {
