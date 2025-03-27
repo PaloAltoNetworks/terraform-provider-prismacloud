@@ -151,8 +151,6 @@ func readSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface
 	return nil
 }
 
-
-
 func deleteSavedSearch(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*pc.Client)
 	id := d.Id()

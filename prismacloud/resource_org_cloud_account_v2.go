@@ -3,12 +3,13 @@ package prismacloud
 import (
 	"context"
 	"encoding/json"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	pc "github.com/paloaltonetworks/prisma-cloud-go"
-	accountv2 "github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	pc "github.com/paloaltonetworks/prisma-cloud-go"
+	accountv2 "github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2"
 
 	"github.com/paloaltonetworks/prisma-cloud-go/cloud/account-v2/org"
 

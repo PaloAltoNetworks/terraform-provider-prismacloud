@@ -386,8 +386,8 @@ func resourcePolicy() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"operation": {
-								  		Type:     schema.TypeString,
-								  		Optional: true,
+										Type:     schema.TypeString,
+										Optional: true,
 									},
 									"payload": {
 										Type:     schema.TypeString,
@@ -534,8 +534,8 @@ func parsePolicy(d *schema.ResourceData, id string) policy.Policy {
 				actions := make([]policy.Action, 0, len(rems["actions"].([]interface{})))
 				for _, action := range rems["actions"].([]interface{}) {
 					actions = append(actions, policy.Action{
-						Operation:    action.(map[string]interface{})["operation"].(string),
-						Payload: action.(map[string]interface{})["payload"].(string),
+						Operation: action.(map[string]interface{})["operation"].(string),
+						Payload:   action.(map[string]interface{})["payload"].(string),
 					})
 				}
 				ans.Remediation.Actions = actions
@@ -680,7 +680,7 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 			csjs = string(b)
 		}
 		var actions []map[string]string
-		if obj.Remediation.Actions != nil  && len(obj.Remediation.Actions) > 0 {
+		if obj.Remediation.Actions != nil && len(obj.Remediation.Actions) > 0 {
 			actions = make([]map[string]string, len(obj.Remediation.Actions))
 			for i, action := range obj.Remediation.Actions {
 				actions[i] = map[string]string{
@@ -696,7 +696,7 @@ func savePolicy(d *schema.ResourceData, obj policy.Policy) {
 			"actions":                       actions,
 			"cli_script_json_schema_string": csjs,
 		}
-		if err := d.Set("remediation", []interface{}{rem} ); err != nil {
+		if err := d.Set("remediation", []interface{}{rem}); err != nil {
 			log.Printf("[WARN] Error setting 'remediation' for %q: %s", d.Id(), err)
 		}
 	}

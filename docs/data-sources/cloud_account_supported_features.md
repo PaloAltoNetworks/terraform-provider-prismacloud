@@ -28,7 +28,7 @@ output "features_supported" {
 The following are the params that this data source supports:
 
 * `cloud_type` - (Required) Cloud type. `aws`, `azure`, or `gcp`.
-* `account_type` - (Required) Cloud account type. `account`, `organization`, `masterServiceAccount`, or `tenant`. Supported values based on cloud_type are given below. <br /> - account, organization - cloud_type: **aws**<br /> - account, organization, masterServiceAccount - cloud_type: **gcp** <br /> - account, tenant - cloud_type: **azure**
+* `account_type` - (Required) Cloud account type. `account`, `organization`, `masterServiceAccount`, `tenant` or `workspaceDomain`. Supported values based on cloud_type are given below. <br /> - account, organization - cloud_type: **aws**<br /> - account, organization, masterServiceAccount, workspaceDomain - cloud_type: **gcp** <br /> - account, tenant - cloud_type: **azure**
 * `deployment_type` - (Optional) *Applicable only for cloud_type: **azure***. Possible values: `azure`, `azure_gov`, or `azure_china`. <br /> - **azure** -  Account type is commercial<br /> - **azure_gov** - Account type is Government on Prisma Commercial and Government stacks.<br /> - **azure_china** - Prisma China Stack.
 * `aws_partition` - (Optional) *Applicable only for Prisma Government Stack(**app.gov.prismacloud.io**) and given if the Cloud account Global Deployment option is enabled.<br />* - **us-east-1** -  AWS Commercial/Global account.<br /> - **us-gov-west-1** - AWS GovCloud account.
 * `root_sync_enabled` - (Optional) *Applicable only for cloud_type: **azure** and accountType: **tenant***.<br />  In order to get supported features for accountType **tenant** and its associated **management groups** and **subscriptions**, rootSyncEnabled must be set to true.

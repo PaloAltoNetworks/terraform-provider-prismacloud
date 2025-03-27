@@ -24,6 +24,7 @@ func dataSourceCloudAccountSupportedFeatures() *schema.Resource {
 						"organization",
 						"masterServiceAccount",
 						"tenant",
+						"workspaceDomain",
 					},
 					false,
 				),
