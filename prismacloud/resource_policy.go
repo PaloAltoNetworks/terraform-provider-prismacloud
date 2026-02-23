@@ -731,8 +731,10 @@ func createPolicy(ctx context.Context, d *schema.ResourceData, meta interface{})
 	client := meta.(*pc.Client)
 	obj := parsePolicy(d, "")
 
-	if err := policy.Create(client, obj); err != nil {
-		return diag.FromErr(err)
+	if diags := RetryWithBackoff(client, func() error {
+		return policy.Create(client, obj)
+	}); diags != nil {
+		return diags
 	}
 
 	PollApiUntilSuccess(func() error {
@@ -758,13 +760,19 @@ func readPolicy(ctx context.Context, d *schema.ResourceData, meta interface{}) d
 	client := meta.(*pc.Client)
 	id := d.Id()
 
-	obj, err := policy.Get(client, id)
-	if err != nil {
-		if err == pc.ObjectNotFoundError {
+	var obj policy.Policy
+	var lastErr error
+	if diags := RetryWithBackoff(client, func() error {
+		var err error
+		obj, err = policy.Get(client, id)
+		lastErr = err
+		return err
+	}); diags != nil {
+		if lastErr == pc.ObjectNotFoundError {
 			d.SetId("")
 			return nil
 		}
-		return diag.FromErr(err)
+		return diags
 	}
 
 	savePolicy(d, obj)
@@ -777,8 +785,10 @@ func updatePolicy(ctx context.Context, d *schema.ResourceData, meta interface{})
 	id := d.Id()
 	obj := parsePolicy(d, id)
 
-	if err := policy.Update(client, obj); err != nil {
-		return diag.FromErr(err)
+	if diags := RetryWithBackoff(client, func() error {
+		return policy.Update(client, obj)
+	}); diags != nil {
+		return diags
 	}
 
 	return readPolicy(ctx, d, meta)
@@ -789,11 +799,14 @@ func deletePolicy(ctx context.Context, d *schema.ResourceData, meta interface{})
 	id := d.Id()
 	obj := parsePolicy(d, "")
 
-	err := policy.Delete(client, id, obj)
-	if err != nil {
-		if err != pc.ObjectNotFoundError {
-			return diag.FromErr(err)
+	if diags := RetryWithBackoff(client, func() error {
+		err := policy.Delete(client, id, obj)
+		if err != nil && err == pc.ObjectNotFoundError {
+			return nil
 		}
+		return err
+	}); diags != nil {
+		return diags
 	}
 
 	d.SetId("")
