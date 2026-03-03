@@ -37,6 +37,70 @@ func PollApiUntilSuccessCustom(p Poller) diag.Diagnostics {
 	return nil
 }
 
+// isRetryableError checks if an error is retryable (429 Too Many Requests or 5xx Server Errors).
+func isRetryableError(err error) bool {
+	if err == nil {
+		return false
+	}
+	errMsg := err.Error()
+	code := strings.Split(errMsg, " ")[0]
+	switch code {
+	case "429", "500", "502", "503", "504":
+		return true
+	}
+	return false
+}
+
+// RetryWithBackoff retries a Poller function using the provider's configured
+// retry settings (max_retries, retry_max_delay, retry_type) for retryable
+// HTTP errors such as 429 (Too Many Requests) and 5xx (Server Errors).
+func RetryWithBackoff(client *pc.Client, p Poller) diag.Diagnostics {
+	maxRetries := client.MaxRetries
+	retryMaxDelay := client.RetryMaxDelay
+	retryType := client.RetryType
+
+	if maxRetries <= 0 {
+		maxRetries = 5
+	}
+	if retryMaxDelay <= 0 {
+		retryMaxDelay = 30
+	}
+	if retryType == "" {
+		retryType = "exponential_backoff"
+	}
+
+	var retries int
+	for {
+		err := p()
+		if err == nil {
+			return nil
+		}
+
+		if !isRetryableError(err) {
+			return diag.FromErr(err)
+		}
+
+		retries++
+		if retries > maxRetries {
+			log.Printf("[ERROR] Exhausted all %d retries, last error: %v", maxRetries, err)
+			return diag.FromErr(err)
+		}
+
+		var delay int
+		if retryType == "exponential_backoff" {
+			delay = 1 << retries
+		} else {
+			delay = 1 + retries
+		}
+		if delay > retryMaxDelay {
+			delay = retryMaxDelay
+		}
+
+		log.Printf("[WARN] Retryable error encountered (attempt %d/%d), retrying after %d seconds: %v", retries, maxRetries, delay, err)
+		time.Sleep(time.Duration(delay) * time.Second)
+	}
+}
+
 func (b *BackOffRetry) PollApiByBackoffUntilSuccess(p Poller) diag.Diagnostics {
 	var delay int
 	var retries = 0

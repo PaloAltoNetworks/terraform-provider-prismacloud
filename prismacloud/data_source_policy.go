@@ -384,30 +384,40 @@ func dataSourcePolicy() *schema.Resource {
 }
 
 func dataSourcePolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	var err error
 	client := meta.(*pc.Client)
 
 	id := d.Get("policy_id").(string)
 
 	if id == "" {
 		name := d.Get("name").(string)
-		id, err = policy.Identify(client, name)
-		if err != nil {
-			if err == pc.ObjectNotFoundError {
+		var lastErr error
+		if diags := RetryWithBackoff(client, func() error {
+			var err error
+			id, err = policy.Identify(client, name)
+			lastErr = err
+			return err
+		}); diags != nil {
+			if lastErr == pc.ObjectNotFoundError {
 				d.SetId("")
 				return nil
 			}
-			return diag.FromErr(err)
+			return diags
 		}
 	}
 
-	obj, err := policy.Get(client, id)
-	if err != nil {
-		if err == pc.ObjectNotFoundError {
+	var obj policy.Policy
+	var lastErr error
+	if diags := RetryWithBackoff(client, func() error {
+		var err error
+		obj, err = policy.Get(client, id)
+		lastErr = err
+		return err
+	}); diags != nil {
+		if lastErr == pc.ObjectNotFoundError {
 			d.SetId("")
 			return nil
 		}
-		return diag.FromErr(err)
+		return diags
 	}
 
 	d.SetId(id)

@@ -144,9 +144,13 @@ func dataSourcePoliciesRead(ctx context.Context, d *schema.ResourceData, meta in
 		buf.WriteString(fmt.Sprintf("%s=%s", key, query[key]))
 	}
 
-	items, err := policy.List(client, query)
-	if err != nil {
-		return diag.FromErr(err)
+	var items []policy.Policy
+	if diags := RetryWithBackoff(client, func() error {
+		var err error
+		items, err = policy.List(client, query)
+		return err
+	}); diags != nil {
+		return diags
 	}
 
 	if buf.Len() == 0 {
