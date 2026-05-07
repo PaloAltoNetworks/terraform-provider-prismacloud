@@ -737,20 +737,21 @@ func createPolicy(ctx context.Context, d *schema.ResourceData, meta interface{})
 		return diags
 	}
 
-	PollApiUntilSuccess(func() error {
-		_, err := policy.Identify(client, obj.Name)
+	var id string
+	if diags := RetryWithBackoff(client, func() error {
+		var err error
+		id, err = policy.Identify(client, obj.Name)
 		return err
-	})
-
-	id, err := policy.Identify(client, obj.Name)
-	if err != nil {
-		return diag.FromErr(err)
+	}); diags != nil {
+		return diags
 	}
 
-	PollApiUntilSuccess(func() error {
+	if diags := RetryWithBackoff(client, func() error {
 		_, err := policy.Get(client, id)
 		return err
-	})
+	}); diags != nil {
+		return diags
+	}
 
 	d.SetId(id)
 	return readPolicy(ctx, d, meta)

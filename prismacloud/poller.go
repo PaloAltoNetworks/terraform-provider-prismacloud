@@ -6,6 +6,7 @@ import (
 	pc "github.com/paloaltonetworks/prisma-cloud-go"
 	"log"
 	"math/rand"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -38,12 +39,28 @@ func PollApiUntilSuccessCustom(p Poller) diag.Diagnostics {
 }
 
 // isRetryableError checks if an error is retryable (429 Too Many Requests or 5xx Server Errors).
+// Handles multiple SDK error formats:
+//   - "503 error, and could not unmarshal header..." (unmarshal failure)
+//   - "503 error without the \"X-Redlock-Status\" header..." (missing header)
+//   - "503/path Error(msg:... severity:...)" (PrismaCloudErrorList format)
+//   - "429", "500", etc. (plain status codes)
 func isRetryableError(err error) bool {
 	if err == nil {
 		return false
 	}
 	errMsg := err.Error()
-	code := strings.Split(errMsg, " ")[0]
+
+	// Extract the status code from the error message.
+	// The first token may be "503" or "503/some/path", so split on "/" first
+	// to handle the PrismaCloudErrorList format (e.g., "503/compliance/...").
+	firstToken := strings.Split(errMsg, " ")[0]
+	code := strings.Split(firstToken, "/")[0]
+
+	// Validate that code is a number to avoid false positives
+	if _, parseErr := strconv.Atoi(code); parseErr != nil {
+		return false
+	}
+
 	switch code {
 	case "429", "500", "502", "503", "504":
 		return true
