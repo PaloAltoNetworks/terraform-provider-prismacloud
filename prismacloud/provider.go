@@ -167,6 +167,7 @@ func Provider() *schema.Provider {
 			"prismacloud_trusted_login_ip":                         dataSourceTrustedLoginIp(),
 			"prismacloud_trusted_login_ips":                        dataSourceTrustedLoginIps(),
 			"prismacloud_aws_storage_uuid":                         dataSourceStorageUUID(),
+			"prismacloud_saml_bypass_users":                        dataSourceSamlBypassUsers(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -198,6 +199,8 @@ func Provider() *schema.Provider {
 			"prismacloud_trusted_alert_ip":                        resourceTrustedAlertIp(),
 			"prismacloud_trusted_login_ip":                        resourceTrustedLoginIp(),
 			"prismacloud_trusted_login_ip_status":                 resourceLoginIpStatus(),
+			"prismacloud_saml_bypass_users":                       resourceSamlBypassUsers(),
+			"prismacloud_saml_bypass_subset_users":                resourceSamlBypassSubsetUsers(),
 		},
 
 		ConfigureFunc: providerConfigure,
